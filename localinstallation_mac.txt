@@ -1,0 +1,50 @@
+Redash Local Setup v0.12 (for Mac)
+
+https://discuss.redash.io/t/redash-v0-12-local-setup/337
+
+	Dependencies:
+		- NPM / Node
+			- sudo npm install --global bower
+			- sudo npm install --global gulp-cli
+
+		- Redis - Install and Run
+			Install Redis from package https://redis.io/
+
+			Run Redis
+			- /redis/src/resis-server
+				- Will run on port 6379
+
+
+		- Postgres Install and Run
+			- Install Postgres using homebrew
+				brew install postgresql
+
+			- Run Postgres
+
+				cd redash/
+
+				initdb -D postgresdb/
+				createdb redash
+				pg_ctl -D postgresdb/ -l logfile start &
+
+				bin/run ./manage.py database drop_tables
+				bin/run ./manage.py database create_tables
+				bin/run ./manage.py users create --admin --password admin "Admin" "admin"
+
+
+		
+		- Installing Some Web Dependencies
+			cd redash/
+			npm install
+			gulp
+			bower install bower.json
+				- use last version of webcomponents (webcomponentsjs#^0.6.0 which resolved to 0.6.3 and is required by polymer#0.5.6)
+
+
+	Running Redash:
+		cd redash/
+		- bin/run honcho start -f Procfile.dev &
+
+		Will run under http://0.0.0.0:5000/
+
+
