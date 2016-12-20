@@ -38,7 +38,7 @@
                    ng-show="currentUser.hasPermission('create_dashboard')">New Dashboard</a></li>
           </ul>
         </li>
-        <li class="dropdown" ng-show="currentUser.hasPermission('view_query')" dropdown>
+        <li class="dropdown" ng-show="currentUser.hasPermission('view_query') && currentUser.id == 1" dropdown>
           <a href="#" class="dropdown-toggle" dropdown-toggle>Queries <b class="caret"></b></a>
           <ul class="dropdown-menu" dropdown-menu>
             <li ng-show="currentUser.hasPermission('create_query')"><a href="queries/new">New Query</a></li>
