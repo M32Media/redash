@@ -19,7 +19,7 @@ def invite_user(org, inviter, user):
 
 
 class UserListResource(BaseResource):
-    @require_permission('list_users')
+    @require_admin
     def get(self):
         return [u.to_dict() for u in models.User.all(self.current_org)]
 
@@ -78,8 +78,10 @@ class UserResetPasswordResource(BaseResource):
 class UserResource(BaseResource):
     def get(self, user_id):
         require_permission_or_owner('list_users', user_id)
-        user = get_object_or_404(models.User.get_by_id_and_org, user_id, self.current_org)
+        if int(user_id) != self.current_user.id:
+            abort(403)
 
+        user = get_object_or_404(models.User.get_by_id_and_org, user_id, self.current_org)
         return user.to_dict(with_api_key=is_admin_or_owner(user_id))
 
     def post(self, user_id):
