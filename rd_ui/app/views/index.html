@@ -1,6 +1,6 @@
 <div class="container">
 
-  <div class="tile m-t-10 m-b-5">
+  <div class="tile m-t-10 m-b-5" ng-show="currentUser.id == 1">
     <div class="t-body p-5">
       <a href="queries/new" ng-show="currentUser.hasPermission('create_query')" class="btn btn-default">New Query</a>
       <button ng-show="currentUser.hasPermission('create_dashboard')" type="button" class="btn btn-default"
@@ -22,7 +22,7 @@
             </div>
           </div>
 
-          <div class="col-md-6">
+          <div class="col-md-6" ng-show="currentUser.id == 1">
             <p class="f-500 m-b-20 c-black">Recent Queries</p>
             <div class="list-group">
               <a ng-href="queries/{{query.id}}" class="list-group-item"
