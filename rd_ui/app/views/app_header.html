@@ -33,8 +33,8 @@
               <a role="menu-item" ng-href="dashboard/{{dashboard.slug}}" ng-bind="dashboard.name"></a>
             </li>
             <li class="divider"
-                ng-show="currentUser.hasPermission('create_dashboard') && (groupedDashboards.length > 0 || otherDashboards.length > 0)"></li>
-            <li><a data-toggle="modal" href="#new_dashboard_dialog"
+                ng-show="currentUser.id == 1 || currentUser.hasPermission('create_dashboard') && (groupedDashboards.length > 0 || otherDashboards.length > 0)"></li>
+            <li ng-show="currentUser.id == 1"><a data-toggle="modal" href="#new_dashboard_dialog"
                    ng-show="currentUser.hasPermission('create_dashboard')">New Dashboard</a></li>
           </ul>
         </li>

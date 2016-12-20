@@ -51,7 +51,7 @@ class DataSourceResource(BaseResource):
 
 
 class DataSourceListResource(BaseResource):
-    @require_permission('list_data_sources')
+    @require_admin
     def get(self):
         if self.current_user.has_permission('admin'):
             data_sources = models.DataSource.all(self.current_org)
@@ -99,6 +99,7 @@ class DataSourceListResource(BaseResource):
 
 
 class DataSourceSchemaResource(BaseResource):
+    @require_admin
     def get(self, data_source_id):
         data_source = get_object_or_404(models.DataSource.get_by_id_and_org, data_source_id, self.current_org)
         require_access(data_source.groups, self.current_user, view_only)

@@ -54,6 +54,7 @@ class DestinationResource(BaseResource):
 
 
 class DestinationListResource(BaseResource):
+    @require_admin
     def get(self):
         destinations = models.NotificationDestination.all(self.current_org)
 
