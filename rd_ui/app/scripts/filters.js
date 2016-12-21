@@ -52,7 +52,16 @@ angular.module('redash.filters', []).
         return 0;
       }
       if (widgetWidth == 1) {
+        return 12;
+      }
+      if (widgetWidth == 2) {
         return 6;
+      }
+      if (widgetWidth == 3) {
+        return 3;
+      }
+      if (widgetWidth == 100) {
+        return '100';
       }
       return 12;
     }
