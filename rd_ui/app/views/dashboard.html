@@ -2,7 +2,7 @@
 <edit-dashboard-form dashboard="dashboard" id="edit_dashboard_dialog"></edit-dashboard-form>
 
 <div class="container">
-    <page-header title="{{dashboard.name}}">
+    <page-header title="{{dashboard.prettyname}}">
       <span ng-if="!dashboard.is_archived && !public" class="hidden-print">
           <button type="button" class="btn btn-sm" ng-class="{'btn-default': !refreshEnabled, 'btn-primary': refreshEnabled}" tooltip="Enable/Disable Auto Refresh" ng-click="triggerRefresh()">
             <span class="zmdi zmdi-refresh"></span>
