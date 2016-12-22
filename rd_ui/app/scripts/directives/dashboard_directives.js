@@ -121,13 +121,16 @@
         link: function($scope, element, attrs) {
           $scope.widgetSizes = [{
             name: '100%',
-            value: 1
+            value: 12
           }, {
             name: '50%',
-            value: 2
+            value: 6
           }, {
             name: '25%',
-            value: 4
+            value: 3
+          }, {
+            name: 'clearfix',
+            value: 100
           }];
 
           $scope.type = 'visualization';

@@ -19,7 +19,7 @@
           <span class="zmdi zmdi-more"></span>
         </button>
         <ul class="dropdown-menu pull-right" dropdown-menu>
-          <li><a data-toggle="modal" hash-link hash="edit_dashboard_dialog">Edit Dashboard</a></li>
+          <!--li><a data-toggle="modal" hash-link hash="edit_dashboard_dialog">Edit Dashboard</a></li-->
           <li><a data-toggle="modal" hash-link hash="add_query_dialog">Add Widget</a></li>
           <li ng-if="!dashboard.is_archived"><a ng-click="archiveDashboard()">Archive Dashboard</a></li>
         </ul>
@@ -32,9 +32,35 @@
   <div class="m-b-5">
     <filters ng-if="dashboard.dashboard_filters_enabled"></filters>
   </div>
+    
+    <style ng-if="!dashboard.canEdit()">
+      .col-lg-100 {
+        display: block;
+        clear: both;
+        visibility: hidden;
+        height: 1px;
+      }
+
+      .col-lg-12 {
+        clear: both;
+      }
+    </style>
+
+    <style ng-if="dashboard.canEdit()">
+      .col-lg-100 {
+        display: block;
+        clear: both;
+      }
+
+      .col-lg-12 {
+        clear: both;
+      }
+    </style>
+
+    <div class="clearfix"></div>
 
     <div ng-repeat="row in dashboard.widgets" class="">
-        <div ng-repeat="widget in row" class="col-lg-{{12 / widget.width}}" ng-controller='WidgetCtrl'>
+        <div ng-repeat="widget in row" class="col-lg-{{widget.width}}" ng-controller='WidgetCtrl'>
             <div class="tile" ng-if="type=='visualization'">
                 <div class="t-header widget">
                     <div class="th-title">
