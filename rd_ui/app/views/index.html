@@ -16,8 +16,11 @@
           <div class="col-md-6">
             <p class="f-500 m-b-20 c-black">Recent Dashboards</p>
             <div class="list-group">
-              <a ng-href="dashboard/{{dashboard.slug}}" class="list-group-item" ng-repeat="dashboard in recentDashboards">
+              <a ng-if="currentUser.id == 1" ng-href="dashboard/{{dashboard.slug}}" class="list-group-item" ng-repeat="dashboard in recentDashboards">
                 {{dashboard.name}}
+              </a>
+              <a ng-if="currentUser.id != 1" ng-href="dashboard/{{dashboard.slug}}" class="list-group-item" ng-repeat="dashboard in recentDashboards">
+                {{dashboard.prettyname}}
               </a>
             </div>
           </div>

@@ -7,6 +7,8 @@ import threading
 import time
 import datetime
 import itertools
+import re
+import logging
 from funcy import project
 
 import peewee
@@ -896,7 +898,8 @@ class Dashboard(ModelTimestampsMixin, BaseModel, BelongsToOrgMixin):
             'widgets': widgets_layout,
             'is_archived': self.is_archived,
             'updated_at': self.updated_at,
-            'created_at': self.created_at
+            'created_at': self.created_at,
+            'prettyname': re.sub('.*::', '', self.name)
         }
 
     @classmethod
@@ -907,10 +910,6 @@ class Dashboard(ModelTimestampsMixin, BaseModel, BelongsToOrgMixin):
             join(Query, peewee.JOIN_LEFT_OUTER, on=(Visualization.query == Query.id)). \
             join(DataSourceGroup, peewee.JOIN_LEFT_OUTER, on=(Query.data_source == DataSourceGroup.data_source)). \
             where(Dashboard.is_archived == False). \
-            where((DataSourceGroup.group << groups) |
-                  (Dashboard.user == user_id) |
-                  (~(Widget.dashboard >> None) & (Widget.visualization >> None))). \
-            where(Dashboard.org == org). \
             group_by(Dashboard.id)
 
         return query
@@ -928,14 +927,8 @@ class Dashboard(ModelTimestampsMixin, BaseModel, BelongsToOrgMixin):
             where(Event.object_type == 'dashboard'). \
             where(Dashboard.is_archived == False). \
             where(Dashboard.org == org). \
-            where((DataSourceGroup.group << groups) |
-                  (Dashboard.user == user_id) |
-                  (~(Widget.dashboard >> None) & (Widget.visualization >> None))). \
             group_by(Event.object_id, Dashboard.id). \
             order_by(peewee.SQL("count(0) desc"))
-
-        if for_user:
-            query = query.where(Event.user == user_id)
 
         query = query.limit(limit)
 

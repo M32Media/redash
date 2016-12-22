@@ -3,6 +3,7 @@ from flask import request, url_for
 from funcy import distinct, take
 from itertools import chain
 
+import re
 from redash import models
 from redash.permissions import require_permission, require_admin_or_owner
 from redash.handlers.base import BaseResource, get_object_or_404
@@ -11,21 +12,33 @@ from redash.handlers.base import BaseResource, get_object_or_404
 class RecentDashboardsResource(BaseResource):
     @require_permission('list_dashboards')
     def get(self):
-        recent = [d.to_dict() for d in models.Dashboard.recent(self.current_org, self.current_user.groups, self.current_user.id, for_user=True)]
+        recent = [d for d in models.Dashboard.recent(self.current_org, self.current_user.groups, self.current_user.id, for_user=True)]
+        temp = []
+        if self.current_user.id != 1:
+            for d in recent:
+                if re.match('^' + self.current_user.name, d.name) != None:
+                    temp.append(d)
+        else:
+            temp = recent
 
-        global_recent = []
-        if len(recent) < 10:
-            global_recent = [d.to_dict() for d in models.Dashboard.recent(self.current_org, self.current_user.groups, self.current_user.id)]
-
-        return take(20, distinct(chain(recent, global_recent), key=lambda d: d['id']))
+        recent = [d.to_dict() for d in temp]
+        return recent
 
 
 class DashboardListResource(BaseResource):
     @require_permission('list_dashboards')
     def get(self):
-        dashboards = [d.to_dict() for d in models.Dashboard.all(self.current_org, self.current_user.groups, self.current_user)]
+        dashboards = [d for d in models.Dashboard.all(self.current_org, self.current_user.groups, self.current_user)]
+        temp = []
+        if self.current_user.id != 1:
+            for d in dashboards:
+                if re.match('^' + self.current_user.name, d.name) != None:
+                    temp.append(d)
+        else:
+            temp = dashboards
 
-        return dashboards
+        dash = [d.to_dict() for d in temp]
+        return dash
 
     @require_permission('create_dashboard')
     def post(self):
