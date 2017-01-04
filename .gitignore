@@ -9,7 +9,11 @@ celerybeat-schedule*
 \#*#
 *~
 _build
-
+bin/*
+*.png
+postgresdb/*
+man/*
+lib/*
 # Vagrant related
 .vagrant
 Berksfile.lock
