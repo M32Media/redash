@@ -81,7 +81,7 @@
                     <ul class="dropdown-menu pull-right" dropdown-menu style="z-index:1000000">
                       <li><a ng-disabled="!queryResult.getData()" query-result-link target="_self">Download as CSV File</a></li>
                       <li><a ng-disabled="!queryResult.getData()" file-type="xlsx" query-result-link target="_self" >Download as Excel File</a></li>
-                      <li><a ng-href="queries/{{query.id}}#{{widget.visualization.id}}" ng-show="currentUser.hasPermission('view_query')">View Query</a></li>
+                      <li><a ng-href="queries/{{query.id}}#{{widget.visualization.id}}" ng-show="currentUser.id == 1 && currentUser.hasPermission('view_query')">View Query</a></li>
                       <li><a ng-show="dashboard.canEdit()" ng-click="deleteWidget()">Remove From Dashboard</a></li>
                     </ul>
                   </div>
@@ -106,7 +106,7 @@
                     <span class="visible-print">
                       Updated: {{queryResult.getUpdatedAt() | dateTime}}
                     </span>
-                    <button class="btn btn-sm btn-default pull-right hidden-print" ng-click="reload(true)" ng-if="!public"><i class="zmdi zmdi-refresh"></i></button>
+                    <button class="btn btn-sm btn-default pull-right hidden-print" ng-click="reload(true)" ng-if="!public && currentUser.id == 1"><i class="zmdi zmdi-refresh"></i></button>
                 </div>
             </div>
 
