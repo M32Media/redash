@@ -1,4 +1,9 @@
-<div class="container bg-white p-5" ng-show="filters">
+<div class="container bg-white p-5 filter-hack" ng-show="filters">
+  <script>
+    var f = document.querySelectorAll('.filter-hack');
+    for(var i = 1; i < f.length; i++)
+      f[i].style.display = 'none';
+  </script>
   <div class="row" ng-show="filters">
     <div class="col-sm-12 m-t-5" ng-repeat="filter in filters">
       <ui-select ng-model="filter.current" ng-if="!filter.multiple">
