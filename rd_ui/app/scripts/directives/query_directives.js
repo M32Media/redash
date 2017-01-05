@@ -8,7 +8,7 @@
         'query': '=',
         'visualization': '=?'
       },
-      template: '<a ng-href="{{link}}" class="query-link">{{query.name}}</a>',
+      template: '<div ng-href="{{link}}" class="query-link">{{query.name}}</div>',
       link: function(scope, element) {
         var hash = null;
         if (scope.visualization) {
