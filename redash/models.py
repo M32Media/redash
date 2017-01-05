@@ -615,6 +615,7 @@ class Query(ModelTimestampsMixin, BaseModel, BelongsToOrgMixin):
             'options': self.options
         }
 
+        d['prettyname'] = re.sub(' \[.*\]$', '', d['name'])
         if with_user:
             d['user'] = self.user.to_dict()
         else:
