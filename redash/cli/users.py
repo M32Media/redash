@@ -47,7 +47,8 @@ def grant_admin(email, organization='default'):
 @manager.option('--google', dest='google_auth', action="store_true", default=False, help="user uses Google Auth to login")
 @manager.option('--password', dest='password', default=None, help="Password for users who don't use Google Auth (leave blank for prompt).")
 @manager.option('--groups', dest='groups', default=None, help="Comma seperated list of groups (leave blank for default).")
-def create(email, name, groups, is_admin=False, google_auth=False, password=None, organization='default'):
+@manager.option('--dashlist', dest='dashlist', default=None, help="Comma seperated list of groups (leave blank for default).")
+def create(email, name, groups, is_admin=False, google_auth=False, password=None, organization='default', dashlist=''):
     print "Creating user (%s, %s) in organization %s..." % (email, name, organization)
     print "Admin: %r" % is_admin
     print "Login with Google Auth: %r\n" % google_auth
@@ -55,7 +56,7 @@ def create(email, name, groups, is_admin=False, google_auth=False, password=None
     org = models.Organization.get_by_slug(organization)
     groups = build_groups(org, groups, is_admin)
 
-    user = models.User(org=org, email=email, name=name, groups=groups)
+    user = models.User(org=org, email=email, name=name, groups=groups, dashlist=dashlist)
     if not google_auth:
         password = password or prompt_pass("Password")
         user.hash_password(password)

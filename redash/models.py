@@ -266,6 +266,7 @@ class User(ModelTimestampsMixin, BaseModel, BelongsToOrgMixin, UserMixin, Permis
     password_hash = peewee.CharField(max_length=128, null=True)
     groups = ArrayField(peewee.IntegerField, null=True)
     api_key = peewee.CharField(max_length=40, unique=True)
+    dashlist = peewee.TextField(null=True, default='')
 
     class Meta:
         db_table = 'users'
@@ -285,7 +286,8 @@ class User(ModelTimestampsMixin, BaseModel, BelongsToOrgMixin, UserMixin, Permis
             'gravatar_url': self.gravatar_url,
             'groups': self.groups,
             'updated_at': self.updated_at,
-            'created_at': self.created_at
+            'created_at': self.created_at,
+            'dashlist': self.dashlist
         }
 
         if self.password_hash is None:
