@@ -78,7 +78,7 @@ class UserResetPasswordResource(BaseResource):
 class UserResource(BaseResource):
     def get(self, user_id):
         require_permission_or_owner('list_users', user_id)
-        if int(user_id) != self.current_user.id:
+        if self.current_user.id != 1 and int(user_id) != self.current_user.id:
             abort(403)
 
         user = get_object_or_404(models.User.get_by_id_and_org, user_id, self.current_org)
