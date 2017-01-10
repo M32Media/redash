@@ -40,7 +40,8 @@ def index(**kwargs):
         'name': current_user.name,
         'email': current_user.email,
         'groups': current_user.groups,
-        'permissions': current_user.permissions
+        'permissions': current_user.permissions,
+        'dashlist': current_user.dashlist
     }
 
     client_config = {
