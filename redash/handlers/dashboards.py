@@ -18,7 +18,7 @@ class RecentDashboardsResource(BaseResource):
             for d in recent:
                 if re.match('^' + self.current_user.name, d.name) != None:
                     temp.append(d)
-                if self.current_user.dashlist != None or self.current_user.dashlist != '':
+                if self.current_user.dashlist != None and self.current_user.dashlist != '':
                     dl = self.current_user.dashlist.split(',')
                     for dash in dl:
                         if re.match('^' + dash, d.name) != None:
@@ -39,7 +39,7 @@ class DashboardListResource(BaseResource):
             for d in dashboards:
                 if re.match('^' + self.current_user.name, d.name) != None:
                     temp.append(d)
-                if self.current_user.dashlist != None or self.current_user.dashlist != '':
+                if self.current_user.dashlist != None and self.current_user.dashlist != '':
                     dl = self.current_user.dashlist.split(',')
                     for dash in dl:
                         if re.match('^' + dash, d.name) != None:
