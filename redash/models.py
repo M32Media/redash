@@ -668,15 +668,15 @@ class Query(ModelTimestampsMixin, BaseModel, BelongsToOrgMixin):
     def outdated_queries(cls):
         queries = cls.select(cls, QueryResult.retrieved_at, DataSource)\
             .join(QueryResult)\
-            .switch(Query).join(DataSource)\
-            .where(cls.schedule != None)
+            .switch(Query).join(DataSource)
+           # .where(cls.schedule != None)
 
         now = utils.utcnow()
         outdated_queries = {}
         for query in queries:
-            if should_schedule_next(query.latest_query_data.retrieved_at, now, query.schedule):
-                key = "{}:{}".format(query.query_hash, query.data_source.id)
-                outdated_queries[key] = query
+            #if should_schedule_next(query.latest_query_data.retrieved_at, now, query.schedule):
+            key = "{}:{}".format(query.query_hash, query.data_source.id)
+            outdated_queries[key] = query
 
         return outdated_queries.values()
 
