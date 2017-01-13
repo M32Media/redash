@@ -8,8 +8,9 @@ from flask_script import Manager
 
 from redash import settings, models, __version__
 from redash.wsgi import app
-from redash.cli import users, groups, database, data_sources, organization
+from redash.cli import users, groups, database, data_sources, organization,dashboard
 from redash.monitor import get_status
+from redash.tasks import refresh_queries
 
 manager = Manager(app)
 manager.add_command("database", database.manager)
@@ -17,7 +18,7 @@ manager.add_command("users", users.manager)
 manager.add_command("groups", groups.manager)
 manager.add_command("ds", data_sources.manager)
 manager.add_command("org", organization.manager)
-
+manager.add_command("dashboard", dashboard.manager)
 
 
 @manager.command
@@ -54,6 +55,16 @@ def send_test_mail():
 
     mail.send(Message(subject="Test Message from re:dash", recipients=[settings.MAIL_DEFAULT_SENDER], body="Test message."))
 
+@manager.command
+def refresh_all_the_queries():
+    refresh_queries()
+
+@manager.command
+def clone_dashboard(publisher):
+    dashboard.create_dashboard(publisher, 2)
+    dashboard.create_dashboard(publisher, 4)
+    dashboard.create_dashboard(publisher, 6)
+    
 
 if __name__ == '__main__':
     manager.run()
