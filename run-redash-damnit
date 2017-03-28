@@ -1,0 +1,5 @@
+#!/bin/bash
+if $(ps aux | grep -e '[c]elery' >/dev/null); then 
+    ./bin/run celery worker --app=redash.worker --beat -Qscheduled_queries,queries,celery -c2 &
+fi
+./bin/run ./manage.py runserver --debugger --reload
