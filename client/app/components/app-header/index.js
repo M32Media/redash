@@ -14,10 +14,10 @@ function controller($rootScope, $location, $uibModal, Auth, currentUser, Dashboa
   /*
   We should eventually use redash's permission system but it requires us to implement them ourselves.
   */
-  //this.showQueriesMenu = currentUser.hasPermission('view_query');
-  this.showQueriesMenu = currentUser.id == 1;
-  //this.showNewQueryMenu = currentUser.hasPermission('create_query');
-  this.showNewQueryMenu = currentUser.id == 1;
+  this.showQueriesMenu = currentUser.hasPermission('view_query');
+  //this.showQueriesMenu = currentUser.id == 1;
+  this.showNewQueryMenu = currentUser.hasPermission('create_query');
+  //this.showNewQueryMenu = currentUser.id == 1;
 
   this.showSettingsMenu = currentUser.hasPermission('list_users');
   this.showDashboardsMenu = currentUser.hasPermission('list_dashboards');
