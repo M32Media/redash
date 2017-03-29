@@ -11,10 +11,9 @@ function controller($rootScope, $location, $uibModal, Auth, currentUser, Dashboa
   this.logoUrl = logoUrl;
   this.currentUser = currentUser;
 
-  /*
-  We should eventually use redash's permission system but it requires us to implement them ourselves.
-  */
+  console.log(JSON.stringify(currentUser));
   this.showQueriesMenu = currentUser.hasPermission('view_query');
+  var showQueriesMenu = false;
   //this.showQueriesMenu = currentUser.id == 1;
   this.showNewQueryMenu = currentUser.hasPermission('create_query');
   //this.showNewQueryMenu = currentUser.id == 1;

@@ -52,6 +52,7 @@ const ngModule = angular.module('app', requirements);
 function registerComponents() {
   each(components, (register) => {
     register(ngModule);
+    console.log(JSON.stringify(ngModule));
   });
 }
 
