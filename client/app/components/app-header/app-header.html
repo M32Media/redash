@@ -25,21 +25,18 @@
             </li>
           </ul>
         </li>
-        <li class="dropdown">
-          <a href="">AAAAAAAAA</a>
-        </li> 
-        <li class="dropdown" ng-show="showQueriesMenu" uib-dropdown>
+        <li class="dropdown" ng-show="$ctrl.showQueriesMenu" uib-dropdown>
           <a href="#" class="dropdown-toggle" uib-dropdown-toggle>Queries <b class="caret"></b></a>
           <ul class="dropdown-menu" uib-dropdown-menu>
             <li ng-show="$ctrl.showNewQueryMenu"><a href="queries/new">New Query</a></li>
             <li><a href="queries">Queries</a></li>
           </ul>
         </li>
-        <li>
+        <li ng-if="$ctrl.currentUser.hasPermission('list_alerts')>
           <a href="alerts">Alerts</a>
         </li>
       </ul>
-      <form class="navbar-form navbar-left" role="search" ng-submit="$ctrl.searchQueries()">
+      <form class="navbar-form navbar-left" role="search" ng-if="$ctrl.currentUser.hasPermission('view_query')" ng-submit="$ctrl.searchQueries()">
         <div class="input-group menu-search">
           <input type="text" ng-model="$ctrl.term" class="form-control" placeholder="Search queries...">
           <span class="input-group-btn">
