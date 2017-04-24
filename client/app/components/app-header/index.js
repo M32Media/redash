@@ -11,12 +11,8 @@ function controller($rootScope, $location, $uibModal, Auth, currentUser, Dashboa
   this.logoUrl = logoUrl;
   this.currentUser = currentUser;
 
-  console.log(JSON.stringify(currentUser));
   this.showQueriesMenu = currentUser.hasPermission('view_query');
-  var showQueriesMenu = false;
-  //this.showQueriesMenu = currentUser.id == 1;
   this.showNewQueryMenu = currentUser.hasPermission('create_query');
-  //this.showNewQueryMenu = currentUser.id == 1;
 
   this.showSettingsMenu = currentUser.hasPermission('list_users');
   this.showDashboardsMenu = currentUser.hasPermission('list_dashboards');
