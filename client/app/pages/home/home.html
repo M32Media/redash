@@ -4,7 +4,7 @@
       <a href="queries/new" ng-show="$ctrl.canCreateQuery" class="btn btn-default">New Query</a>
       <button ng-show="$ctrl.canCreateDashboard" class="btn btn-default" ng-click="$ctrl.newDashboard()">New Dashboard
       </button>
-      <a href="alerts/new" class="btn btn-default">New Alert</a>
+      <a href="alerts/new" class="btn btn-default" ng-if="$ctrl.currentUser.hasPermission('list_alerts')">New Alert</a>
     </div>
   </div>
 
@@ -20,7 +20,7 @@
             </div>
           </div>
 
-          <div class="col-md-6">
+          <div class="col-md-6" ng-if="$ctrl.currentUser.hasPermission('view_query')>
             <p class="f-500 m-b-20 c-black">Recent Queries</p>
             <div class="list-group">
               <a ng-href="queries/{{query.id}}" class="list-group-item"
