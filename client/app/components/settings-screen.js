@@ -18,6 +18,7 @@ export default function (ngModule) {
          $scope.showUsersLink = currentUser.hasPermission('list_users');
          $scope.showDsLink = currentUser.hasPermission('admin');
          $scope.showDestinationsLink = currentUser.hasPermission('admin');
+         $scope.showQuerySnippets = currentUser.hasPermission('view_query');
        },
      })
   );
