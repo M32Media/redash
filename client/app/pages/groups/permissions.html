@@ -8,11 +8,11 @@
         <li role="presentation"><a href="groups/{{group.id}}/data_sources">Data Sources</a></li>
         <li role="presentation" class="active"><a href="groups/{{group.id}}/permissions">Permissions</a></li>
       </ul>
-    </div>
-    <div class="col-lg-8">
-      <ul class="permissions">
-      	<li ng-repeat="permission in group.permissions">{{permission}}</li>
-      </ul>
+      <div class="col-lg-8">
+        <ul class="permissions">
+          <li ng-repeat="permission in group.permissions">{{permission}}</li>
+        </ul>
+      </div>
     </div>
   </div>
 </settings-screen>
