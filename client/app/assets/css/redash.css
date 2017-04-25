@@ -312,7 +312,7 @@ to add those CSS styles here. */
 }
 
 .rd-form-control {
-  width: 90%;
+  width: 100%;
 }
 
 pivot-table-renderer > table, grid-renderer > div, visualization-renderer > div {
@@ -415,16 +415,6 @@ counter-renderer counter-name {
   background-color: white;
 }
 
-.schema-control {
-  display: flex;
-  padding: 5px 0;
-}
-
-.schema-control .form-control {
-  height: 30px;
-  margin-right: 5px;
-}
-
 .schema-browser {
   height: calc(100% - 45px);
   overflow-y: auto;
@@ -447,6 +437,10 @@ div.table-name:hover {
 .blankslate {
   text-align: center;
   padding: 30px;
+}
+
+.log-container {
+  margin-bottom: 50px;
 }
 
 /* Footer */
@@ -607,16 +601,9 @@ div.table-name:hover {
 
 .collapsing,
 .collapse.in {
-  padding: 5px 10px;
-  transition: all 0.35s ease;
-}
-
-.schema-browser .collapse.in {
-  background: #f4f4f4;
-}
-
-.navbar .collapse.in {
-  background: #222;
+    background: #f4f4f4;
+    padding: 5px 10px;
+    transition: all 0.35s ease;
 }
 
 /* Fixes for SuperFlat */
@@ -685,11 +672,8 @@ div.table-name:hover {
   margin:2px;
 }
 
-.dropdown-menu > .disabled{
- cursor: not-allowed;
-}
-
-/* The real magic ;) */
-.dropdown-menu > .disabled > a{
- pointer-events: none;
+/* Group permissions */
+.permissions{
+  list-style-type: none;
+  padding-left: 20px;
 }

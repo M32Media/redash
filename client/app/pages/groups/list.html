@@ -14,6 +14,9 @@
           <tr ng-repeat="row in groups.getPageRows()">
             <td>
               <a href="groups/{{row.id}}">{{row.name}}</a>
+              <ul class="permissions">
+                <li ng-repeat="permission in row.permissions">{{permission}}</li>
+              </ul>
             </td>
           </tr>
         </tbody>

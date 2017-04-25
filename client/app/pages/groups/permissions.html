@@ -1,0 +1,18 @@
+<settings-screen>
+  <group-name group="group"></group-name>
+
+  <div class="row">
+    <div class="col-lg-4">
+      <ul class="tab-nav">
+        <li role="presentation"><a href="groups/{{group.id}}">Members</a></li>
+        <li role="presentation"><a href="groups/{{group.id}}/data_sources">Data Sources</a></li>
+        <li role="presentation" class="active"><a href="groups/{{group.id}}/permissions">Permissions</a></li>
+      </ul>
+    </div>
+    <div class="col-lg-8">
+      <ul class="permissions">
+      	<li ng-repeat="permission in group.permissions">{{permission}}</li>
+      </ul>
+    </div>
+  </div>
+</settings-screen>
