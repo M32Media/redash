@@ -32,11 +32,11 @@
             <li><a href="queries">Queries</a></li>
           </ul>
         </li>
-        <li ng-if="$ctrl.currentUser.hasPermission('list_alerts')>
+        <li ng-show="$ctrl.currentUser.hasPermission('list_alerts')">
           <a href="alerts">Alerts</a>
         </li>
       </ul>
-      <form class="navbar-form navbar-left" role="search" ng-if="$ctrl.currentUser.hasPermission('view_query')" ng-submit="$ctrl.searchQueries()">
+      <form class="navbar-form navbar-left" role="search" ng-show="$ctrl.currentUser.hasPermission('view_query')" ng-submit="$ctrl.searchQueries()">
         <div class="input-group menu-search">
           <input type="text" ng-model="$ctrl.term" class="form-control" placeholder="Search queries...">
           <span class="input-group-btn">
