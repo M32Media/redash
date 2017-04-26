@@ -1266,6 +1266,39 @@ class Dashboard(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model
     def __unicode__(self):
         return u"%s=%s" % (self.id, self.name)
 
+#-------------------------------------------------------------------
+# CUSTOM : Make dashboards for specific users easier to manage by
+# assigning them to groups
+#-------------------------------------------------------------------
+
+# For the actual dashboard group
+class Dashgroup(db.Model):
+    id = Column(db.Integer, primary_key=True)
+    name = Column(db.String(50))
+
+    __tablename__ = 'dashgroups'
+
+# For grouping multiple groups 
+class DashgroupDasboard(db.Model):
+    id = Column(db.Integer, primary_key=True)
+    dashgroup_id = Column(db.Integer, db.ForeignKey("dashgroups.id"))
+    dashgroup = db.relationship(Dashgroup)
+    dashboard_id = Column(db.Integer, db.ForeignKey("dashboards.id"))
+    dashboard = db.relationship(Dashboard)
+
+    __tablename__ = 'dashgroups_dashboards'
+
+# For linking Users with dashgroups
+class UserDashgroup(db.Model):
+    id = Column(db.Integer, primary_key=True)
+    user_id = Column(db.Integer, db.ForeignKey("users.id"))
+    user = db.relationship(User)
+    dashgroup_id = Column(db.Integer, db.ForeignKey("dashgroups.id"))
+    dashgroup = db.relationship(Dashgroup)
+
+    __tablename__ = 'users_dashgroups'
+
+#-------------------------------------------------------------------
 
 class Visualization(TimestampMixin, db.Model):
     id = Column(db.Integer, primary_key=True)
