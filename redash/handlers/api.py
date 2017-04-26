@@ -6,7 +6,7 @@ from redash.utils import json_dumps
 from redash.handlers.base import org_scoped_rule
 from redash.handlers.permissions import ObjectPermissionsListResource, CheckPermissionResource
 from redash.handlers.alerts import AlertResource, AlertListResource, AlertSubscriptionListResource, AlertSubscriptionResource
-from redash.handlers.dashboards import DashboardListResource, DashboardGroupList, RecentDashboardsResource, DashboardResource, DashboardShareResource, PublicDashboardResource 
+from redash.handlers.dashboards import DashboardListResource, RecentDashboardsResource, DashboardResource, DashboardShareResource, PublicDashboardResource 
 from redash.handlers.data_sources import DataSourceTypeListResource, DataSourceListResource, DataSourceSchemaResource, DataSourceResource, DataSourcePauseResource, DataSourceTestResource
 from redash.handlers.events import EventResource
 from redash.handlers.queries import QueryForkResource, QueryRefreshResource, QueryListResource, QueryRecentResource, QuerySearchResource, QueryResource, MyQueriesResource
@@ -43,13 +43,6 @@ api.add_org_resource(AlertResource, '/api/alerts/<alert_id>', endpoint='alert')
 api.add_org_resource(AlertSubscriptionListResource, '/api/alerts/<alert_id>/subscriptions', endpoint='alert_subscriptions')
 api.add_org_resource(AlertSubscriptionResource, '/api/alerts/<alert_id>/subscriptions/<subscriber_id>', endpoint='alert_subscription')
 api.add_org_resource(AlertListResource, '/api/alerts', endpoint='alerts')
-
-
-#-------------------------------------------------------------------
-# CUSTOM : Test custom API route
-#-------------------------------------------------------------------
-api.add_org_resource(DashboardGroupList, '/api/dashgroup', endpoint='dashgroup')
-
 
 api.add_org_resource(DashboardListResource, '/api/dashboards', endpoint='dashboards')
 api.add_org_resource(RecentDashboardsResource, '/api/dashboards/recent', endpoint='recent_dashboards')
