@@ -106,6 +106,13 @@ function apiKeyHttpInterceptor($injector) {
 export default function (ngModule) {
   ngModule.factory('Auth', AuthService);
   ngModule.service('currentUser', CurrentUserService);
+  
+
+  /*-------------------------------------------------------------------
+    CUSTOM : Assign custom services here
+  -------------------------------------------------------------------*/
+          
+
   ngModule.service('clientConfig', ClientConfigService);
   ngModule.factory('apiKeyHttpInterceptor', apiKeyHttpInterceptor);
 
