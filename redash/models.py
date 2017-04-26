@@ -1279,7 +1279,7 @@ class Dashgroup(db.Model):
     __tablename__ = 'dashgroups'
 
 # For grouping multiple groups 
-class DashgroupDasboard(db.Model):
+class DashgroupDashboard(db.Model):
     id = Column(db.Integer, primary_key=True)
     dashgroup_id = Column(db.Integer, db.ForeignKey("dashgroups.id"))
     dashgroup = db.relationship(Dashgroup)
