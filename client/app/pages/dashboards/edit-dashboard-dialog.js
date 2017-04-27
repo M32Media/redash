@@ -1,6 +1,8 @@
 import { sortBy } from 'underscore';
 import template from './edit-dashboard-dialog.html';
 
+/* eslint-disable */
+
 const EditDashboardDialog = {
   bindings: {
     resolve: '<',
@@ -10,7 +12,8 @@ const EditDashboardDialog = {
   template,
   controller($rootScope, $location, $http, toastr, Events, Dashboard) {
     'ngInject';
-
+    this.dashgroups = Dashboard.groups();
+    console.log(this.dashgroups)
     this.dashboard = this.resolve.dashboard;
     this.gridsterOptions = {
       margins: [5, 5],

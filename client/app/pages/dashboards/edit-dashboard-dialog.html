@@ -5,8 +5,11 @@
 <div class="modal-body">
   <p>
     <input type="text" class="form-control" placeholder="Dashboard Name" ng-model="$ctrl.dashboard.name">
+    </br>
+    <select ng-options="dg as dg.dashgroup_name for dg in $ctrl.dashgroups track by dg.dashgroup_id" ng-model="selected" class="form-control ng-pristine ng-valid ng-not-empty ng-touched">
+        <option value="">Select Option</option>
+    </select>
   </p>
-
   <div gridster="$ctrl.gridsterOptions" ng-if="$ctrl.items | notEmpty">
     <ul>
       <li gridster-item="item" ng-repeat="item in $ctrl.items" class="widget panel panel-default gs-w">
