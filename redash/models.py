@@ -311,6 +311,10 @@ class Group(db.Model, BelongsToOrgMixin):
         result = cls.query.filter(cls.org == org, cls.name.in_(group_names))
         return list(result)
 
+    @classmethod
+    def get_by_id(cls, id):
+        return cls.query.filter(cls.id == id).one()
+
     def __unicode__(self):
         return unicode(self.id)
 
@@ -369,6 +373,10 @@ class User(TimestampMixin, db.Model, BelongsToOrgMixin, UserMixin, PermissionsCh
     @classmethod
     def get_by_email_and_org(cls, email, org):
         return cls.query.filter(cls.email == email, cls.org == org).one()
+
+    @classmethod
+    def get_by_id(cls, id):
+        return cls.query.filter(cls.id == id).one()
 
     @classmethod
     def get_by_api_key_and_org(cls, api_key, org):
@@ -1223,15 +1231,28 @@ class Dashboard(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model
                 (DataSourceGroup.group_id.in_(group_ids) |
                  (Dashboard.user_id == user_id) |
                  ((Widget.dashboard != None) & (Widget.visualization == None))),
-                Dashboard.org == org)
+                Dashboard.org == org
+                )
             .group_by(Dashboard.id))
 
+        query = cls._filter_by_dashgroups(query, user_id)
         query = query.filter(or_(Dashboard.user_id == user_id, Dashboard.is_draft == False))
-
         return query
 
     @classmethod
-    def recent(cls, org, group_ids, user_id, for_user=False, limit=20):
+    def _filter_by_dashgroups(cls, query, user_id):
+        #An admin can see everything but the rest needs to be filtered according to their dashgroups
+        if any(["admin" in Group.get_by_id(group).permissions for group in User.get_by_id(user_id).group_ids]):
+            return query
+        dashgroups = [udg.dashgroup_id for udg in list(UserDashgroup.query.filter(UserDashgroup.user_id == user_id))]
+        print(DashgroupDashboard.query.one().dashgroup_id)
+        dashboards = [dgdb.dashboard_id for dgdb in list(DashgroupDashboard.query.filter(DashgroupDashboard.dashgroup_id.in_(dashgroups)))]
+        print("dashgroups: {}, dashboards: {}".format(dashgroups,dashboards))
+        print("query: {}".format(list(query)))
+        return query.filter(Dashboard.id.in_(dashboards))
+
+    @classmethod
+    def recent(cls, org, group_ids, user_id, for_user=False, limit=2):
         query = (Dashboard.query
                  .outerjoin(Event, Dashboard.id == Event.object_id.cast(db.Integer))
                  .outerjoin(Widget)
@@ -1254,7 +1275,7 @@ class Dashboard(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model
 
         if for_user:
             query = query.filter(Event.user_id == user_id)
-
+        query = cls._filter_by_dashgroups(query, user_id)
         query = query.limit(limit)
 
         return query
