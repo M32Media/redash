@@ -3,7 +3,7 @@ import { each } from 'underscore';
 import template from './show.html';
 
 function UserCtrl($scope, $routeParams, $http, $location, toastr,
-  clientConfig, currentUser, Events, User, Dashboard) {
+  clientConfig, currentUser, Events, User, Dashgroup) {
   $scope.userId = $routeParams.userId;
   $scope.currentUser = currentUser;
   $scope.clientConfig = clientConfig;
@@ -18,10 +18,14 @@ function UserCtrl($scope, $routeParams, $http, $location, toastr,
   $scope.showPasswordSettings = false;
   $scope.showDashgroupsSettings = currentUser.hasPermission('admin');
 
-  $scope.dashgroups = Dashboard.groups().$promise.then(function(groups){
-    $scope.dashgroups = groups.filter(function(group) {
+  $scope.userDashgroups = Dashgroup.userGroups().$promise.then(function(groups){
+    $scope.userDashgroups = groups.filter(function(group) {
       return group.user_id == $scope.userId;
     });
+  });
+
+  $scope.dashgroups = Dashgroup.groups().$promise.then(function(groups){
+    $scope.dashgroups = groups
   });
 
   $scope.selectTab = (tab) => {

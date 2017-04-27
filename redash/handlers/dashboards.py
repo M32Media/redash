@@ -226,9 +226,9 @@ class DashboardShareResource(BaseResource):
             'object_type': 'dashboard',
         })
 
-class DashgroupList(BaseResource):
+"""class DashgroupList(BaseResource):
     def get(self):
         dashgroups = models.UserDashgroup.get_dashgroups(self.current_user.id)
 
         #This is working
-        return [d.to_dict() for d in dashgroups]
+        return [d.to_dict() for d in dashgroups]"""

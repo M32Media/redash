@@ -6,7 +6,8 @@ from redash.utils import json_dumps
 from redash.handlers.base import org_scoped_rule
 from redash.handlers.permissions import ObjectPermissionsListResource, CheckPermissionResource
 from redash.handlers.alerts import AlertResource, AlertListResource, AlertSubscriptionListResource, AlertSubscriptionResource
-from redash.handlers.dashboards import DashboardListResource, RecentDashboardsResource, DashboardResource, DashboardShareResource, PublicDashboardResource, DashgroupList 
+from redash.handlers.dashboards import DashboardListResource, RecentDashboardsResource, DashboardResource, DashboardShareResource, PublicDashboardResource
+from redash.handlers.dashgroups import DashgroupList, UserDashgroupList
 from redash.handlers.data_sources import DataSourceTypeListResource, DataSourceListResource, DataSourceSchemaResource, DataSourceResource, DataSourcePauseResource, DataSourceTestResource
 from redash.handlers.events import EventResource
 from redash.handlers.queries import QueryForkResource, QueryRefreshResource, QueryListResource, QueryRecentResource, QuerySearchResource, QueryResource, MyQueriesResource
@@ -43,7 +44,8 @@ def json_representation(data, code, headers=None):
 # CUSTOM : Add Custom API calls here
 #-------------------------------------------------------------------
 
-api.add_org_resource(DashgroupList, '/api/dashboards/groups', endpoint='dashgroup') 
+api.add_org_resource(UserDashgroupList, '/api/dashgroups/user_groups')
+api.add_org_resource(DashgroupList, '/api/dashgroups/groups')
 
 #-------------------------------------------------------------------
 
