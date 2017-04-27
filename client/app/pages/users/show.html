@@ -101,11 +101,13 @@
         <li ng-repeat="dg in userDashgroups">{{dg.dashgroup_name}}</li>
       </ul>
     </div>
-  </div>
-  <div class="col-md-6">
-    <p>Add user to group</p>
-    <select ng-options="name as dg.name for dg in dashgroups track by dg.id" ng-model="selected" class="form-control">
-        <option value="">Select Option</option>
-    </select>    
+    <div class="col-md-6">
+      <p>Add user to group</p>
+      <form class="form" name="">
+        <select ng-options="name as dg.name for dg in dashgroups track by dg.id" ng-model="selected" class="form-control">
+            <option value="">Select Option</option>
+        </select>
+      </form>
+    </div>
   </div>
 </settings-screen>
