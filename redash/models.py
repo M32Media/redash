@@ -12,6 +12,7 @@ from funcy import project
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, AnonymousUserMixin
 from sqlalchemy.dialects import postgresql
+from flask import jsonify
 from sqlalchemy.event import listens_for
 from sqlalchemy.inspection import inspect
 from sqlalchemy.types import TypeDecorator
@@ -1278,6 +1279,13 @@ class Dashgroup(db.Model):
 
     __tablename__ = 'dashgroups'
 
+    def to_dict(self): 
+        return {
+            'id': self.id,
+            'name': self.name
+        }
+
+
 # For grouping multiple groups 
 class DashgroupDasboard(db.Model):
     id = Column(db.Integer, primary_key=True)
@@ -1288,6 +1296,13 @@ class DashgroupDasboard(db.Model):
 
     __tablename__ = 'dashgroups_dashboards'
 
+    def to_dict(self): 
+        return {
+            'id': self.id,
+            'dashgroup_id': self.dashgroup_id,
+            'dashboard_id': self.dashboard_id
+        }
+
 # For linking Users with dashgroups
 class UserDashgroup(db.Model):
     id = Column(db.Integer, primary_key=True)
@@ -1297,6 +1312,22 @@ class UserDashgroup(db.Model):
     dashgroup = db.relationship(Dashgroup)
 
     __tablename__ = 'users_dashgroups'
+
+    def to_dict(self):
+
+        return {
+            'user_id': self.user_id,
+            'dashgroup_id': self.dashgroup_id, 
+            'user': self.user.to_dict(), #Apparently joins work magically with relationship, just have to specifiy what you want to get
+            'dashgroup_name': self.dashgroup.name
+        }
+
+    @classmethod
+    def get_dashgroups(cls, user_id):
+        query = UserDashgroup.query.filter(cls.user_id == user_id)  
+
+        return query
+        
 
 #-------------------------------------------------------------------
 

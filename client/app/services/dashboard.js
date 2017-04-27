@@ -25,11 +25,17 @@ function Dashboard($resource, $http, currentUser, Widget) {
       url: 'api/dashboards/recent',
       transformResponse: transform,
     },
+    groups: {
+      method: 'get',
+      isArray: true,
+      url: 'api/dashboards/groups',
+    },
   });
 
   resource.prototype.canEdit = function canEdit() {
     return currentUser.canEdit(this) || this.can_edit;
   };
+
 
   return resource;
 }

@@ -13,6 +13,7 @@ function DashboardListCtrl(Dashboard, $location, clientConfig) {
 
   this.defaultOptions = {};
   this.dashboards = Dashboard.query({}); // shared promise
+  this.groups = Dashboard.groups();
 
   this.selectedTags = []; // in scope because it needs to be accessed inside a table refresh
   this.searchText = '';

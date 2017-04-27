@@ -1,6 +1,7 @@
 from itertools import chain
 
 from flask import request, url_for
+from flask import jsonify
 from flask_restful import abort
 from funcy import distinct, project, take
 from sqlalchemy.orm.exc import StaleDataError
@@ -10,6 +11,8 @@ from redash.handlers.base import BaseResource, get_object_or_404
 from redash.permissions import (can_modify, require_admin_or_owner,
                                 require_object_modify_permission,
                                 require_permission)
+
+
 
 
 class RecentDashboardsResource(BaseResource):
@@ -25,7 +28,6 @@ class RecentDashboardsResource(BaseResource):
             global_recent = [d.to_dict() for d in models.Dashboard.recent(self.current_org, self.current_user.group_ids, self.current_user.id)]
 
         return take(20, distinct(chain(recent, global_recent), key=lambda d: d['id']))
-
 
 class DashboardListResource(BaseResource):
     @require_permission('list_dashboards')
@@ -223,3 +225,10 @@ class DashboardShareResource(BaseResource):
             'object_id': dashboard.id,
             'object_type': 'dashboard',
         })
+
+class DashgroupList(BaseResource):
+    def get(self):
+        dashgroups = models.UserDashgroup.get_dashgroups(self.current_user.id)
+
+        #This is working
+        return [d.to_dict() for d in dashgroups]
