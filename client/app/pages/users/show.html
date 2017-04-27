@@ -8,6 +8,7 @@
     <rd-tab tab-id="apiKey" name="API Key" ng-click="selectTab('apiKey')" ng-if="user.api_key"></rd-tab>
     <rd-tab tab-id="settings" name="Settings" ng-click="selectTab('settings')" ng-if="showSettings"></rd-tab>
     <rd-tab tab-id="password" name="Password" ng-click="selectTab('password')" ng-if="showPasswordSettings"></rd-tab>
+    <rd-tab tab-id="dashgroups" name="Dashgroups" ng-click="selectTab('dashgroups')" ng-if="showDashgroupsSettings"></rd-tab>
   </ul>
 
   <div ng-show="selectedTab == 'profile'" class="p-10">
@@ -90,6 +91,15 @@
           <button class="btn btn-primary">Save</button>
         </div>
       </form>
+    </div>
+  </div>
+  <div ng-show="selectedTab == 'dashgroups'" class="p-10">
+    <div class="col-md-6">
+      <p>Current users dashgroups</p>
+      <hr/>
+      <ul>
+        <li ng-repeat="dg in dashgroups">{{dg.dashgroup_name}}</li>
+      </ul>
     </div>
   </div>
 </settings-screen>

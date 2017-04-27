@@ -1,8 +1,9 @@
+/* eslint-disable */
 import { each } from 'underscore';
 import template from './show.html';
 
 function UserCtrl($scope, $routeParams, $http, $location, toastr,
-  clientConfig, currentUser, Events, User) {
+  clientConfig, currentUser, Events, User, Dashboard) {
   $scope.userId = $routeParams.userId;
   $scope.currentUser = currentUser;
   $scope.clientConfig = clientConfig;
@@ -15,6 +16,16 @@ function UserCtrl($scope, $routeParams, $http, $location, toastr,
   $scope.canEdit = currentUser.hasPermission('admin') || currentUser.id === parseInt($scope.userId, 10);
   $scope.showSettings = false;
   $scope.showPasswordSettings = false;
+  $scope.showDashgroupsSettings = currentUser.hasPermission('admin');
+  /*$scope.dashgroups = Dashboard.groups();
+  console.log($scope.dashgroups);
+  $scope.dashgroups = $scope.dashgroups.filter(dgIndex => {
+    console.log($scope.dashgroups[dgIndex].user_id);
+    console.log($scope.userId);
+    return $scope.dashgroups[dgIndex].user_id === $scope.userId;
+  });
+  console.log(Dashboard);
+  console.log($scope.dashgroups);*/
 
   $scope.selectTab = (tab) => {
     $scope.selectedTab = tab;
