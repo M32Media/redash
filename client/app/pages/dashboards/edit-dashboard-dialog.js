@@ -13,8 +13,8 @@ const EditDashboardDialog = {
   controller($rootScope, $location, $http, toastr, Events, Dashboard) {
     'ngInject';
     this.dashgroups = Dashboard.groups();
-    console.log(this.dashgroups)
     this.dashboard = this.resolve.dashboard;
+    this.dashgroup_id = 0;
     this.gridsterOptions = {
       margins: [5, 5],
       rowHeight: 100,
@@ -50,7 +50,7 @@ const EditDashboardDialog = {
 
     this.saveDashboard = () => {
       this.saveInProgress = true;
-
+      console.log("SAVING");
       if (this.dashboard.id) {
         const layout = [];
         const sortedItems = sortBy(this.items, item => item.row * 10 + item.col);
@@ -89,6 +89,7 @@ const EditDashboardDialog = {
       } else {
         $http.post('api/dashboards', {
           name: this.dashboard.name,
+	  did: this.dashgroup_id
         }).success((response) => {
           this.close();
           $location.path(`/dashboard/${response.slug}`).replace();
