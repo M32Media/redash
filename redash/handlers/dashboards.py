@@ -48,14 +48,33 @@ class DashboardListResource(BaseResource):
         Responds with a :ref:`dashboard <dashboard-response-label>`.
         """
         dashboard_properties = request.get_json(force=True)
+
         dashboard = models.Dashboard(name=dashboard_properties['name'],
                                      org=self.current_org,
                                      user=self.current_user,
                                      is_draft=True,
                                      layout='[]')
+
+
         models.db.session.add(dashboard)
         models.db.session.commit()
+
+        print("HERE : ")
+        print(dashboard.to_dict())
+
+
+        dg_db = models.DashgroupDashboard(dashboard_id=dashboard.id, dashgroup_id=dashboard_properties['did']['dashgroup_id'])
+        models.db.session.add(dg_db)
+        models.db.session.commit()
+
+        """
+        u_dg = models.UserDashgroup(user_id=self.current_user.id, dashgroup_id=dashboard_properties['did']['dashgroup_id'])
+        models.db.session.add(u_dg)
+        models.db.session.commit()
+        """
+
         return dashboard.to_dict()
+
 
 
 class DashboardResource(BaseResource):
