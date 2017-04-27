@@ -1243,7 +1243,7 @@ class Dashboard(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model
     @classmethod
     def _filter_by_dashgroups(cls, query, user_id):
         #An admin can see everything but the rest needs to be filtered according to their dashgroups
-        if any(["admin" in Group.get_by_id(group).permissions for group in User.get_by_id(user_id).group_ids]):
+        if "admin" in User.get_by_id(user_id).permissions:
             return query
         dashgroups = [udg.dashgroup_id for udg in list(UserDashgroup.query.filter(UserDashgroup.user_id == user_id))]
         print(DashgroupDashboard.query.one().dashgroup_id)
@@ -1345,10 +1345,11 @@ class UserDashgroup(db.Model):
 
     @classmethod
     def get_dashgroups(cls, user_id):
-        query = UserDashgroup.query.filter(cls.user_id == user_id)  
-
+        if "admin" not in User.get_by_id(user_id).permissions:
+            return UserDashgroup.query
+        else:
+            return UserDashgroup.query.filter(cls.user_id == user_id)
         return query
-        
 
 #-------------------------------------------------------------------
 
