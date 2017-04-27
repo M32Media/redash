@@ -1345,11 +1345,10 @@ class UserDashgroup(db.Model):
 
     @classmethod
     def get_dashgroups(cls, user_id):
-        if "admin" not in User.get_by_id(user_id).permissions:
+        if "admin" in User.get_by_id(user_id).permissions:
             return UserDashgroup.query
         else:
             return UserDashgroup.query.filter(cls.user_id == user_id)
-        return query
 
 #-------------------------------------------------------------------
 
