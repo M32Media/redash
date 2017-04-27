@@ -10,9 +10,9 @@ const EditDashboardDialog = {
     dismiss: '&',
   },
   template,
-  controller($rootScope, $location, $http, toastr, Events, Dashboard) {
+  controller($rootScope, $location, $http, toastr, Events, Dashboard, Dashgroup) {
     'ngInject';
-    this.dashgroups = Dashboard.groups();
+    this.dashgroups = Dashgroup.groups();
     this.dashboard = this.resolve.dashboard;
     this.dashgroup_id = 0;
     this.gridsterOptions = {
