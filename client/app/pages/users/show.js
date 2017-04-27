@@ -17,15 +17,12 @@ function UserCtrl($scope, $routeParams, $http, $location, toastr,
   $scope.showSettings = false;
   $scope.showPasswordSettings = false;
   $scope.showDashgroupsSettings = currentUser.hasPermission('admin');
-  /*$scope.dashgroups = Dashboard.groups();
-  console.log($scope.dashgroups);
-  $scope.dashgroups = $scope.dashgroups.filter(dgIndex => {
-    console.log($scope.dashgroups[dgIndex].user_id);
-    console.log($scope.userId);
-    return $scope.dashgroups[dgIndex].user_id === $scope.userId;
+
+  $scope.dashgroups = Dashboard.groups().$promise.then(function(groups){
+    $scope.dashgroups = groups.filter(function(group) {
+      return group.user_id == $scope.userId;
+    });
   });
-  console.log(Dashboard);
-  console.log($scope.dashgroups);*/
 
   $scope.selectTab = (tab) => {
     $scope.selectedTab = tab;
