@@ -1309,10 +1309,9 @@ class Dashgroup(db.Model):
 
 # For grouping multiple groups 
 class DashgroupDashboard(db.Model):
-    id = Column(db.Integer, primary_key=True)
-    dashgroup_id = Column(db.Integer, db.ForeignKey("dashgroups.id"))
+    dashgroup_id = Column(db.Integer, db.ForeignKey("dashgroups.id", ondelete='cascade'), primary_key=True)
     dashgroup = db.relationship(Dashgroup)
-    dashboard_id = Column(db.Integer, db.ForeignKey("dashboards.id"))
+    dashboard_id = Column(db.Integer, db.ForeignKey("dashboards.id", ondelete='cascade'), primary_key=True)
     dashboard = db.relationship(Dashboard)
 
     __tablename__ = 'dashgroups_dashboards'
@@ -1326,10 +1325,9 @@ class DashgroupDashboard(db.Model):
 
 # For linking Users with dashgroups
 class UserDashgroup(db.Model):
-    id = Column(db.Integer, primary_key=True)
-    user_id = Column(db.Integer, db.ForeignKey("users.id"))
+    user_id = Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
     user = db.relationship(User)
-    dashgroup_id = Column(db.Integer, db.ForeignKey("dashgroups.id"))
+    dashgroup_id = Column(db.Integer, db.ForeignKey("dashgroups.id", ondelete='cascade'))
     dashgroup = db.relationship(Dashgroup)
 
     __tablename__ = 'users_dashgroups'
