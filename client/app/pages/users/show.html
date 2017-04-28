@@ -104,7 +104,6 @@
     <div class="col-md-6">
       <p>Add {{user.name}} to dashgroup</p>
       <form class="form" name="">
-        <p> {{currentDashgroup.id}} </p>
         <select ng-options="dg.id as dg.name for dg in dashgroups track by dg.id" ng-model="currentDashgroup.id" class="form-control">
             <option value="">Select Dashgroup</option>
         </select>
