@@ -56,9 +56,6 @@ const EditDashboardDialog = {
       console.log("SAVING");
       console.log(JSON.stringify(this.dashgroup))
       if (this.dashboard.id) {
-        const layout = [];
-        const sortedItems = sortBy(this.items, item => item.row * 10 + item.col);
-
         sortedItems.forEach((item) => {
           layout[item.row] = layout[item.row] || [];
           if (item.col > 0 && layout[item.row][item.col - 1] === undefined) {
