@@ -6,7 +6,7 @@
   <p>
     <input type="text" class="form-control" placeholder="Dashboard Name" ng-model="$ctrl.dashboard.name">
     </br>
-    <select ng-options="dg_name as dg.name for dg in $ctrl.dashgroups track by dg.id" ng-model="selected" class="form-control">
+    <select ng-options="dg.id as dg.name for dg in $ctrl.dashgroups track by dg.id"  ng-model="$ctrl.dashgroup_id" class="form-control">
         <option value="">From Tag (Tag:Dashboard)</option>
     </select>
   </p>

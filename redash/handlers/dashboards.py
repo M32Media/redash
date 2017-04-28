@@ -60,10 +60,9 @@ class DashboardListResource(BaseResource):
         models.db.session.commit()
 
         print("HERE : ")
-        print(dashboard.to_dict())
+        print(dashboard_properties)
 
-
-        dg_db = models.DashgroupDashboard(dashboard_id=dashboard.id, dashgroup_id=dashboard_properties['did']['dashgroup_id'])
+        dg_db = models.DashgroupDashboard(dashboard_id=dashboard.id, dashgroup_id=dashboard_properties['did'])
         models.db.session.add(dg_db)
         models.db.session.commit()
 
