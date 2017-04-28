@@ -1339,7 +1339,7 @@ class DashgroupDashboard(db.Model):
 class UserDashgroup(db.Model):
     user_id = Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
     user = db.relationship(User)
-    dashgroup_id = Column(db.Integer, db.ForeignKey("dashgroups.id", ondelete='cascade'))
+    dashgroup_id = Column(db.Integer, db.ForeignKey("dashgroups.id", ondelete='cascade'), primary_key=True)
     dashgroup = db.relationship(Dashgroup)
 
     __tablename__ = 'users_dashgroups'
@@ -1355,7 +1355,7 @@ class UserDashgroup(db.Model):
 
     @classmethod
     def get_dashgroups(cls, user_id):
-        query = UserDashgroup.query.filter(cls.user_id == user_id)
+        query = UserDashgroup.query.filter(cls.user_id == user_id).distinct()
 
         return query
         
