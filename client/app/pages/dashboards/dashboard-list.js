@@ -5,7 +5,7 @@ import template from './dashboard-list.html';
 import './dashboard-list.css';
 
 
-function DashboardListCtrl(Dashboard, $location, clientConfig) {
+function DashboardListCtrl(Dashboard, $location, clientConfig, Dashgroup) {
   const TAGS_REGEX = /(^([\w\s]|[^\u0000-\u007F])+):|(#([\w-]|[^\u0000-\u007F])+)/ig;
 
   this.logoUrl = clientConfig.logoUrl;
@@ -13,7 +13,7 @@ function DashboardListCtrl(Dashboard, $location, clientConfig) {
 
   this.defaultOptions = {};
   this.dashboards = Dashboard.query({}); // shared promise
-  this.groups = Dashboard.groups();
+  this.groups = Dashgroup.userGroups();
 
   this.selectedTags = []; // in scope because it needs to be accessed inside a table refresh
   this.searchText = '';
