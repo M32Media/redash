@@ -7,6 +7,7 @@ function UserCtrl($scope, $routeParams, $http, $location, toastr,
   $scope.userId = $routeParams.userId;
   $scope.currentUser = currentUser;
   $scope.clientConfig = clientConfig;
+  $scope.currentDashgroup = {};
 
   if ($scope.userId === 'me') {
     $scope.userId = currentUser.id;
@@ -18,13 +19,18 @@ function UserCtrl($scope, $routeParams, $http, $location, toastr,
   $scope.showPasswordSettings = false;
   $scope.showDashgroupsSettings = currentUser.hasPermission('admin');
 
+  $scope.addInProgress = false;
+
   $scope.userDashgroups = Dashgroup.userGroups().$promise.then(function(groups){
     $scope.userDashgroups = groups.filter(function(group) {
-      return group.user_id == $scope.userId;
+
+      return true;
+
     });
   });
 
-  $scope.dashgroups = Dashgroup.groups().$promise.then(function(groups){
+  //Getting Dashgroups
+  Dashgroup.groups().$promise.then(function(groups){
     $scope.dashgroups = groups
   });
 
@@ -112,6 +118,30 @@ function UserCtrl($scope, $routeParams, $http, $location, toastr,
       $scope.disablePasswordResetButton = false;
       $scope.passwordResetLink = data.reset_link;
     });
+  };
+
+  $scope.updateDid = () => {
+
+  }
+
+  $scope.addUserToDashgroup = () => {
+
+    console.log("Submit that")
+    $scope.addInProgress = true;
+
+    console.log($scope.currentDashgroup.id)
+
+    $http.post('/api/dashgroups/user_groups',{
+          uid: $scope.userId,
+          did: $scope.currentDashgroup.id
+    }).success((data) => {
+      
+      console.log("ADDED TO DASHGROUP WITH SUCCESS");
+
+    }).error(() => {
+      
+    });
+
   };
 }
 
