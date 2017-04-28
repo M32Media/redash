@@ -355,7 +355,7 @@ counter-renderer counter.negative value {
 }
 
 counter-renderer counter-name {
-  font-size: 40px;
+  font-size: 30px;
   display: block;
 }
 
