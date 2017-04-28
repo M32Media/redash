@@ -7,7 +7,7 @@ from redash.handlers.base import org_scoped_rule
 from redash.handlers.permissions import ObjectPermissionsListResource, CheckPermissionResource
 from redash.handlers.alerts import AlertResource, AlertListResource, AlertSubscriptionListResource, AlertSubscriptionResource
 from redash.handlers.dashboards import DashboardListResource, RecentDashboardsResource, DashboardResource, DashboardShareResource, PublicDashboardResource
-from redash.handlers.dashgroups import DashgroupList, UserDashgroupList
+from redash.handlers.dashgroups import DashgroupList, UserDashgroupList, OneUserDashgroupList
 from redash.handlers.data_sources import DataSourceTypeListResource, DataSourceListResource, DataSourceSchemaResource, DataSourceResource, DataSourcePauseResource, DataSourceTestResource
 from redash.handlers.events import EventResource
 from redash.handlers.queries import QueryForkResource, QueryRefreshResource, QueryListResource, QueryRecentResource, QuerySearchResource, QueryResource, MyQueriesResource
@@ -45,6 +45,7 @@ def json_representation(data, code, headers=None):
 #-------------------------------------------------------------------
 
 api.add_org_resource(UserDashgroupList, '/api/dashgroups/user_groups')
+api.add_org_resource(OneUserDashgroupList, '/api/dashgroups/user_groups/<user_id>')
 api.add_org_resource(DashgroupList, '/api/dashgroups/groups')
 
 #-------------------------------------------------------------------

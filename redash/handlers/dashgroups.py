@@ -30,3 +30,10 @@ class UserDashgroupList(BaseResource):
         models.db.session.commit()
 
         return u_dg.to_dict()
+
+class OneUserDashgroupList(BaseResource):
+    def get(self,user_id):
+        user_dashgroups = models.UserDashgroup.get_dashgroups(user_id)
+
+        #This is working
+        return [d.to_dict() for d in user_dashgroups]

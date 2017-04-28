@@ -12,6 +12,12 @@ function Dashgroup($resource, $http, currentUser) {
       method: 'get',
       isArray: true,
       url: 'api/dashgroups/user_groups',
+    },
+    //This should have a better name but I don't know what it should be.
+    oneUserGroups: {
+      method: 'get',
+      isArray: true,
+      url: 'api/dashgroups/user_groups/:id'
     }
   });
   return resource;
