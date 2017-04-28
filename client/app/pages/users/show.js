@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { each } from 'underscore';
+import { each, contains} from 'underscore';
 import template from './show.html';
 
 function UserCtrl($scope, $routeParams, $http, $location, toastr,
@@ -22,16 +22,18 @@ function UserCtrl($scope, $routeParams, $http, $location, toastr,
   $scope.addInProgress = false;
 
   $scope.userDashgroups = Dashgroup.oneUserGroups({id:$scope.userId}).$promise.then(function(groups){
-    $scope.userDashgroups = groups.filter(function(group) {
-
-      return true;
-
-    });
+    $scope.userDashgroups = groups;
   });
 
   //Getting Dashgroups
-  Dashgroup.groups().$promise.then(function(groups){
-    $scope.dashgroups = groups
+  Dashgroup.groups().$promise.then(function(groups) {
+    var usergroups_ids = [];
+    for (var i = 0; i < $scope.userDashgroups.length; i++) {
+      usergroups_ids.push($scope.userDashgroups[i].dashgroup_id);
+    }
+    $scope.dashgroups = groups.filter(function(group) {
+      return !contains(usergroups_ids, group.id);
+    });
   });
 
   $scope.selectTab = (tab) => {
