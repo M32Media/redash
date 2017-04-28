@@ -62,12 +62,19 @@ class DashboardListResource(BaseResource):
         print("HERE : ")
         print(dashboard_properties)
 
-        #if the dashgroup doesn't exist, we create it with the right name
-        if dashboard_properties['dashgroup_id'] == 0 or Dashgroup.get_by_id(dashboard_properties['dashgroup_id']) is None:
-            dashgroup = models.Dashgroup(name=dashboard_properties['dashgroup_name'])
-            models.db.session.add(dashgroup)
-            models.db.session.commit()
-            dashboard_properties['dashgroup_id'] = dashgroup.id
+        #if the user created with group from tag :
+        if dashboard_properties['dashgroup_id'] == 0:
+            dashgroup = models.Dashgroup.get_by_name(dashboard_properties['dashgroup_name'])
+            if dashgroup is None:
+                #if the group does not exist, create it
+                dashgroup = models.Dashgroup(name=dashboard_properties['dashgroup_name'])
+                models.db.session.add(dashgroup)
+                models.db.session.commit()
+                dashboard_properties['dashgroup_id'] = dashgroup.id
+            else:
+                #else put the dashboard in that group
+                dashboard_properties['dashgroup_id'] = dashgroup.id
+
 
 
         dg_db = models.DashgroupDashboard(dashboard_id=dashboard.id, dashgroup_id=dashboard_properties['dashgroup_id'])
