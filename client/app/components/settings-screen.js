@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import startsWith from 'underscore.string/startsWith';
 import template from './settings-screen.html';
 
@@ -13,13 +15,16 @@ export default function (ngModule) {
          $scope.dsPage = startsWith($location.path(), '/data_sources');
          $scope.destinationsPage = startsWith($location.path(), '/destinations');
          $scope.snippetsPage = startsWith($location.path(), '/query_snippets');
+         $scope.dashgroupsPage = startsWith($location.path(), '/dashgroups');
 
          $scope.showGroupsLink = currentUser.hasPermission('list_users');
          $scope.showUsersLink = currentUser.hasPermission('list_users');
          $scope.showDsLink = currentUser.hasPermission('admin');
          $scope.showDestinationsLink = currentUser.hasPermission('admin');
          $scope.showQuerySnippets = currentUser.hasPermission('view_query');
-       },
+         $scope.showDashgroups = currentUser.hasPermission('admin');
+       	 console.log($scope.showDashgroups)
+	},
      })
   );
 }
