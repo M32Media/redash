@@ -1302,9 +1302,16 @@ class Dashgroup(db.Model):
             'id': self.id,
             'name': self.name
         }
+
     @classmethod
     def get_dashgroups(cls):
         return cls.query
+
+    @classmethod
+    def get_by_id(cls,id):
+        return cls.query.filter(cls.id == id).first()
+
+
 
 
 # For grouping multiple groups 

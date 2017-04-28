@@ -62,7 +62,14 @@ class DashboardListResource(BaseResource):
         print("HERE : ")
         print(dashboard_properties)
 
-        dg_db = models.DashgroupDashboard(dashboard_id=dashboard.id, dashgroup_id=dashboard_properties['did'])
+        #if the dashgroup doesn't exist, we create it with the right name
+        if dashboard_properties['dashgroup_id'] == 0 or Dashgroup.get_by_id(dashboard_properties['dashgroup_id']) is None:
+            dashgroup = models.Dashgroup(name=dashboard_properties['dashgroup_name'])
+            models.db.session.add(dashgroup)
+            models.db.session.commit()
+
+
+        dg_db = models.DashgroupDashboard(dashboard_id=dashboard.id, dashgroup_id=dashboard_properties['dashgroup_id'])
         models.db.session.add(dg_db)
         models.db.session.commit()
 

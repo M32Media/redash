@@ -14,7 +14,7 @@ const EditDashboardDialog = {
     'ngInject';
     this.dashgroups = Dashgroup.groups();
     this.dashboard = this.resolve.dashboard;
-    this.dashgroup_id = 0;
+    this.dashgroup = null;
     this.gridsterOptions = {
       margins: [5, 5],
       rowHeight: 100,
@@ -49,8 +49,12 @@ const EditDashboardDialog = {
     }
 
     this.saveDashboard = () => {
+      if(this.dashgroup === null) {
+        this.dashgroup = {dashgroup_id:0, dashgroup_name:this.dashboard.name.split(':')[0]}
+      }
       this.saveInProgress = true;
       console.log("SAVING");
+      console.log(JSON.stringify(this.dashgroup))
       if (this.dashboard.id) {
         const layout = [];
         const sortedItems = sortBy(this.items, item => item.row * 10 + item.col);
@@ -88,8 +92,9 @@ const EditDashboardDialog = {
         Events.record('edit', 'dashboard', this.dashboard.id);
       } else {
         $http.post('api/dashboards', {
-          name: this.dashboard.name,
-	  did: this.dashgroup_id
+          name: this.dashboard.name, 
+          dashgroup_id: this.dashgroup_id,
+          dashgroup_name: this.dashgroup_name
         }).success((response) => {
           this.close();
           $location.path(`/dashboard/${response.slug}`).replace();
