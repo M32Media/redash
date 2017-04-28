@@ -14,3 +14,10 @@ class UserDashgroupList(BaseResource):
 
         #This is working
         return [d.to_dict() for d in user_dashgroups]
+
+class OneUserDashgroupList(BaseResource):
+    def get(self,user_id):
+        user_dashgroups = models.UserDashgroup.get_dashgroups(user_id)
+
+        #This is working
+        return [d.to_dict() for d in user_dashgroups]

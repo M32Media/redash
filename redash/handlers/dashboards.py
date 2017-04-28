@@ -67,6 +67,7 @@ class DashboardListResource(BaseResource):
             dashgroup = models.Dashgroup(name=dashboard_properties['dashgroup_name'])
             models.db.session.add(dashgroup)
             models.db.session.commit()
+            dashboard_properties['dashgroup_id'] = dashgroup.id
 
 
         dg_db = models.DashgroupDashboard(dashboard_id=dashboard.id, dashgroup_id=dashboard_properties['dashgroup_id'])

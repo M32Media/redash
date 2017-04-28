@@ -50,7 +50,7 @@ const EditDashboardDialog = {
 
     this.saveDashboard = () => {
       if(this.dashgroup === null) {
-        this.dashgroup = {dashgroup_id:0, dashgroup_name:this.dashboard.name.split(':')[0]}
+        this.dashgroup = {id:0, name:this.dashboard.name.split(':')[0]}
       }
       this.saveInProgress = true;
       console.log("SAVING");
@@ -93,8 +93,8 @@ const EditDashboardDialog = {
       } else {
         $http.post('api/dashboards', {
           name: this.dashboard.name, 
-          dashgroup_id: this.dashgroup_id,
-          dashgroup_name: this.dashgroup_name
+          dashgroup_id: this.dashgroup.id,
+          dashgroup_name: this.dashgroup.name
         }).success((response) => {
           this.close();
           $location.path(`/dashboard/${response.slug}`).replace();

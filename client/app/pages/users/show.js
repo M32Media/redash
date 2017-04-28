@@ -18,7 +18,7 @@ function UserCtrl($scope, $routeParams, $http, $location, toastr,
   $scope.showPasswordSettings = false;
   $scope.showDashgroupsSettings = currentUser.hasPermission('admin');
 
-  $scope.userDashgroups = Dashgroup.userGroups().$promise.then(function(groups){
+  $scope.userDashgroups = Dashgroup.oneUserGroups({id:$scope.userId}).$promise.then(function(groups){
     $scope.userDashgroups = groups.filter(function(group) {
       return group.user_id == $scope.userId;
     });
