@@ -2,7 +2,7 @@
 
 function Dashgroup($resource, $http, currentUser) {
 
-  const resource = $resource('api/dashgroups', {}, {
+  const resource = $resource('api/dashgroups/:slug', {slug: '@slug'}, {
     groups: {
       method: 'get',
       isArray: true,
@@ -23,6 +23,11 @@ function Dashgroup($resource, $http, currentUser) {
       method: 'get',
       isArray: true,
       url: 'api/dashgroups/dashboards'
+    },
+    newDashgroup: {
+      //should probably be post
+      method: 'get',
+      url: 'api/dashgroups/create/:name'
     }
   });
   return resource;

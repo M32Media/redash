@@ -1,6 +1,9 @@
 <settings-screen>
   <div class="row voffset1">
     <div class="col-md-4">
+      <p ng-if="$ctrl.showNewButton">
+        <a href="dashgroups/new" class="btn btn-default"><i class="fa fa-plus"></i> New Dashgroup</a>
+      </p>
       <ul>
       	<li ng-repeat="dg in detailedDashgroups">
       		{{dg.name}}
