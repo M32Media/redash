@@ -37,3 +37,11 @@ class OneUserDashgroupList(BaseResource):
 
         #This is working
         return [d.to_dict() for d in user_dashgroups]
+
+class DashgroupDashboardList(BaseResource):
+    def get(self):
+        dashgroup_dashboards = models.DashgroupDashboard.get_dashgroup_dashboards()
+
+        print(dashgroup_dashboards)
+
+        return [d.to_dict() for d in dashgroup_dashboards]

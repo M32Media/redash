@@ -1,7 +1,7 @@
 import debug from 'debug';
 
 import template from './app-header.html';
-import logoUrl from '../../assets/images/m32-logo-small.png';
+import logoUrl from '../../assets/images/m32-40x40.png';
 import './app-header.css';
 
 const logger = debug('redash:appHeader');

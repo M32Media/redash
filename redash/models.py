@@ -1330,10 +1330,15 @@ class DashgroupDashboard(db.Model):
 
     def to_dict(self): 
         return {
-            'id': self.id,
             'dashgroup_id': self.dashgroup_id,
-            'dashboard_id': self.dashboard_id
+            'dashgroup_name': self.dashgroup.name,
+            'dashboard_id': self.dashboard_id,
+            'dashboard_name': self.dashboard.name
         }
+
+    @classmethod
+    def get_dashgroup_dashboards(cls):
+        return cls.query.distinct()
 
 # For linking Users with dashgroups
 class UserDashgroup(db.Model):
