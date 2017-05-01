@@ -39,6 +39,12 @@ function DashgroupsCtrl($scope, $location, $q, currentUser, Events, Dashgroup) {
 
   });
 
+  $scope.removeDashboard = (dgId, dbId) =>{
+
+    console.log("Remove " + dbId + " from  dgId");
+    
+  }
+
 }
 
 export default function (ngModule) {

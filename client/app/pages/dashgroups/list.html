@@ -1,11 +1,14 @@
 <settings-screen>
   <div class="row voffset1">
     <div class="col-md-4">
-      <ul>
+      <ul class="dashgroups">
       	<li ng-repeat="dg in detailedDashgroups">
       		{{dg.name}}
       		<ul>
-      			<li ng-repeat="db in dg.dashboards"> {{ db.dashboard_name }} </li>
+      			<li ng-repeat="db in dg.dashboards"> 
+      				{{ db.dashboard_name }} 
+      				<button type="button" class="btn btn-danger" ng-click="removeDashboard(dg.id, db.dashboard_id)">Remove</button>
+      			</li>
       		</ul>
       	</li>
 
