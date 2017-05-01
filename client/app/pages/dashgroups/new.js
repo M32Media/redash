@@ -7,8 +7,8 @@ function NewDashgroupCtrl($scope, $location, toastr, currentUser, Events, Dashgr
   this.dashgroup_name = '';
   $scope.created = false;
   $scope.saveDashgroup = () => {
-    if (!this.dashgroupForm.$valid) {
-      console.log("invalid form for new dashgroup");
+    if (!this.dashgroupForm.$valid || $scope.created) {
+        return
     }
     Dashgroup.newDashgroup({name:this.dashgroup_name});
     $scope.created = true;
