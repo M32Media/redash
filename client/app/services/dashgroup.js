@@ -18,6 +18,11 @@ function Dashgroup($resource, $http, currentUser) {
       method: 'get',
       isArray: true,
       url: 'api/dashgroups/user_groups/:id'
+    },
+    dashgroupDashboard: {
+      method: 'get',
+      isArray: true,
+      url: 'api/dashgroups/dashboards'
     }
   });
   return resource;
