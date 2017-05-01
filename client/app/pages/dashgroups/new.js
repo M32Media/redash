@@ -10,7 +10,6 @@ function NewDashgroupCtrl($scope, $location, $http, toastr, currentUser, Events,
     if (!this.dashgroupForm.$valid || $scope.created) {
         return
     }
-    Dashgroup.newDashgroup({name:this.dashgroup_name});
     $http.post('api/dashgroups/create', {
       dashgroup_name: this.dashgroup_name
     }).then(function(){
