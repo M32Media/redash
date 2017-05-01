@@ -1,7 +1,7 @@
 /* eslint-disable */
 import template from './new.html';
 
-function NewDashgroupCtrl($scope, $location, toastr, currentUser, Events, Dashgroup) {
+function NewDashgroupCtrl($scope, $location, $http, toastr, currentUser, Events, Dashgroup) {
   Events.record('view', 'page', 'dashgroups/new');
 
   this.dashgroup_name = '';
@@ -11,7 +11,11 @@ function NewDashgroupCtrl($scope, $location, toastr, currentUser, Events, Dashgr
         return
     }
     Dashgroup.newDashgroup({name:this.dashgroup_name});
-    $scope.created = true;
+    $http.post('api/dashgroups/create', {
+      dashgroup_name: this.dashgroup_name
+    }).then(function(){
+        $scope.created = true;
+    });
   };
 }
 

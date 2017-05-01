@@ -48,7 +48,8 @@ class DashgroupDashboardList(BaseResource):
         return [d.to_dict() for d in dashgroup_dashboards]
 class NewDashgroup(BaseResource):
     @require_permission("admin")
-    def get(self, dashgroup_name):
+    def post(self):
+        dashgroup_name = request.get_json(force=True)["dashgroup_name"]
         dashgroup = models.Dashgroup(name=dashgroup_name)
         models.db.session.add(dashgroup)
         models.db.session.commit()

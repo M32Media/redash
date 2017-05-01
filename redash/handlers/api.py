@@ -48,7 +48,7 @@ api.add_org_resource(UserDashgroupList, '/api/dashgroups/user_groups')
 api.add_org_resource(OneUserDashgroupList, '/api/dashgroups/user_groups/<user_id>')
 api.add_org_resource(DashgroupList, '/api/dashgroups/groups')
 api.add_org_resource(DashgroupDashboardList, '/api/dashgroups/dashboards')
-api.add_org_resource(NewDashgroup, '/api/dashgroups/create/<dashgroup_name>')
+api.add_org_resource(NewDashgroup, '/api/dashgroups/create')
 
 #-------------------------------------------------------------------
 
