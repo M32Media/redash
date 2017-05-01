@@ -2,7 +2,13 @@
   <div class="row voffset1">
     <div class="col-md-4">
       <ul>
-      	<li ng-repeat="dg in groups">{{dg.name}}</li>
+      	<li ng-repeat="dg in detailedDashgroups">
+      		{{dg.name}}
+      		<ul>
+      			<li ng-repeat="db in dg.dashboards"> {{ db.dashboard_name }} </li>
+      		</ul>
+      	</li>
+
       </ul>
     </div>
   </div>
