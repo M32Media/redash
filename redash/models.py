@@ -1340,6 +1340,15 @@ class DashgroupDashboard(db.Model):
     def get_dashgroup_dashboards(cls):
         return cls.query.distinct()
 
+    @classmethod  
+    def delete(cls, dashgroup_id, dashboard_id):
+        dgdb = cls.query.filter(cls.dashgroup_id == dashgroup_id).filter(cls.dashboard_id == dashboard_id).first()
+
+        db.session.delete(dgdb)
+        db.session.commit();
+
+        return True;
+
 # For linking Users with dashgroups
 class UserDashgroup(db.Model):
     user_id = Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
