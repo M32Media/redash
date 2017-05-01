@@ -23,7 +23,6 @@ export default function (ngModule) {
          $scope.showDestinationsLink = currentUser.hasPermission('admin');
          $scope.showQuerySnippets = currentUser.hasPermission('view_query');
          $scope.showDashgroups = currentUser.hasPermission('admin');
-       	 console.log($scope.showDashgroups)
 	},
      })
   );

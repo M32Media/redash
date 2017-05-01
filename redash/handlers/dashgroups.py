@@ -18,7 +18,6 @@ class UserDashgroupList(BaseResource):
     def get(self):
         user_dashgroups = models.UserDashgroup.get_dashgroups(self.current_user.id)
 
-        #This is working
         return [d.to_dict() for d in user_dashgroups]
     @require_permission('admin')
     def post(self):
@@ -38,5 +37,4 @@ class OneUserDashgroupList(BaseResource):
         else:
             user_dashgroups = models.UserDashgroup.get_dashgroups(self.current_user.id)
 
-        #This is working
         return [d.to_dict() for d in user_dashgroups]

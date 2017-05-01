@@ -10,7 +10,6 @@ function HomeCtrl($scope, $uibModal, currentUser, Events, Dashboard, Query) {
   // todo: maybe this should come from some serivce as we have this logic elsewhere.
   this.canCreateQuery = currentUser.hasPermission('create_query');
   this.canCreateDashboard = currentUser.hasPermission('create_dashboard');
-  console.log(this.canCreateDashboard)
   this.canListAlert = currentUser.hasPermission('list_alerts');
   this.canShowQueries = currentUser.hasPermission('view_query');
   this.recentQueries = Query.recent();
