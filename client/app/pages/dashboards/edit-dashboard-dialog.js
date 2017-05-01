@@ -51,6 +51,9 @@ const EditDashboardDialog = {
     this.saveDashboard = () => {
       if(this.dashgroup === null) {
         this.dashgroup = {id:0, name:this.dashboard.name.split(':')[0]}
+      } else {
+        //Angular is weird. It works.
+        this.dashgroup = {id:this.dashgroup};
       }
       this.saveInProgress = true;
       console.log("SAVING");
@@ -88,6 +91,7 @@ const EditDashboardDialog = {
         });
         Events.record('edit', 'dashboard', this.dashboard.id);
       } else {
+        console.log("dashgroupppp : " + this.dashgroup);
         $http.post('api/dashboards', {
           name: this.dashboard.name, 
           dashgroup_id: this.dashgroup.id,

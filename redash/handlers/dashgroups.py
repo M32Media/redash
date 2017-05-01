@@ -1,6 +1,6 @@
 from redash import models
 from redash.handlers.base import BaseResource
-from redash.permissions import require_permission
+from redash.permissions import require_permission, has_access, view_only
 from flask import request
 
 
@@ -33,7 +33,10 @@ class UserDashgroupList(BaseResource):
 
 class OneUserDashgroupList(BaseResource):
     def get(self,user_id):
-        user_dashgroups = models.UserDashgroup.get_dashgroups(user_id)
+        if self.current_user.has_permission("admin"):
+            user_dashgroups = models.UserDashgroup.get_dashgroups(user_id)
+        else:
+            user_dashgroups = models.UserDashgroup.get_dashgroups(self.current_user.id)
 
         #This is working
         return [d.to_dict() for d in user_dashgroups]

@@ -7,7 +7,7 @@ manager = Manager(help="Organization management commands.")
 @manager.option('publisher', help="the name of the publisher")
 @manager.command
 def create_dashboard(publisher,dashboard_id):
-    organization = models.Organization.select().first()
+    organization = models.Organization.query().first()
     # the base model is the one from Fanoweb
     old_publisher='Fanoweb'
     old_dashboard = models.Dashboard.get_by_id(dashboard_id)
@@ -17,7 +17,8 @@ def create_dashboard(publisher,dashboard_id):
                                  user=1,
                                  dashboard_filters_enabled = old_dashboard.dashboard_filters_enabled,
                                  layout='[]')
-    dashboard.save()
+    models.db.session.add(dashboard)
+    models.db.session.commit()
     new_layout = ''
     for widget in old_dashboard.layout.replace(' ', '').replace('[', '').replace(']', '').split(','):
         old_widget = models.Widget.get_by_id(widget)
@@ -34,7 +35,8 @@ def create_dashboard(publisher,dashboard_id):
                 data_source=old_widget.visualization.query.data_source,
                 org=1
             )
-            new_query.save()
+            models.db.session.add(query)
+            models.db.session.commit()
             new_visualisation = models.Visualization(
                 type=old_widget.visualization.type,
                 query=new_query.id,
@@ -42,7 +44,10 @@ def create_dashboard(publisher,dashboard_id):
                 description='',
                 options=old_widget.visualization.options
             )
-            new_visualisation.save()
+
+            models.db.session.add(new_visualisation)
+            models.db.session.commit()
+
             new_widget = models.Widget(
                 type=old_widget.type,
                 width=old_widget.width,
@@ -50,14 +55,17 @@ def create_dashboard(publisher,dashboard_id):
                 dashboard=dashboard.id,
                 visualization=new_visualisation.id
             )
-            new_widget.save()
+
+            models.db.session.add(new_widget)
+            models.db.session.commit()
+
             new_layout = new_layout + '[' + str(new_widget.id) + '],'
 
     new_layout = new_layout.rstrip(',')
     new_layout = '[' + new_layout + ']'
 
     dashboard.layout = new_layout
-    dashboard.save()
+    models.db.session.commit()
     print 'dashboard created'
 
 def create_query_definition(id,publisher,old_publisher):
