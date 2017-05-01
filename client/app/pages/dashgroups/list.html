@@ -1,14 +1,16 @@
 <settings-screen>
   <div class="row voffset1">
     <div class="col-md-4">
-      <ul class="dashgroups">
+      <p ng-if="$ctrl.showNewButton">
+        <a href="dashgroups/new" class="btn btn-default"><i class="fa fa-plus"></i> New Dashgroup</a>
+      </p>
+      <ul class="dashboards">
       	<li ng-repeat="dg in detailedDashgroups">
       		{{dg.name}}
       		<ul>
-      			<li ng-repeat="db in dg.dashboards"> 
-      				{{ db.dashboard_name }} 
-      				<button type="button" class="btn btn-danger" ng-click="removeDashboard(dg.id, db.dashboard_id)">Remove</button>
-      			</li>
+      			<li ng-repeat="db in dg.dashboards"> {{ db.dashboard_name }} 
+              <button type="button" class="btn btn-danger" ng-click="removeDashboard(dg.id, db.dashboard_id)">X</button>
+            </li>
       		</ul>
       	</li>
 

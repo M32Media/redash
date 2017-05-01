@@ -7,7 +7,8 @@ function DashgroupsCtrl($scope, $location, $q, currentUser, Events, Dashgroup) {
   Events.record('view', 'page', 'admin/dashgroups');
 
   $scope.detailedDashgroups = [];
-
+  this.currentUser = currentUser;
+  this.showNewButton = currentUser.hasPermission("admin");
   const promises = {
     groups: Dashgroup.groups().$promise,
     dashgroupDashboard: Dashgroup.dashgroupDashboard().$promise
@@ -41,8 +42,13 @@ function DashgroupsCtrl($scope, $location, $q, currentUser, Events, Dashgroup) {
 
   $scope.removeDashboard = (dgId, dbId) =>{
 
-    console.log("Remove " + dbId + " from  dgId");
-    
+    $http.delete('api/dashgroups/dashboards/remove',{
+      dashboard_id: dbId,
+      dashgroup_id: dgId
+    }).success((response) => {
+      console.log("Remove " + dbId + " from " + dgId);
+    })
+
   }
 
 }
@@ -54,6 +60,7 @@ export default function (ngModule) {
     '/dashgroups': {
       template,
       controller: 'DashgroupsCtrl',
+      controllerAs: '$ctrl',
       title: 'Dashgroups',
     },
   };

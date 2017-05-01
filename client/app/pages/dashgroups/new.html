@@ -1,0 +1,21 @@
+<settings-screen>
+  <form class="form" name="$ctrl.dashgroupForm" ng-submit="saveDashgroup()" novalidate>
+    <div class="form-group required">
+      <label class="control-label">Name</label>
+      <input type="text" name="name" class="form-control" ng-model="$ctrl.dashgroup_name" ng-disabled="dashgroup.created" required/>
+
+      <error-messages input="$ctrl.dashgroupForm.name" form="$ctrl.dashgroupForm"></error-messages>
+    </div>
+
+    <div class="form-group" ng-if="!created">
+      <button class="btn btn-primary">Create</button>
+    </div>
+
+
+    <div ng-if="created" class="alert alert-success">
+      <p>
+        <strong>The dashgroup has been created.</strong>
+      </p>
+    </div>
+  </form>
+</settings-screen>
