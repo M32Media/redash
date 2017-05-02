@@ -715,7 +715,7 @@ ul.dashgroups{
   color:white;
 }
 
-.acc-content.hidden>ul>li {
+.acc-content.acc-hidden>ul>li {
   transition: height .8s;
   height: 0px;
 }

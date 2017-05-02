@@ -9,7 +9,7 @@
       		<div class="acc-head" ng-click="showDetails = ! showDetails" ng-class="{ 'open': showDetails }">
             {{dg.name}} 
           </div>
-          <div class="acc-content" ng-class="{ 'hidden': !showDetails }">
+          <div class="acc-content" ng-class="{ 'acc-hidden': !showDetails }">
         		<ul>
         			<li ng-repeat="db in dg.dashboards"> {{ db.dashboard_name }} 
                  <div class="delete-x" ng-click="removeDashboard($event, dg.id, db.dashboard_id)"> &#10006 </div>
