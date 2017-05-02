@@ -29,6 +29,19 @@ class RecentDashboardsResource(BaseResource):
 
         return take(20, distinct(chain(recent, global_recent), key=lambda d: d['id']))
 
+
+def create_or_get_dashgroup(name):
+    """Returns the id of the created or already existing dashgroup with the specified name."""
+    dashgroup = models.Dashgroup.get_by_name(name)
+    if dashgroup is None:
+        #if the group does not exist, create it
+        dashgroup = models.Dashgroup(name=name)
+        models.db.session.add(dashgroup)
+        models.db.session.commit()
+        dashgroup.id
+    return dashgroup.id
+
+
 class DashboardListResource(BaseResource):
     @require_permission('list_dashboards')
     def get(self):
@@ -63,33 +76,19 @@ class DashboardListResource(BaseResource):
         print(dashboard_properties)
 
         #if the user created with group from tag :
-        if dashboard_properties['dashgroup_id'] == 0:
-            dashgroup = models.Dashgroup.get_by_name(dashboard_properties['dashgroup_name'])
-            if dashgroup is None:
-                #if the group does not exist, create it
-                dashgroup = models.Dashgroup(name=dashboard_properties['dashgroup_name'])
-                models.db.session.add(dashgroup)
-                models.db.session.commit()
-                dashboard_properties['dashgroup_id'] = dashgroup.id
-            else:
-                #else put the dashboard in that group
-                dashboard_properties['dashgroup_id'] = dashgroup.id
+        if dashboard_properties['dashgroup_id'] == -1:
+            dashboard_properties['dashgroup_id'] = create_or_get_dashgroup(dashboard_properties['dashgroup_name'])
+
+        #dashgroup id at 0 means no group for this dashboard.
+        if dashboard_properties['dashgroup_id'] !=0:
+            dg_db = models.DashgroupDashboard(dashboard_id=dashboard.id, dashgroup_id=dashboard_properties['dashgroup_id'])
+            models.db.session.add(dg_db)
+            models.db.session.commit()
 
 
 
-        dg_db = models.DashgroupDashboard(dashboard_id=dashboard.id, dashgroup_id=dashboard_properties['dashgroup_id'])
-        models.db.session.add(dg_db)
-        models.db.session.commit()
-
-        """
-        u_dg = models.UserDashgroup(user_id=self.current_user.id, dashgroup_id=dashboard_properties['did']['dashgroup_id'])
-        models.db.session.add(u_dg)
-        models.db.session.commit()
-        """
 
         return dashboard.to_dict()
-
-
 
 class DashboardResource(BaseResource):
     @require_permission('list_dashboards')
@@ -159,6 +158,17 @@ class DashboardResource(BaseResource):
 
         updates = project(dashboard_properties, ('name', 'layout', 'version',
                                                  'is_draft'))
+        print(dashboard_properties)
+        print(dashboard.id)
+        if dashboard_properties['dashgroup_id'] == '-1':
+            dashboard_properties['dashgroup_id'] = create_or_get_dashgroup(dashboard_properties['dashgroup_name'])
+
+        if dashboard_properties['dashgroup_id'] != '0':
+            old_grouping = models.DashgroupDashboard.get_by_dashboard_id(dashboard.id).first()
+            if old_grouping is not None:
+                models.db.session.delete(old_grouping)
+            #delete the old grouping and create another one.
+            models.db.session.add(models.DashgroupDashboard(dashboard_id=dashboard.id, dashgroup_id = dashboard_properties['dashgroup_id']))
 
         # SQLAlchemy handles the case where a concurrent transaction beats us
         # to the update. But we still have to make sure that we're not starting

@@ -6,8 +6,10 @@
   <p>
     <input type="text" class="form-control" placeholder="Dashboard Name" ng-model="$ctrl.dashboard.name">
     </br>
-    <select ng-options="dg.id as dg.name for dg in $ctrl.dashgroups track by dg.id"  ng-model="$ctrl.dashgroup" class="form-control">
-        <option value="">From Tag (Tag:Dashboard)</option>
+    <select ng-model="$ctrl.dashgroup" class="form-control">
+        <option value="0">None</option>
+        <option value="-1">From Tag (Tag:Dashboard)</option>
+        <option ng-repeat="dg in $ctrl.dashgroups" value="{{dg.id}}">{{dg.name}}</option>
     </select>
   </p>
   <div gridster="$ctrl.gridsterOptions" ng-if="$ctrl.items | notEmpty">

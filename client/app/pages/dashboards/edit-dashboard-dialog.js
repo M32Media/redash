@@ -14,7 +14,7 @@ const EditDashboardDialog = {
     'ngInject';
     this.dashgroups = Dashgroup.groups();
     this.dashboard = this.resolve.dashboard;
-    this.dashgroup = null;
+    this.dashgroup = '0';
     this.gridsterOptions = {
       margins: [5, 5],
       rowHeight: 100,
@@ -49,16 +49,17 @@ const EditDashboardDialog = {
     }
 
     this.saveDashboard = () => {
-      if(this.dashgroup === null) {
-        this.dashgroup = {id:0, name:this.dashboard.name.split(':')[0]}
+      if(this.dashgroup == '-1') {
+        this.dashgroup = {id:-1, name:this.dashboard.name.split(':')[0]}
       } else {
         //Angular is weird. It works.
         this.dashgroup = {id:this.dashgroup};
       }
       this.saveInProgress = true;
-      console.log("SAVING");
-      console.log(JSON.stringify(this.dashgroup))
       if (this.dashboard.id) {
+        console.log("passes here");
+        const layout = [];
+        const sortedItems = sortBy(this.items, item => item.row * 10 + item.col);
         sortedItems.forEach((item) => {
           layout[item.row] = layout[item.row] || [];
           if (item.col > 0 && layout[item.row][item.col - 1] === undefined) {
@@ -73,14 +74,19 @@ const EditDashboardDialog = {
           name: this.dashboard.name,
           version: this.dashboard.version,
           layout: JSON.stringify(layout),
+          dashgroup_id: this.dashgroup.id,
+          dashgroup_name: this.dashgroup.name,
         };
 
+        console.log("and there");
         Dashboard.save(request, (dashboard) => {
           this.dashboard = dashboard;
+          console.log("but not there ?!");
           this.saveInProgress = false;
           this.close({ $value: this.dashboard });
           $rootScope.$broadcast('reloadDashboards');
         }, (error) => {
+          console.log(error);
           this.saveInProgress = false;
           if (error.status === 403) {
             toastr.error('Unable to save dashboard: Permission denied.');
@@ -93,7 +99,7 @@ const EditDashboardDialog = {
       } else {
         console.log("dashgroupppp : " + this.dashgroup);
         $http.post('api/dashboards', {
-          name: this.dashboard.name, 
+          name: this.dashboard.name,
           dashgroup_id: this.dashgroup.id,
           dashgroup_name: this.dashgroup.name
         }).success((response) => {

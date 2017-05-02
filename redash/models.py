@@ -1340,6 +1340,10 @@ class DashgroupDashboard(db.Model):
     def get_dashgroup_dashboards(cls):
         return cls.query.distinct()
 
+    @classmethod
+    def get_by_dashboard_id(cls, dashboard_id):
+        return cls.query.filter(cls.dashboard_id == dashboard_id)
+
 # For linking Users with dashgroups
 class UserDashgroup(db.Model):
     user_id = Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
