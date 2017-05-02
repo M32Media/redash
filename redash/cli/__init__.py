@@ -5,9 +5,12 @@ import click
 from flask.cli import FlaskGroup, run_command
 from flask import current_app
 
+
 from redash import create_app, settings, __version__
-from redash.cli import users, groups, database, data_sources, organization
+from redash.cli import users, groups, database, data_sources, organization, dashboard, test
 from redash.monitor import get_status
+from redash.tasks import refresh_queries
+from redash import models
 
 
 def create(group):
@@ -26,20 +29,28 @@ def create(group):
 def manager():
     """Management script for Redash"""
 
-
 manager.add_command(database.manager, "database")
 manager.add_command(users.manager, "users")
 manager.add_command(groups.manager, "groups")
 manager.add_command(data_sources.manager, "ds")
 manager.add_command(organization.manager, "org")
+manager.add_command(dashboard.manager, "dashboard")
+manager.add_command(test.manager, "test")
 manager.add_command(run_command, "runserver")
-
 
 @manager.command()
 def version():
     """Displays Redash version."""
     print __version__
 
+@manager.command()
+def test():
+    print "test"
+    return 34
+
+@manager.command()
+def refresh_all_the_queries():
+    refresh_queries()
 
 @manager.command()
 def status():
@@ -51,6 +62,27 @@ def check_settings():
     """Show the settings as Redash sees them (useful for debugging)."""
     for name, item in settings.all_settings().iteritems():
         print "{} = {}".format(name, item)
+
+@manager.command()
+@click.argument('old_publisher')
+@click.argument('publisher')
+def clone_dashboards(old_publisher, publisher):
+
+    dashgroup = models.Dashgroup.query.filter(models.Dashgroup.name == old_publisher).one()
+
+    if dashgroup is None:
+        print("Can't find the publisher name")
+        return
+    dashboard_ids = [db.dashboard_id for db in models.DashgroupDashboard.get_by_dashgroup_id(dashgroup.id)]
+
+    #for every dashboards in the old publishers dashgroup, copy these dashboards with the new publisher
+    for dashboard_id in dashboard_ids:
+        created = dashboard.create_dashboard_logic(old_publisher, publisher, dashboard_id)
+        #we want to put the created dashboard in a new dashgroup or one that has the right name
+        new_pub_group = models.Dashgroup.create_or_get_dashgroup(publisher)
+        grouping = models.DashgroupDashboard(dashboard_id=created.id, dashgroup_id=new_pub_group)
+        models.db.session.add(grouping)
+        models.db.session.commit()
 
 
 @manager.command()
