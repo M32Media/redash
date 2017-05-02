@@ -7,7 +7,7 @@ from redash.handlers.base import org_scoped_rule
 from redash.handlers.permissions import ObjectPermissionsListResource, CheckPermissionResource
 from redash.handlers.alerts import AlertResource, AlertListResource, AlertSubscriptionListResource, AlertSubscriptionResource
 from redash.handlers.dashboards import DashboardListResource, RecentDashboardsResource, DashboardResource, DashboardShareResource, PublicDashboardResource
-from redash.handlers.dashgroups import DashgroupList, UserDashgroupList, OneUserDashgroupList, DashgroupDashboardList, NewDashgroup
+from redash.handlers.dashgroups import DashgroupList, UserDashgroupList, OneUserDashgroupList, DashgroupDashboardList, NewDashgroup, DashgroupDashboardResource
 from redash.handlers.data_sources import DataSourceTypeListResource, DataSourceListResource, DataSourceSchemaResource, DataSourceResource, DataSourcePauseResource, DataSourceTestResource
 from redash.handlers.events import EventResource
 from redash.handlers.queries import QueryForkResource, QueryRefreshResource, QueryListResource, QueryRecentResource, QuerySearchResource, QueryResource, MyQueriesResource
@@ -49,6 +49,7 @@ api.add_org_resource(OneUserDashgroupList, '/api/dashgroups/user_groups/<user_id
 api.add_org_resource(DashgroupList, '/api/dashgroups/groups')
 api.add_org_resource(DashgroupDashboardList, '/api/dashgroups/dashboards')
 api.add_org_resource(NewDashgroup, '/api/dashgroups/create')
+api.add_org_resource(DashgroupDashboardResource, '/api/dashgroups/<dashgroup_id>/dashboards/<dashboard_id>')
 
 #-------------------------------------------------------------------
 

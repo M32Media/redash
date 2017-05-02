@@ -40,12 +40,15 @@ class OneUserDashgroupList(BaseResource):
         return [d.to_dict() for d in user_dashgroups]
 
 class DashgroupDashboardList(BaseResource):
+    @require_permission("admin")
     def get(self):
         dashgroup_dashboards = models.DashgroupDashboard.get_dashgroup_dashboards()
 
         print(dashgroup_dashboards)
 
         return [d.to_dict() for d in dashgroup_dashboards]
+
+
 class NewDashgroup(BaseResource):
     @require_permission("admin")
     def post(self):
@@ -53,4 +56,15 @@ class NewDashgroup(BaseResource):
         dashgroup = models.Dashgroup(name=dashgroup_name)
         models.db.session.add(dashgroup)
         models.db.session.commit()
+        return {"status":"success"}
+
+class DashgroupDashboardResource(BaseResource):
+    @require_permission("admin")
+    def delete(self, dashgroup_id, dashboard_id):
+
+        print(dashgroup_id)
+        print(dashboard_id)
+
+        models.DashgroupDashboard.delete(dashgroup_id, dashboard_id)
+
         return {"status":"success"}

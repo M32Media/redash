@@ -1328,7 +1328,7 @@ class DashgroupDashboard(db.Model):
 
     __tablename__ = 'dashgroups_dashboards'
 
-    def to_dict(self): 
+    def to_dict(self):
         return {
             'dashgroup_id': self.dashgroup_id,
             'dashgroup_name': self.dashgroup.name,
@@ -1343,6 +1343,15 @@ class DashgroupDashboard(db.Model):
     @classmethod
     def get_by_dashboard_id(cls, dashboard_id):
         return cls.query.filter(cls.dashboard_id == dashboard_id)
+
+    @classmethod
+    def delete(cls, dashgroup_id, dashboard_id):
+        dgdb = cls.query.filter(cls.dashgroup_id == dashgroup_id).filter(cls.dashboard_id == dashboard_id).first()
+
+        db.session.delete(dgdb)
+        db.session.commit();
+
+        return True;
 
 # For linking Users with dashgroups
 class UserDashgroup(db.Model):
@@ -1367,7 +1376,6 @@ class UserDashgroup(db.Model):
         query = UserDashgroup.query.filter(cls.user_id == user_id).distinct()
 
         return query
-        
 
 #-------------------------------------------------------------------
 
