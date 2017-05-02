@@ -6,6 +6,7 @@ import template from './list.html';
 function DashgroupsCtrl($scope, $http, $location, $q, currentUser, Events, Dashgroup) {
   Events.record('view', 'page', 'admin/dashgroups');
 
+  $scope.showDetails = false;
   $scope.detailedDashgroups = [];
   this.currentUser = currentUser;
   this.showNewButton = currentUser.hasPermission("admin");
@@ -41,7 +42,8 @@ function DashgroupsCtrl($scope, $http, $location, $q, currentUser, Events, Dashg
 
   });
 
-  $scope.removeDashboard = (dgId, dbId) =>{
+
+  $scope.removeDashboard = (event, dgId, dbId) =>{
 
     console.log("Remove " + dbId + " from " + dgId);
 
@@ -50,7 +52,7 @@ function DashgroupsCtrl($scope, $http, $location, $q, currentUser, Events, Dashg
     data.dgId = dgId;
 
     $http.delete(`api/dashgroups/${data.dgId}/dashboards/${data.dbId}`).success((response) => {
-
+      event.target.parentElement.remove()
     })
 
   }

@@ -1,17 +1,21 @@
 <settings-screen>
   <div class="row voffset1">
-    <div class="col-md-4">
+    <div class="col-md-6">
       <p ng-if="$ctrl.showNewButton">
         <a href="dashgroups/new" class="btn btn-default"><i class="fa fa-plus"></i> New Dashgroup</a>
       </p>
-      <ul class="dashboards">
+      <ul class="accordion">
       	<li ng-repeat="dg in detailedDashgroups">
-      		{{dg.name}}
-      		<ul>
-      			<li ng-repeat="db in dg.dashboards"> {{ db.dashboard_name }} 
-              <button type="button" class="btn btn-danger" ng-click="removeDashboard(dg.id, db.dashboard_id)">X</button>
-            </li>
-      		</ul>
+      		<div class="acc-head" ng-click="showDetails = ! showDetails" ng-class="{ 'open': showDetails }">
+            {{dg.name}} 
+          </div>
+          <div class="acc-content" ng-class="{ 'hidden': !showDetails }">
+        		<ul>
+        			<li ng-repeat="db in dg.dashboards"> {{ db.dashboard_name }} 
+                 <div class="delete-x" ng-click="removeDashboard($event, dg.id, db.dashboard_id)"> &#10006 </div>
+              </li>
+        		</ul>
+          </div>
       	</li>
 
       </ul>

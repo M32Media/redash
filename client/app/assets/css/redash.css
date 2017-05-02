@@ -698,3 +698,52 @@ ul.dashgroups{
   font-size: 0.8em;
   font-weight: normal;
 }
+
+.acc-head{
+  transition: height .8s;
+  background-color: gray;
+  height: 40px;
+  line-height:40px;
+  padding-left:10px;
+  color:white;
+}
+
+.accordion, .accordion ul{
+  list-style-type: none;
+  padding:0px;
+  margin:0px;
+  color:white;
+}
+
+.acc-content.hidden>ul>li {
+  transition: height .8s;
+  height: 0px;
+}
+
+.acc-content>ul>li{
+  transition: .8s;
+  max-height:40px;
+  overflow: hidden;
+  padding-left:20px;
+  height:40px;
+  line-height:40px;
+  background-color: #D3D3D3;
+}
+
+
+.delete-x{
+  display: inline;
+}
+
+.delete-x:hover{
+  cursor: pointer;
+}
+
+.delete-x:active{
+  color:red;
+}
+
+.open{
+  transition: .8s;
+  background-color: #337ab7;
+}
