@@ -114,3 +114,27 @@ def org_scoped_rule(rule):
 
 def json_response(response):
     return current_app.response_class(json_dumps(response), mimetype='application/json')
+
+def is_allowed():
+
+    """
+    Checks the referrer first to see if the url has been called directly
+    """
+
+    if request.referrer is not None:
+
+        print(request.host)
+        print(request.referrer)
+
+        """
+        Checks if the referrer is in the same domain
+        """
+        if request.host in request.referrer:
+            return True
+        else:
+            return False
+
+        
+    else:
+        return False
+

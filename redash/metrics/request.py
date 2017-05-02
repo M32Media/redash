@@ -19,8 +19,8 @@ def calculate_metrics(response):
     request_duration = (time.time() - g.start_time) * 1000
     queries_duration = g.get('queries_duration', 0.0)
     queries_count = g.get('queries_count', 0.0)
-
-    metrics_logger.info("method=%s path=%s endpoint=%s status=%d content_type=%s content_length=%d duration=%.2f query_count=%d query_duration=%.2f",
+	
+    metrics_logger.info("method={} path={} endpoint={} status={} content_type={} content_length={} duration={} query_count={} query_duration={}".format(
                         request.method,
                         request.path,
                         request.endpoint,
@@ -29,7 +29,7 @@ def calculate_metrics(response):
                         response.content_length,
                         request_duration,
                         queries_count,
-                        queries_duration)
+                        queries_duration))
 
     statsd_client.timing('requests.{}.{}'.format(request.endpoint, request.method.lower()), request_duration)
 

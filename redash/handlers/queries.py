@@ -6,10 +6,11 @@ from flask_login import login_required
 from flask_restful import abort
 from funcy import distinct, take
 from sqlalchemy.orm.exc import StaleDataError
+from redash.handlers.base import routes
 
 from redash import models
 from redash.handlers.base import (BaseResource, get_object_or_404,
-                                  org_scoped_rule, paginate, routes)
+                                  org_scoped_rule, paginate, routes, is_allowed)
 from redash.handlers.query_results import run_query
 from redash.permissions import (can_modify, not_view_only, require_access,
                                 require_admin_or_owner,
@@ -204,6 +205,7 @@ class QueryResource(BaseResource):
 
         return query.to_dict(with_visualizations=True)
 
+
     @require_permission('view_query')
     def get(self, query_id):
         """
@@ -213,11 +215,20 @@ class QueryResource(BaseResource):
 
         Responds with the :ref:`query <query-response-label>` contents.
         """
+
+        #for x in request.environ:
+            #print(x + " : " + str(request.environ[x]))
+
+
         q = get_object_or_404(models.Query.get_by_id_and_org, query_id, self.current_org)
         require_access(q.groups, self.current_user, view_only)
 
         result = q.to_dict(with_visualizations=True)
-        result['can_edit'] = can_modify(q, self.current_user)
+        result['can_edit'] = can_modify(q, self.current_user)   
+
+        if not is_allowed():
+            result.pop('query', None)
+
         return result
 
     # TODO: move to resource of its own? (POST /queries/{id}/archive)
