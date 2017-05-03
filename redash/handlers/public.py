@@ -66,6 +66,5 @@ def ExposeQueryData(data_id, ext):
     else:
         headers = {'Content-Type': "application/json"}
         response = make_response(result.data, 200, headers)
-
     
     return response

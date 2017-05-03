@@ -7,7 +7,7 @@ from flask import current_app
 
 
 from redash import create_app, settings, __version__
-from redash.cli import users, groups, database, data_sources, organization, dashboard, test
+from redash.cli import users, groups, database, data_sources, organization, dashboard
 from redash.monitor import get_status
 from redash.tasks import refresh_queries
 from redash import models
@@ -35,7 +35,6 @@ manager.add_command(groups.manager, "groups")
 manager.add_command(data_sources.manager, "ds")
 manager.add_command(organization.manager, "org")
 manager.add_command(dashboard.manager, "dashboard")
-manager.add_command(test.manager, "test")
 manager.add_command(run_command, "runserver")
 
 @manager.command()
