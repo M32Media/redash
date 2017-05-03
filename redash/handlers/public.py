@@ -10,8 +10,10 @@ def validate_api_key(func):
 
     def validation_wrapper():
 
-        token = request.args.get('token')
+        token = request.values.get('token')
         ext = request.args.get('ext') or 'json'
+
+        print(request.headers.get('User-Agent'))
 
         #Verify presence of token and check if it exists in database
         if token:
@@ -21,7 +23,7 @@ def validate_api_key(func):
 
             if (query and query.latest_query_data_id ):
 
-                return func(data.latest_query_data_id, ext)
+                return func(query.latest_query_data_id, ext)
 
             #When we have query object but the query is not working
             elif (query and not query.latest_query_data_id):
@@ -38,7 +40,7 @@ def validate_api_key(func):
             #When the token is invalid
             else:
                 message = {
-                    'message': "You don't have the credentials",
+                    'message': "Your API token is invalid please contact M32",
                 }
 
                 resp = jsonify(message)
