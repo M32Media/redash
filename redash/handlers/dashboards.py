@@ -30,17 +30,6 @@ class RecentDashboardsResource(BaseResource):
         return take(20, distinct(chain(recent, global_recent), key=lambda d: d['id']))
 
 
-def create_or_get_dashgroup(name):
-    """Returns the id of the created or already existing dashgroup with the specified name."""
-    dashgroup = models.Dashgroup.get_by_name(name)
-    if dashgroup is None:
-        #if the group does not exist, create it
-        dashgroup = models.Dashgroup(name=name)
-        models.db.session.add(dashgroup)
-        models.db.session.commit()
-        dashgroup.id
-    return dashgroup.id
-
 
 class DashboardListResource(BaseResource):
     @require_permission('list_dashboards')
@@ -76,11 +65,11 @@ class DashboardListResource(BaseResource):
         print(dashboard_properties)
 
         #if the user created with group from tag :
-        if dashboard_properties['dashgroup_id'] == -1:
-            dashboard_properties['dashgroup_id'] = create_or_get_dashgroup(dashboard_properties['dashgroup_name'])
+        if dashboard_properties['dashgroup_id'] == '-1':
+            dashboard_properties['dashgroup_id'] = models.Dashgroup.create_or_get_dashgroup(dashboard_properties['dashgroup_name'])
 
         #dashgroup id at 0 means no group for this dashboard.
-        if dashboard_properties['dashgroup_id'] !=0:
+        if dashboard_properties['dashgroup_id'] != '0':
             dg_db = models.DashgroupDashboard(dashboard_id=dashboard.id, dashgroup_id=dashboard_properties['dashgroup_id'])
             models.db.session.add(dg_db)
             models.db.session.commit()
@@ -161,7 +150,7 @@ class DashboardResource(BaseResource):
         print(dashboard_properties)
         print(dashboard.id)
         if dashboard_properties['dashgroup_id'] == '-1':
-            dashboard_properties['dashgroup_id'] = create_or_get_dashgroup(dashboard_properties['dashgroup_name'])
+            dashboard_properties['dashgroup_id'] = models.Dashgroup.create_or_get_dashgroup(dashboard_properties['dashgroup_name'])
 
         if dashboard_properties['dashgroup_id'] != '0':
             old_grouping = models.DashgroupDashboard.get_by_dashboard_id(dashboard.id).first()

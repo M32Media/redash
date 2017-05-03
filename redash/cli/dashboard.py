@@ -1,20 +1,18 @@
-from flask_script import Manager
+from flask.cli import AppGroup
+from click import argument, option
 from redash import models
 
-manager = Manager(help="Organization management commands.")
+manager = AppGroup(help="Dashboard management commands.")
 
-
-@manager.option('publisher', help="the name of the publisher")
-@manager.command
-def create_dashboard(publisher,dashboard_id):
-    organization = models.Organization.query().first()
-    # the base model is the one from Fanoweb
-    old_publisher='Fanoweb'
+#Click prevents us from simply calling a command from another command, hence this function.
+def create_dashboard_logic(old_publisher, publisher, dashboard_id):
     old_dashboard = models.Dashboard.get_by_id(dashboard_id)
     dashboardname = old_dashboard.name.lower().replace(old_publisher.lower(), publisher.lower())
+    print(dashboardname)
+
     dashboard = models.Dashboard(name=dashboardname,
-                                 org=1,
-                                 user=1,
+                                 org=models.Organization.get_by_id(1),
+                                 user=models.User.get_by_id(1),
                                  dashboard_filters_enabled = old_dashboard.dashboard_filters_enabled,
                                  layout='[]')
     models.db.session.add(dashboard)
@@ -22,24 +20,24 @@ def create_dashboard(publisher,dashboard_id):
     new_layout = ''
     for widget in old_dashboard.layout.replace(' ', '').replace('[', '').replace(']', '').split(','):
         old_widget = models.Widget.get_by_id(widget)
-        if old_widget.visualization !=None:
-            query_id = old_widget.visualization.query.id
+        if old_widget.visualization != None:
+            query_id = old_widget.visualization.query_rel.id
             new_query_sql = create_query_definition(query_id, publisher, old_publisher)
             new_query = models.Query(
-                name=old_widget.visualization.query.name + ' [' + publisher.lower() + ']',
+                name=old_widget.visualization.query_rel.name + ' [' + publisher.lower() + ']',
                 description='',
-                query=new_query_sql,
-                user=1,
+                query_text=new_query_sql,
+                user=models.User.get_by_id(1),
                 is_archived=False,
                 schedule=None,
-                data_source=old_widget.visualization.query.data_source,
-                org=1
+                data_source=old_widget.visualization.query_rel.data_source,
+                org=models.Organization.get_by_id(1)
             )
-            models.db.session.add(query)
+            models.db.session.add(new_query)
             models.db.session.commit()
             new_visualisation = models.Visualization(
                 type=old_widget.visualization.type,
-                query=new_query.id,
+                query_rel=new_query,
                 name=old_widget.visualization.name,
                 description='',
                 options=old_widget.visualization.options
@@ -52,8 +50,8 @@ def create_dashboard(publisher,dashboard_id):
                 type=old_widget.type,
                 width=old_widget.width,
                 options=old_widget.options,
-                dashboard=dashboard.id,
-                visualization=new_visualisation.id
+                dashboard=dashboard,
+                visualization=new_visualisation
             )
 
             models.db.session.add(new_widget)
@@ -67,7 +65,17 @@ def create_dashboard(publisher,dashboard_id):
     dashboard.layout = new_layout
     models.db.session.commit()
     print 'dashboard created'
+    return dashboard    
+
+
+@manager.command()
+@argument('old_publisher')
+@argument('publisher')
+@argument('dashboard_id')
+def create_dashboard(old_publisher, publisher, dashboard_id):
+    create_dashboard_logic(old_publisher, publisher, dashboard_id)
 
 def create_query_definition(id,publisher,old_publisher):
     query = models.Query.get_by_id(id)
-    return query.query.replace(old_publisher,publisher)
+    return query.query_text.replace(old_publisher,publisher)
+

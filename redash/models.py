@@ -249,6 +249,10 @@ class Organization(TimestampMixin, db.Model):
     def get_by_slug(cls, slug):
         return cls.query.filter(cls.slug == slug).first()
 
+    @classmethod
+    def get_by_id(cls, id):
+        return cls.query.filter(cls.id == id).first()
+
     @property
     def default_group(self):
         return self.groups.filter(Group.name == 'default', Group.type == Group.BUILTIN_GROUP).first()
@@ -1295,6 +1299,10 @@ class Dashboard(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model
     def get_by_slug_and_org(cls, slug, org):
         return cls.query.filter(cls.slug == slug, cls.org==org).one()
 
+    @classmethod
+    def get_by_id(cls, id):
+        return cls.query.filter(cls.id == id).one()
+
     def __unicode__(self):
         return u"%s=%s" % (self.id, self.name)
 
@@ -1329,7 +1337,17 @@ class Dashgroup(db.Model):
     def get_by_name(cls,name):
         return cls.query.filter(cls.name == name).first()
 
-
+    @classmethod
+    def create_or_get_dashgroup(cls, name):
+        """Returns the id of the created or already existing dashgroup with the specified name."""
+        dashgroup = cls.get_by_name(name)
+        if dashgroup is None:
+            #if the group does not exist, create it
+            dashgroup = Dashgroup(name=name)
+            db.session.add(dashgroup)
+            db.session.commit()
+            dashgroup.id
+        return dashgroup.id
 
 
 # For grouping multiple groups 
@@ -1355,7 +1373,14 @@ class DashgroupDashboard(db.Model):
 
     @classmethod
     def get_by_dashboard_id(cls, dashboard_id):
+        #this should return a singular object but I'm afraid of what will break if I change it ...
         return cls.query.filter(cls.dashboard_id == dashboard_id)
+
+
+    @classmethod
+    def get_by_dashgroup_id(cls, dashgroup_id):
+        return cls.query.filter(cls.dashgroup_id == dashgroup_id)
+
 
     @classmethod
     def delete(cls, dashgroup_id, dashboard_id):
@@ -1476,6 +1501,10 @@ class Widget(TimestampMixin, db.Model):
     @classmethod
     def get_by_id_and_org(cls, widget_id, org):
         return db.session.query(cls).join(Dashboard).filter(cls.id == widget_id, Dashboard.org== org).one()
+
+    @classmethod
+    def get_by_id(cls, id):
+        return cls.query.filter(cls.id == id).first()
 
 
 class Event(db.Model):

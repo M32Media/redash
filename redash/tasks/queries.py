@@ -162,7 +162,7 @@ class QueryTask(object):
             updated_at = 0
 
         status = self.STATUSES[task_status]
-
+        print("-"*9 + str(result) + "-"*9)
         if isinstance(result, Exception):
             error = result.message
             status = 4
