@@ -691,6 +691,7 @@ class QueryResult(db.Model, BelongsToOrgMixin):
         return s.getvalue()
 
 
+
 def should_schedule_next(previous_iteration, now, schedule, failures):
     if schedule.isdigit():
         ttl = int(schedule)
@@ -936,6 +937,18 @@ class Query(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model):
             return {}
 
         return self.data_source.groups
+
+    @classmethod
+    def get_by_token(cls, token):
+
+        query = cls.query.filter(cls.api_key==token).one_or_none()
+
+        if query:
+            return query.latest_query_data_id
+        else:
+            return None
+
+
 
     def __unicode__(self):
         return unicode(self.id)
