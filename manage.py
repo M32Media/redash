@@ -3,7 +3,7 @@
 CLI to manage redash.
 """
 
-from cli import manager
+from redash.cli import manager
 
 if __name__ == '__main__':
     manager()
