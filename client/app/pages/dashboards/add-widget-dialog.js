@@ -27,10 +27,6 @@ const AddWidgetDialog = {
     }, {
       name: '25%',
       value: 3
-    }, {
-      // that sounds like a hack but it was in the old version ...
-      name: 'clearfix',
-      value: 100
     }];
 
     this.type = 'visualization';
