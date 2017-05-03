@@ -17,14 +17,26 @@ def validate_api_key(func):
         if token:
 
             #Get Query ID if one is associated with token
-            data_id = models.Query.get_by_token(token)
+            query = models.Query.get_by_token(token)
 
-            if data_id:
+            if (query and query.latest_query_data_id ):
 
-                return func(data_id, ext)
+                return func(data.latest_query_data_id, ext)
 
+            #When we have query object but the query is not working
+            elif (query and not query.latest_query_data_id):
+
+                message = {
+                    'message': "Something is wrong with this query",
+                }
+
+                resp = jsonify(message)
+                resp.status_code = 404
+
+                return resp
+
+            #When the token is invalid
             else:
-
                 message = {
                     'message': "You don't have the credentials",
                 }
@@ -34,10 +46,11 @@ def validate_api_key(func):
 
                 return resp
 
+        #When token is not specified
         else:
 
             message = {
-                'message': "You don't have the credentials",
+                'message': "No token found",
             }
 
             resp = jsonify(message)

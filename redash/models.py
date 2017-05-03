@@ -948,7 +948,7 @@ class Query(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model):
         query = cls.query.filter(cls.api_key==token).one_or_none()
 
         if query:
-            return query.latest_query_data_id
+            return query
         else:
             return None
 
