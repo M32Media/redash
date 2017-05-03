@@ -331,8 +331,9 @@ counter-renderer {
 
 counter-renderer counter {
   margin: 0 auto;
-  padding: 15px 50px;
-  display: block;;
+  padding: 15px 15px;
+  display: block;
+  text-align: center;
 }
 
 counter-renderer value,

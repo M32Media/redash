@@ -1,3 +1,4 @@
+/* eslint-disable */
 import template from './add-widget-dialog.html';
 
 const AddWidgetDialog = {
@@ -18,11 +19,18 @@ const AddWidgetDialog = {
     this.selected_query = undefined;
     this.text = '';
     this.widgetSizes = [{
-      name: 'Regular',
+      name: '50%',
       value: 1,
     }, {
-      name: 'Double',
+      name: '100%',
       value: 2,
+    }, {
+      name: '25%',
+      value: 3
+    }, {
+      // that sounds like a hack but it was in the old version ...
+      name: 'clearfix',
+      value: 100
     }];
 
     this.type = 'visualization';
