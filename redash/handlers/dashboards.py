@@ -70,13 +70,14 @@ class DashboardListResource(BaseResource):
             print(dashgroup_id)
 
         #dashgroup id at 0 means no change for this dashboard.
-        if dashgroup_id != '0' or dashgroup_id != 0:
+        if dashgroup_id != '0' and dashgroup_id != 0:
             dg_db = models.DashgroupDashboard(dashboard_id=dashboard.id, dashgroup_id=dashgroup_id)
             models.db.session.add(dg_db)
             models.db.session.commit()
 
 
-
+        models.db.session.add(dashboard)
+        models.db.session.commit()
 
         return dashboard.to_dict()
 
@@ -153,7 +154,7 @@ class DashboardResource(BaseResource):
         if dashgroup_id == '-1' or dashgroup_id != -1:
             dashgroup_id = models.Dashgroup.create_or_get_dashgroup(dashboard_properties['dashgroup_name'])
 
-        if dashgroup_id != '0' or dashgroup_id != 0:
+        if dashgroup_id != '0' and dashgroup_id != 0:
             old_grouping = models.DashgroupDashboard.get_by_dashboard_id(dashboard.id).first()
             if old_grouping is not None:
                 models.db.session.delete(old_grouping)
