@@ -952,7 +952,21 @@ class Query(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model):
         else:
             return None
 
+    @classmethod
+    def refresh_tokens(cls):
 
+        queries = cls.query.distinct();
+        
+        for q in queries:
+            print("OLD : " + q.api_key)
+            q.api_key = generate_token(40)
+            print("NEW : " + q.api_key)
+
+        db.session.commit()
+
+        return "Kappa"
+
+        
 
     def __unicode__(self):
         return unicode(self.id)
