@@ -151,7 +151,8 @@ class DashboardResource(BaseResource):
                                                  'is_draft'))
 
         dashgroup_id = dashboard_properties.get('dashgroup_id', '0')
-        if dashgroup_id == '-1' or dashgroup_id != -1:
+        print(dashgroup_id)
+        if dashgroup_id == '-1' or dashgroup_id == -1:
             dashgroup_id = models.Dashgroup.create_or_get_dashgroup(dashboard_properties['dashgroup_name'])
 
         if dashgroup_id != '0' and dashgroup_id != 0:
