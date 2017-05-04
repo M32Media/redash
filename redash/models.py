@@ -834,6 +834,17 @@ class Query(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model):
         return q
 
     @classmethod
+    def all_queries(cls):
+        q = (cls.query
+            .options(joinedload(Query.user),
+                     joinedload(Query.latest_query_data).load_only('runtime', 'retrieved_at'))
+            .join(DataSourceGroup, Query.data_source_id == DataSourceGroup.data_source_id)
+            .filter(Query.is_archived == False)
+            .order_by(Query.created_at.asc()))
+
+        return q
+
+    @classmethod
     def by_user(cls, user):
         return cls.all_queries(user.group_ids, user.id).filter(Query.user == user)
 
@@ -1327,7 +1338,7 @@ class Dashboard(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model
 
 # For the actual dashboard group
 class Dashgroup(db.Model):
-    id = Column(db.Integer, primary_key=True)
+    id = Column(db.Integer, primary_key=True, unique=True)
     name = Column(db.String(50))
 
     __tablename__ = 'dashgroups'
