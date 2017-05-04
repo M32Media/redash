@@ -63,13 +63,13 @@ class DashboardListResource(BaseResource):
 
         print("HERE : ")
         print(dashboard_properties)
-
+        dashgroup_id = dashboard_properties.get('dashgroup_id', '0')
         #if the user created with group from tag :
-        if dashboard_properties['dashgroup_id'] == '-1':
-            dashboard_properties['dashgroup_id'] = models.Dashgroup.create_or_get_dashgroup(dashboard_properties['dashgroup_name'])
+        if dashgroup_id == '-1':
+            dashgroup_id = models.Dashgroup.create_or_get_dashgroup(dashboard_properties['dashgroup_name'])
 
-        #dashgroup id at 0 means no group for this dashboard.
-        if dashboard_properties['dashgroup_id'] != '0':
+        #dashgroup id at 0 means no change for this dashboard.
+        if dashgroup_id != '0':
             dg_db = models.DashgroupDashboard(dashboard_id=dashboard.id, dashgroup_id=dashboard_properties['dashgroup_id'])
             models.db.session.add(dg_db)
             models.db.session.commit()
@@ -147,12 +147,12 @@ class DashboardResource(BaseResource):
 
         updates = project(dashboard_properties, ('name', 'layout', 'version',
                                                  'is_draft'))
-        print(dashboard_properties)
-        print(dashboard.id)
-        if dashboard_properties['dashgroup_id'] == '-1':
-            dashboard_properties['dashgroup_id'] = models.Dashgroup.create_or_get_dashgroup(dashboard_properties['dashgroup_name'])
 
-        if dashboard_properties['dashgroup_id'] != '0':
+        dashgroup_id = dashboard_properties.get('dashgroup_id', '0')
+        if dashgroup_id == '-1':
+            dashgroup_id = models.Dashgroup.create_or_get_dashgroup(dashboard_properties['dashgroup_name'])
+
+        if dashgroup_id != '0':
             old_grouping = models.DashgroupDashboard.get_by_dashboard_id(dashboard.id).first()
             if old_grouping is not None:
                 models.db.session.delete(old_grouping)

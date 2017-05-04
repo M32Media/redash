@@ -58,8 +58,6 @@ export function colWidth(widgetWidth) {
     return 12;
   } else if (widgetWidth === 3) {
     return 3;
-  } else if (widgetWidth === 100) {
-    return 100;
   }
   return widgetWidth;
 }
