@@ -50,7 +50,7 @@ class WidgetListResource(BaseResource):
         new_row = True
 
         #This gives the conversion between widget size number (1 being 50%, 2 being 100% and 3 being 25%)
-        widget_size_to_width = {1:2, 2:4, 3:1}
+        widget_size_to_width = {1:2, 2:4, 3:1, -1:1, -2:2, -3:4}
         widget_width = widget_size_to_width[widget.width]
         #Index of the new widget in the layout columns.
         new_widget_idx = -1
@@ -62,7 +62,10 @@ class WidgetListResource(BaseResource):
 
         else:
             #else, we try to find a hole big enough for our widget to fit
-            row_sizes = [reduce((lambda x, y: x + widget_size_to_width[models.Widget.get_by_id(y).width]), widget_ids, 0) for widget_ids in layout]
+
+            #thats a pretty long line...
+            widget_width_rows = [[widget_size_to_width[models.Widget.get_by_id(widget_id).width] if widget_id > 0 else widget_size_to_width[widget_id] for widget_id in widget_ids] for widget_ids in layout]
+            row_sizes = [reduce((lambda x, y: x + y), w_w, 0) for w_w in widget_width_rows]
             for idx, row in enumerate(row_sizes):
                 if row + widget_width <= 4:
                     #appends the widget and breaks.
