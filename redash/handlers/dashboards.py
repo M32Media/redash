@@ -65,17 +65,19 @@ class DashboardListResource(BaseResource):
         print(dashboard_properties)
         dashgroup_id = dashboard_properties.get('dashgroup_id', '0')
         #if the user created with group from tag :
-        if dashgroup_id == '-1':
+        if dashgroup_id == '-1' or dashgroup_id == -1:
             dashgroup_id = models.Dashgroup.create_or_get_dashgroup(dashboard_properties['dashgroup_name'])
+            print(dashgroup_id)
 
         #dashgroup id at 0 means no change for this dashboard.
-        if dashgroup_id != '0':
-            dg_db = models.DashgroupDashboard(dashboard_id=dashboard.id, dashgroup_id=dashboard_properties['dashgroup_id'])
+        if dashgroup_id != '0' and dashgroup_id != 0:
+            dg_db = models.DashgroupDashboard(dashboard_id=dashboard.id, dashgroup_id=dashgroup_id)
             models.db.session.add(dg_db)
             models.db.session.commit()
 
 
-
+        models.db.session.add(dashboard)
+        models.db.session.commit()
 
         return dashboard.to_dict()
 
@@ -149,15 +151,15 @@ class DashboardResource(BaseResource):
                                                  'is_draft'))
 
         dashgroup_id = dashboard_properties.get('dashgroup_id', '0')
-        if dashgroup_id == '-1':
+        if dashgroup_id == '-1' or dashgroup_id != -1:
             dashgroup_id = models.Dashgroup.create_or_get_dashgroup(dashboard_properties['dashgroup_name'])
 
-        if dashgroup_id != '0':
+        if dashgroup_id != '0' and dashgroup_id != 0:
             old_grouping = models.DashgroupDashboard.get_by_dashboard_id(dashboard.id).first()
             if old_grouping is not None:
                 models.db.session.delete(old_grouping)
             #delete the old grouping and create another one.
-            models.db.session.add(models.DashgroupDashboard(dashboard_id=dashboard.id, dashgroup_id = dashboard_properties['dashgroup_id']))
+            models.db.session.add(models.DashgroupDashboard(dashboard_id=dashboard.id, dashgroup_id = dashgroup_id))
 
         # SQLAlchemy handles the case where a concurrent transaction beats us
         # to the update. But we still have to make sure that we're not starting
