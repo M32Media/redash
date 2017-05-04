@@ -1,3 +1,4 @@
+/* eslint-disable */
 import moment from 'moment';
 import _capitalize from 'underscore.string/capitalize';
 import { isEmpty } from 'underscore';
@@ -48,18 +49,10 @@ export function toHuman(text) {
      a.toUpperCase()
   );
 }
-
+//This maps the specified width in a widget to its real width in css columns.
+const colWidthMapping = {'1':6, '2':12, '3':3};
 export function colWidth(widgetWidth) {
-  if (widgetWidth === 0) {
-    return 0;
-  } else if (widgetWidth === 1) {
-    return 6;
-  } else if (widgetWidth === 2) {
-    return 12;
-  } else if (widgetWidth === 3) {
-    return 3;
-  }
-  return widgetWidth;
+  return colWidthMapping[parseInt(widgetWidth)];
 }
 
 export function capitalize(text) {

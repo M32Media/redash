@@ -1,8 +1,15 @@
+/* eslint-disable */
 import { map, isArray } from 'underscore';
 
 function Dashboard($resource, $http, currentUser, Widget) {
   function transformSingle(dashboard) {
-    dashboard.widgets = map(dashboard.widgets, row => row.map(widget => new Widget(widget)));
+    dashboard.widgets = map(dashboard.widgets, row => row.map((widget) => {
+      if(typeof widget === "object"){
+        return new Widget(widget);
+      } else if(typeof widget === 'number'){
+        return widget;
+      }
+    }));
     dashboard.publicAccessEnabled = dashboard.public_url !== undefined;
   }
 

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import * as _ from 'underscore';
 import template from './dashboard.html';
 import shareDashboardTemplate from './share-dashboard.html';
@@ -31,6 +32,9 @@ function DashboardCtrl($rootScope, $routeParams, $location, $timeout, $q, $uibMo
     let globalParams = {};
     this.dashboard.widgets.forEach(row =>
       row.forEach((widget) => {
+        if (typeof widget === "number") {
+          return
+        }
         if (widget.getQuery()) {
           widget.getQuery().getParametersDefs().filter(p => p.global).forEach((param) => {
             const defaults = {};

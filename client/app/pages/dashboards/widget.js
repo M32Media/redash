@@ -1,3 +1,4 @@
+/* eslint-disable */
 import template from './widget.html';
 import editTextBoxTemplate from './edit-text-box.html';
 
@@ -27,6 +28,18 @@ const EditTextBoxComponent = {
 };
 
 function DashboardWidgetCtrl($location, $uibModal, $window, Events, currentUser) {
+  //A negative widget id means a spacer
+  this.isSpacer = false;
+  if(typeof this.widget === 'number') {
+    //1 is 50%, 2 is 100% and 3 is 25%
+    const spacerIdToWidth = {'-1':3, '-2':1, '-3':2};
+
+    var width = spacerIdToWidth[parseInt(this.widget)];
+    this.widget = {};
+    this.widget.width = width;
+    this.isSpacer = true;
+  }
+
   this.canViewQuery = currentUser.hasPermission('view_query');
 
   this.editTextBox = () => {

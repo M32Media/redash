@@ -87,7 +87,7 @@ const AddWidgetDialog = {
         if (response.new_row) {
           this.dashboard.widgets.push([newWidget]);
         } else {
-          this.dashboard.widgets[this.dashboard.widgets.length - 1].push(newWidget);
+          this.dashboard.widgets[response.new_widget_idx].push(newWidget);
         }
         this.close();
       }).catch(() => {

@@ -1,4 +1,4 @@
-<div class="col-lg-{{$ctrl.widget.width | colWidth}}">
+<div ng-if="! $ctrl.isSpacer" class="col-lg-{{$ctrl.widget.width | colWidth}}">
     <div class="tile" ng-if="$ctrl.type=='visualization'">
         <div class="t-header widget">
             <div class="th-title">
@@ -75,3 +75,5 @@
     </div>
   </div>
 </div>
+<!-- if the widget is a spacer, we put an empty (with a non breaking space) div with its width -->
+<div ng-if="$ctrl.isSpacer" class="col-lg-{{$ctrl.widget.width | colWidth}}"> </div>

@@ -956,17 +956,13 @@ class Query(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model):
     def refresh_tokens(cls):
 
         queries = cls.query.distinct();
-        
+
         for q in queries:
-            print("OLD : " + q.api_key)
             q.api_key = generate_token(40)
-            print("NEW : " + q.api_key)
 
         db.session.commit()
 
         return "Kappa"
-
-        
 
     def __unicode__(self):
         return unicode(self.id)
@@ -1198,7 +1194,7 @@ class Dashboard(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model
         "version_id_col": version
         }
 
-    def to_dict(self, with_widgets=False, user=None):
+    def to_dict(self, with_widgets=False, user=None, with_spacers=False):
         layout = json.loads(self.layout)
 
         if with_widgets:
@@ -1227,11 +1223,17 @@ class Dashboard(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model
                     continue
                 new_row = []
                 for widget_id in row:
-                    widget = widgets.get(widget_id, None)
-                    if widget:
-                        new_row.append(widget)
+                    if widget_id > 0:
+                        widget = widgets.get(widget_id, None)
+                        if widget:
+                            new_row.append(widget)
+                    elif with_spacers:
+                        #if spacers were asked, we add their ids
+                        new_row.append(widget_id)
 
                 widgets_layout.append(new_row)
+
+
         else:
             widgets_layout = None
 

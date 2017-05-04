@@ -49,22 +49,40 @@ class WidgetListResource(BaseResource):
         layout = json.loads(widget.dashboard.layout)
         new_row = True
 
-        if len(layout) == 0 or widget.width == 2:
+        #This gives the conversion between widget size number (1 being 50%, 2 being 100% and 3 being 25%)
+        widget_size_to_width = {1:2, 2:4, 3:1}
+        widget_width = widget_size_to_width[widget.width]
+        #Index of the new widget in the layout columns.
+        new_widget_idx = -1
+
+        #If there is no visualization or the widgets size is full length
+        if len(layout) == 0 or widget_width == 4:
+            new_widget_idx = len(layout)
             layout.append([widget.id])
-        elif len(layout[-1]) == 1:
-            neighbour_widget = models.Widget.query.get(layout[-1][0])
-            if neighbour_widget.width == 1:
-                layout[-1].append(widget.id)
-                new_row = False
-            else:
-                layout.append([widget.id])
+
         else:
-            layout.append([widget.id])
+            #else, we try to find a hole big enough for our widget to fit
+            row_sizes = [reduce((lambda x, y: x + widget_size_to_width[models.Widget.get_by_id(y).width]), widget_ids, 0) for widget_ids in layout]
+            for idx, row in enumerate(row_sizes):
+                if row + widget_width <= 4:
+                    #appends the widget and breaks.
+                    layout[idx].append(widget.id)
+                    new_widget_idx = idx
+                    new_row = False
+                    break
+
+            #if we have not found a whole, put the thing in a new row.
+            if new_row:
+                new_widget_idx = len(layout)
+                layout.append([widget.id])
+
 
         widget.dashboard.layout = json.dumps(layout)
         models.db.session.add(widget.dashboard)
         models.db.session.commit()
-        return {'widget': widget.to_dict(), 'layout': layout, 'new_row': new_row, 'version': dashboard.version}
+        #DEBUG
+        print("layout: {}".format(layout))
+        return {'widget': widget.to_dict(), 'layout': layout, 'new_row': new_row, 'new_widget_idx' : new_widget_idx, 'version': dashboard.version}
 
 
 class WidgetResource(BaseResource):

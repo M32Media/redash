@@ -18,8 +18,9 @@ const EditDashboardDialog = {
     this.gridsterOptions = {
       margins: [5, 5],
       rowHeight: 100,
-      colWidth: 260,
-      columns: 2,
+      colWidth: 130,
+      columns: 4,
+      minColumns: 4,
       mobileModeEnabled: false,
       swapping: true,
       minRows: 1,
@@ -33,15 +34,20 @@ const EditDashboardDialog = {
 
     this.items = [];
 
+    const widgetWidthToGridsterWidth = {'1':2, '2':4, '3':1};
+
     if (this.dashboard.widgets) {
       this.dashboard.widgets.forEach((row, rowIndex) => {
         row.forEach((widget, colIndex) => {
+          if(typeof widget === 'number') {
+            return
+          }
           this.items.push({
             id: widget.id,
             col: colIndex,
             row: rowIndex,
             sizeY: 1,
-            sizeX: widget.width,
+            sizeX: widgetWidthToGridsterWidth[parseInt(widget.width)],
             name: widget.getName(), // visualization.query.name
           });
         });
@@ -57,17 +63,42 @@ const EditDashboardDialog = {
       }
       this.saveInProgress = true;
       if (this.dashboard.id) {
-        console.log("passes here");
         const layout = [];
         const sortedItems = sortBy(this.items, item => item.row * 10 + item.col);
-        sortedItems.forEach((item) => {
+
+
+        //This new code takes gaps in account and saves them in the layout.
+        var last_item = {}
+        sortedItems.forEach(function(item){
+          const padding_needed_mapping = {'0':[],'1':[-1], '2': [-2], '3': [-1,-2]};
+          var padding_needed;
+          if(layout[item.row] === undefined) {
+            layout[item.row] = [];
+            //If the starting col is not 0, there is a gap
+            padding_needed = padding_needed_mapping[parseInt(item.col)];
+          } else {
+            //If the row already exists, we are guaranteed to have another item in the row.
+            //If this is not 0, there is a gap between the two items
+            var size_difference = item.col - last_item.sizeX;
+            padding_needed = padding_needed_mapping[parseInt(size_difference)];
+          }
+          //put all the padding
+          padding_needed.forEach(function(i){layout[item.row].push(i)});
+          //then puts the item.
+          layout[item.row].push(item.id);
+          //saves the last item
+          last_item = item;
+        });
+
+        //Old code without saved spacers.
+        /*sortedItems.forEach((item) => {
           layout[item.row] = layout[item.row] || [];
           if (item.col > 0 && layout[item.row][item.col - 1] === undefined) {
             layout[item.row][item.col - 1] = item.id;
           } else {
             layout[item.row][item.col] = item.id;
           }
-        });
+        });*/
 
         const request = {
           slug: this.dashboard.id,
@@ -78,15 +109,12 @@ const EditDashboardDialog = {
           dashgroup_name: this.dashgroup.name,
         };
 
-        console.log("and there");
         Dashboard.save(request, (dashboard) => {
           this.dashboard = dashboard;
-          console.log("but not there ?!");
           this.saveInProgress = false;
           this.close({ $value: this.dashboard });
           $rootScope.$broadcast('reloadDashboards');
         }, (error) => {
-          console.log(error);
           this.saveInProgress = false;
           if (error.status === 403) {
             toastr.error('Unable to save dashboard: Permission denied.');
@@ -97,7 +125,6 @@ const EditDashboardDialog = {
         });
         Events.record('edit', 'dashboard', this.dashboard.id);
       } else {
-        console.log("dashgroupppp : " + this.dashgroup);
         $http.post('api/dashboards', {
           name: this.dashboard.name,
           dashgroup_id: this.dashgroup.id,

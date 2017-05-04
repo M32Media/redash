@@ -61,13 +61,10 @@ class DashboardListResource(BaseResource):
         models.db.session.add(dashboard)
         models.db.session.commit()
 
-        print("HERE : ")
-        print(dashboard_properties)
         dashgroup_id = dashboard_properties.get('dashgroup_id', '0')
         #if the user created with group from tag :
         if dashgroup_id == '-1' or dashgroup_id == -1:
             dashgroup_id = models.Dashgroup.create_or_get_dashgroup(dashboard_properties['dashgroup_name'])
-            print(dashgroup_id)
 
         #dashgroup id at 0 means no change for this dashboard.
         if dashgroup_id != '0' and dashgroup_id != 0:
@@ -118,7 +115,7 @@ class DashboardResource(BaseResource):
         :>json string widget.updated_at: ISO format timestamp for last widget modification
         """
         dashboard = get_object_or_404(models.Dashboard.get_by_slug_and_org, dashboard_slug, self.current_org)
-        response = dashboard.to_dict(with_widgets=True, user=self.current_user)
+        response = dashboard.to_dict(with_widgets=True, user=self.current_user, with_spacers=True)
 
         api_key = models.ApiKey.get_by_object(dashboard)
         if api_key:
@@ -151,7 +148,7 @@ class DashboardResource(BaseResource):
                                                  'is_draft'))
 
         dashgroup_id = dashboard_properties.get('dashgroup_id', '0')
-        print(dashgroup_id)
+
         if dashgroup_id == '-1' or dashgroup_id == -1:
             dashgroup_id = models.Dashgroup.create_or_get_dashgroup(dashboard_properties['dashgroup_name'])
 
@@ -177,7 +174,7 @@ class DashboardResource(BaseResource):
         except StaleDataError:
             abort(409)
 
-        result = dashboard.to_dict(with_widgets=True, user=self.current_user)
+        result = dashboard.to_dict(with_widgets=True, user=self.current_user, with_spacers=True)
         return result
 
     @require_permission('edit_dashboard')
