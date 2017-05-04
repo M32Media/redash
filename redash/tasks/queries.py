@@ -494,3 +494,11 @@ def execute_query(self, query, data_source_id, metadata, user_id=None,
         scheduled_query = None
     return QueryExecutor(self, query, data_source_id, user_id, metadata,
                          scheduled_query).run()
+
+#Update tokens for API data access
+@celery.task(name="redash.tasks.refresh_query_tokens")
+def refresh_query_tokens():
+    logger.warning("Refreshing Query Tokens")
+    models.Query.refresh_tokens()
+
+

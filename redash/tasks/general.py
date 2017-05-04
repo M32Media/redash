@@ -60,6 +60,6 @@ def send_mail(to, subject, html, text):
     except Exception:
         logger.exception('Failed sending message: %s', message.subject)
 
-@celery.task(name="redash.tasks.refresh_query_tokens")
-def refresh_query_tokens():
-    print("Refresh Stuff")
+@celery.task(name="redash.tasks.test_logging")
+def test_logging():
+    return True;
