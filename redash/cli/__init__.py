@@ -64,8 +64,8 @@ def check_settings():
 
 @manager.command()
 @click.argument('old_publisher')
-@click.argument('publisher')
-def clone_dashboards(old_publisher, publisher):
+@click.argument('publishers')
+def clone_dashboards(old_publisher, publishers):
 
     dashgroup = models.Dashgroup.query.filter(models.Dashgroup.name == old_publisher).one()
 
@@ -75,13 +75,15 @@ def clone_dashboards(old_publisher, publisher):
     dashboard_ids = [db.dashboard_id for db in models.DashgroupDashboard.get_by_dashgroup_id(dashgroup.id)]
 
     #for every dashboards in the old publishers dashgroup, copy these dashboards with the new publisher
-    for dashboard_id in dashboard_ids:
-        created = dashboard.create_dashboard_logic(old_publisher, publisher, dashboard_id)
-        #we want to put the created dashboard in a new dashgroup or one that has the right name
-        new_pub_group = models.Dashgroup.create_or_get_dashgroup(publisher)
-        grouping = models.DashgroupDashboard(dashboard_id=created.id, dashgroup_id=new_pub_group)
-        models.db.session.add(grouping)
-        models.db.session.commit()
+    publishers = publishers.split(',')
+    for publisher in publishers:
+        for dashboard_id in dashboard_ids:
+            created = dashboard.create_dashboard_logic(old_publisher, publisher, dashboard_id)
+            #we want to put the created dashboard in a new dashgroup or one that has the right name
+            new_pub_group = models.Dashgroup.create_or_get_dashgroup(publisher)
+            grouping = models.DashgroupDashboard(dashboard_id=created.id, dashgroup_id=new_pub_group)
+            models.db.session.add(grouping)
+            models.db.session.commit()
 
 
 @manager.command()
