@@ -1,7 +1,11 @@
+import json
 from redash.handlers import routes
 from flask import request, render_template, jsonify, make_response
 from flask_restful import Resource, abort
 from redash import models
+from redash.tasks import refresh_queries_http, get_tasks
+from funcy import project
+
 
 """
 API key validation decorator
@@ -83,3 +87,63 @@ def ExposeQueryData(data_id, ext):
         response = make_response(result.data, 200, headers)
     
     return response
+
+"""
+This Route creates the celery tasks to query data from sources. It returns the IDs of those tasks
+and we have to GET /api/queries/refresh/tasks to know their statuses
+"""
+@routes.route('/api/queries/refresh', methods=['POST'])
+def RefreshQueriesData():
+
+    req = request.get_json(force=True)
+
+    #Convert object to dict
+    token = req['token']
+
+    #If token was valid
+    if token == 'mJ4Yg3X41qIEn9UPv3lg1E3WTWdeXa6Z':
+
+        #Refresh all queries here
+        jobs = refresh_queries_http()
+
+        job_ids = []
+
+        for job in jobs:
+            job_ids.append(job.to_dict().get('id', None))
+
+
+        data = {}
+        data['tasks'] = job_ids
+
+        headers = {'Content-Type': "application/json"}
+        response = make_response(json.dumps(data), 202, headers)
+
+        return response;
+        
+    else:
+
+        message = {
+            'message': "Your API token is invalid please contact M32",
+        }
+
+        resp = jsonify(message)
+        resp.status_code = 401
+
+        return resp
+
+@routes.route('/api/queries/refresh/tasks', methods=['POST'])
+def TasksStatus():
+
+    req = request.get_json(force=True)
+
+    #Convert object to dict
+    obj = json.loads(req['tasks'])
+       
+    data = get_tasks(obj['tasks'])
+
+    headers = {'Content-Type': "application/json"}
+    response = make_response(jsonify(data), 200, headers)
+
+    return response
+
+

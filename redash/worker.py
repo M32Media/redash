@@ -29,7 +29,7 @@ celery_schedule = {
     },
     'refresh_query_tokens': {
         'task': 'redash.tasks.refresh_query_tokens',
-        'schedule': timedelta(hours=16)
+        'schedule': timedelta(days=30)
     }
 }
 
