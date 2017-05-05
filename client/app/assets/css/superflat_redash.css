@@ -7906,7 +7906,7 @@ fieldset[disabled] .btn-inverse.active {
 }
 .tile {
   background-color: #fff;
-  margin-bottom: 30px;
+  margin-bottom: 10px !important;
   position: relative;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.07);
 }
