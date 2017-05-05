@@ -70,7 +70,7 @@ const EditDashboardDialog = {
         this.dashgroup = {id:this.dashgroup};
       }
       this.saveInProgress = true;
-      if (this.dashboard.id) {
+      if (this.dashboard.id) { 
         const layout = [];
         const sortedItems = sortBy(this.items, item => item.row * 10 + item.col);
 

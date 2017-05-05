@@ -1,5 +1,6 @@
 body {
   padding-top: 50px;
+  background-color: #FFFFFF;
 }
 
 body.headless {
@@ -13,6 +14,59 @@ body.headless nav.app-header {
 
 body.headless div#footer {
   display: none;
+}
+
+.container {
+  background-color: #FFFFFF;
+}
+
+.t-header.widget {
+  padding: 5px;
+  background-color: #F8F8F8;
+}
+
+.tile {
+  background-color: #fff;
+  margin-bottom: 10px !important;
+  position: relative;
+  box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-inverse {
+  background-color: #F2F2F2 !important;
+  border-color: #F2F2F2 !important;
+  border-bottom-width: medium;
+}
+
+.navbar-inverse .navbar-nav > .open > a {
+  background-color: #2CB9D9 !important;
+  color: #fff;
+}
+
+.navbar-inverse .navbar-nav > li > a {
+    color: #111111 !important;
+    background-color: transparent;
+}
+
+.navbar-inverse .navbar-nav > li > a:focus {
+    color: #333333 !important;
+    background-color: transparent;
+}
+
+.pagination > .active > a{
+  background-color: #BBBBBB !important;
+}
+
+.label-primary {
+    background-color: #2CB9D9 !important;
+}
+
+a {
+    color: #2CB9D9 !important;
+}
+
+.navbar-inverse .navbar-collapse, .navbar-inverse .navbar-form {
+  background-color: white;
 }
 
 a[ng-click] {
@@ -221,13 +275,13 @@ to add those CSS styles here. */
   clear: both;
   font-weight: normal;
   line-height: 1.428571429;
-  color: #333333;
+  color: #000000;
   white-space: nowrap;
 }
 
 .dropdown-menu > span > li > a:hover,
 .dropdown-menu > span > li > a:focus {
-  color: #ffffff;
+  color: #333333;
   text-decoration: none;
   background-color: #428bca;
 }
