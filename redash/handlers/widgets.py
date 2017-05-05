@@ -49,9 +49,12 @@ class WidgetListResource(BaseResource):
         layout = json.loads(widget.dashboard.layout)
         new_row = True
 
+
+        spacer = 99
+        not_spacer = 77
         #This gives the conversion between widget size number (1 being 50%, 2 being 100% and 3 being 25%)
-        widget_size_to_width = {1:2, 2:4, 3:1, -1:1, -2:2, -3:4}
-        widget_width = widget_size_to_width[widget.width]
+        widget_size_to_width = {1:(2, not_spacer), 2:(4,not_spacer), 3:(1,not_spacer), -1:(1, spacer), -2:(2,spacer), -3:(3,spacer), -4:(4,spacer)}
+        widget_width = widget_size_to_width[widget.width][0]
         #Index of the new widget in the layout columns.
         new_widget_idx = -1
 
@@ -63,18 +66,40 @@ class WidgetListResource(BaseResource):
         else:
             #else, we try to find a hole big enough for our widget to fit
 
-            #thats a pretty long line...
+            #thats a pretty long line... It gives us a 2d array of [[(widget_width, isSpacer), ... ], [ ... ]]
             widget_width_rows = [[widget_size_to_width[models.Widget.get_by_id(widget_id).width] if widget_id > 0 else widget_size_to_width[widget_id] for widget_id in widget_ids] for widget_ids in layout]
-            row_sizes = [reduce((lambda x, y: x + y), w_w, 0) for w_w in widget_width_rows]
-            for idx, row in enumerate(row_sizes):
-                if row + widget_width <= 4:
-                    #appends the widget and breaks.
-                    layout[idx].append(widget.id)
-                    new_widget_idx = idx
+            #we need this to know if a row id full.
+            row_sizes = [reduce((lambda x, y: x + y[0]), w_w, 0) for w_w in widget_width_rows]
+            print(row_sizes)
+            #This bit of code tries to find a spacer that's big enough to put the widget in or a row
+            #that isn't full.
+            for i, widget_width_row in enumerate(widget_width_rows):
+                found = False
+                for j, widg in enumerate(widget_width_row):
+                    #If there is a spacer and its big enough
+                    if widg[1] == spacer and widg[0] >= widget_width:
+                        old_spacer = layout[i][j]
+                        layout[i][j] = widget.id
+                        #If the spacer was bigger than the widget, we add a new spacer after the new widget.
+                        if widg[0] - widget_width > 0:
+                            layout[i].insert(j + 1, - (widg[0] - widget_width))
+                        found = True
+                        #We don't need a new row if we've found a space.
+                        new_row = False
+                        new_widget_idx = [i, j]
+                        break
+                #if a space was found, we're done.
+                print("row_sizes: {}".format(row_sizes))
+                if found:
+                    break
+                elif row_sizes[i] + widget_width <= 4:
+                    #If a space wasn't found and the row isn't full, append it at the end and break.
+                    layout[i].append(widget.id)
+                    new_widget_idx = [i, len(layout[i])]
                     new_row = False
                     break
 
-            #if we have not found a whole, put the thing in a new row.
+            #if we have not found a hole, put the thing in a new row.
             if new_row:
                 new_widget_idx = len(layout)
                 layout.append([widget.id])
@@ -83,8 +108,6 @@ class WidgetListResource(BaseResource):
         widget.dashboard.layout = json.dumps(layout)
         models.db.session.add(widget.dashboard)
         models.db.session.commit()
-        #DEBUG
-        print("layout: {}".format(layout))
         return {'widget': widget.to_dict(), 'layout': layout, 'new_row': new_row, 'new_widget_idx' : new_widget_idx, 'version': dashboard.version}
 
 

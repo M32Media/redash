@@ -34,25 +34,33 @@ const EditDashboardDialog = {
 
     this.items = [];
 
-    const widgetWidthToGridsterWidth = {'1':2, '2':4, '3':1};
+    const widgetWidthToGridsterWidth = {'1':2, '2':4, '3':1, '4':3};
 
     if (this.dashboard.widgets) {
       this.dashboard.widgets.forEach((row, rowIndex) => {
+        //Extra space caused by elements with a width > 1;
+        var extra_space = 0;
         row.forEach((widget, colIndex) => {
           if(typeof widget === 'number') {
+            console.log("passes");
+            //the space a spacer takes is -(spacer_id)
+            extra_space += (-widget) - 1;
             return
           }
           this.items.push({
             id: widget.id,
-            col: colIndex,
+            col: colIndex + extra_space,
             row: rowIndex,
             sizeY: 1,
             sizeX: widgetWidthToGridsterWidth[parseInt(widget.width)],
             name: widget.getName(), // visualization.query.name
           });
+          extra_space += this.items[this.items.length -1 ].sizeX - 1;
+          console.log(this.items[this.items.length -1 ]);
         });
       });
     }
+    console.log(this.items);
 
     this.saveDashboard = () => {
       if(this.dashgroup == '-1') {
@@ -70,7 +78,7 @@ const EditDashboardDialog = {
         //This new code takes gaps in account and saves them in the layout.
         var last_item = {}
         sortedItems.forEach(function(item){
-          const padding_needed_mapping = {'0':[],'1':[-1], '2': [-2], '3': [-1,-2]};
+          const padding_needed_mapping = {'0':[],'1':[-1], '2': [-2], '3': [-3]};
           var padding_needed;
           if(layout[item.row] === undefined) {
             layout[item.row] = [];
@@ -79,7 +87,7 @@ const EditDashboardDialog = {
           } else {
             //If the row already exists, we are guaranteed to have another item in the row.
             //If this is not 0, there is a gap between the two items
-            var size_difference = item.col - last_item.sizeX;
+            var size_difference = item.col - (last_item.sizeX + last_item.col);
             padding_needed = padding_needed_mapping[parseInt(size_difference)];
           }
           //put all the padding

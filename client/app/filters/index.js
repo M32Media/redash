@@ -50,7 +50,7 @@ export function toHuman(text) {
   );
 }
 //This maps the specified width in a widget to its real width in css columns.
-const colWidthMapping = {'1':6, '2':12, '3':3};
+const colWidthMapping = {'1':6, '2':12, '3':3, '4':9};
 export function colWidth(widgetWidth) {
   return colWidthMapping[parseInt(widgetWidth)];
 }

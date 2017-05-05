@@ -87,7 +87,8 @@ const AddWidgetDialog = {
         if (response.new_row) {
           this.dashboard.widgets.push([newWidget]);
         } else {
-          this.dashboard.widgets[response.new_widget_idx].push(newWidget);
+          //Splice is basically insert but javascript needs hipster function names. (0 means delete 0 elements)
+          this.dashboard.widgets[response.new_widget_idx[0]].splice(response.new_widget_idx[1], 0, newWidget);
         }
         this.close();
       }).catch(() => {
