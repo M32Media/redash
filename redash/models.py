@@ -834,7 +834,7 @@ class Query(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model):
         return q
 
     @classmethod
-    def all_queries(cls):
+    def every_queries(cls):
         q = (cls.query
             .options(joinedload(Query.user),
                      joinedload(Query.latest_query_data).load_only('runtime', 'retrieved_at'))

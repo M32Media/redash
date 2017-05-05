@@ -13,6 +13,42 @@ from .alerts import check_alerts_for_query
 
 logger = get_task_logger(__name__)
 
+"""
+Gets task associated with ids
+"""
+def get_tasks(ids):
+
+    tasks = {}
+
+    if type(ids) is str:
+
+        lists = QueryTaskTracker.ALL_LISTS
+        for _list in lists:
+            for tracker in QueryTaskTracker.all(_list):
+                print("STUFF")
+    else:
+        lists = QueryTaskTracker.ALL_LISTS
+        #Each different list of query trackers
+        for _list in lists:
+            #Each different tracker inside a list
+            for tracker in QueryTaskTracker.all(_list):
+                for _id in ids:
+                    #Check if id given is matching a tracker
+                    if(_id == tracker.task_id):
+                        qt = QueryTask(tracker.task_id)
+
+                        data = qt.to_dict()
+
+                        tasks[tracker.task_id] = {
+                            "status" : data.get('status', None),
+                            "query_id" : tracker.query_id,
+                            "query_result_id" : data.get('query_result_id', None),
+                            "error": data.get('error', None)
+                        }
+                        
+
+    return tasks;
+
 
 def _job_lock_id(query_hash, data_source_id):
     return "query_hash_job:%s:%s" % (data_source_id, query_hash)
@@ -258,7 +294,46 @@ def enqueue_query(query, data_source, user_id, scheduled_query=None, metadata={}
 
 @celery.task(name="redash.tasks.refresh_queries")
 def refresh_queries():
+
     logger.info("Refreshing queries...")
+
+    jobs = []
+
+    for query in models.Query.every_queries():
+
+        logger.info("Updating Query {} ...".format(query.id))
+
+        if query.data_source.paused:
+
+            logger.info("Skipping refresh of Query 1 {} because datasource {} is paused because {}"
+                .format(query.id, 
+                    query.data_source.name,
+                    query.data_source.pause_reason
+                ))
+        else:
+            
+            jobs.append(enqueue_query(query.query_text, query.data_source, query.user_id,
+                              scheduled_query=query,
+                              metadata={'Query ID': query.id, 'Username': 'Scheduled'}))
+
+    
+
+    """ LINK BETWEEN TRACKER AND ACTUAL TASK
+    for job in jobs:
+        print("JOBS : {}".format(job.to_dict().get('id', None)))
+
+
+    lists = QueryTaskTracker.ALL_LISTS
+    for _list in lists:
+        for tracker in QueryTaskTracker.all(_list):
+            print("TRACKER : {}".format(tracker.data.get('task_id', None)))
+    """
+    
+
+    return jobs
+
+    """
+    OLD CODE THAT CHECKS FOR OUTDATED QUERIES
 
     outdated_queries_count = 0
     query_ids = []
@@ -291,7 +366,7 @@ def refresh_queries():
     })
 
     statsd_client.gauge('manager.seconds_since_refresh', now - float(status.get('last_refresh_at', now)))
-
+    """
 
 @celery.task(name="redash.tasks.cleanup_tasks")
 def cleanup_tasks():
