@@ -3,7 +3,7 @@ from redash.handlers import routes
 from flask import request, render_template, jsonify, make_response
 from flask_restful import Resource, abort
 from redash import models
-from redash.tasks import refresh_queries, get_tasks
+from redash.tasks import refresh_queries_http, get_tasks
 from funcy import project
 
 
@@ -104,7 +104,7 @@ def RefreshQueriesData():
     if token == 'mJ4Yg3X41qIEn9UPv3lg1E3WTWdeXa6Z':
 
         #Refresh all queries here
-        jobs = refresh_queries()
+        jobs = refresh_queries_http()
 
         job_ids = []
 

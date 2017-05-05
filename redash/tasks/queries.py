@@ -292,8 +292,8 @@ def enqueue_query(query, data_source, user_id, scheduled_query=None, metadata={}
     return job
 
 
-@celery.task(name="redash.tasks.refresh_queries")
-def refresh_queries():
+@celery.task(name="redash.tasks.refresh_queries_http")
+def refresh_queries_http():
 
     logger.info("Refreshing queries...")
 
@@ -332,8 +332,9 @@ def refresh_queries():
 
     return jobs
 
-    """
-    OLD CODE THAT CHECKS FOR OUTDATED QUERIES
+    
+@celery.task(name="redash.tasks.refresh_queries")
+def refresh_queries():
 
     outdated_queries_count = 0
     query_ids = []
@@ -366,7 +367,7 @@ def refresh_queries():
     })
 
     statsd_client.gauge('manager.seconds_since_refresh', now - float(status.get('last_refresh_at', now)))
-    """
+
 
 @celery.task(name="redash.tasks.cleanup_tasks")
 def cleanup_tasks():
