@@ -16,6 +16,10 @@ body.headless div#footer {
   display: none;
 }
 
+div.modal-widget > div.modal-dialog {
+  min-width:1200px !important;
+}
+
 .container {
   background-color: #FFFFFF;
 }

@@ -13,7 +13,7 @@
                 </p>
                 <div class="text-muted" ng-bind-html="$ctrl.query.description | markdown"></div>
             </div>
-          <div class="actions dropdown" uib-dropdown ng-if="!$ctrl.public">
+          <div class="actions dropdown" uib-dropdown ng-if="!$ctrl.public" style="padding-right:35px">
             <a data-toggle="dropdown" uib-dropdown-toggle><i class="zmdi zmdi-more"></i></a>
 
             <ul class="dropdown-menu pull-right" uib-dropdown-menu style="z-index:1000000">
@@ -22,6 +22,9 @@
               <li><a ng-href="queries/{{$ctrl.query.id}}#{{$ctrl.widget.visualization.id}}" ng-show="$ctrl.canViewQuery">View Query</a></li>
               <li><a ng-show="$ctrl.dashboard.canEdit()" ng-click="$ctrl.deleteWidget()">Remove From Dashboard</a></li>
             </ul>
+          </div>
+          <div class="actions">
+            <a ng-click="$ctrl.openWidgetModal($ctrl.widget.visualization)"><i class="zmdi zmdi-fullscreen"></i></a>
           </div>
         </div>
 

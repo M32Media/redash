@@ -1,7 +1,7 @@
 /* eslint-disable */
 import template from './widget.html';
 import editTextBoxTemplate from './edit-text-box.html';
-
+import widgetModalTemplate from './widget-modal.html'
 const EditTextBoxComponent = {
   template: editTextBoxTemplate,
   bindings: {
@@ -24,6 +24,20 @@ const EditTextBoxComponent = {
         this.saveInProgress = false;
       });
     };
+  },
+};
+
+const WidgetModalComponent = {
+  template: widgetModalTemplate,
+  bindings: {
+    resolve: '<',
+    close: '&',
+    dismiss: '&',
+  },
+  controller(toastr) {
+    'ngInject';
+    this.widget = this.resolve.widget;
+    this.queryResult = this.resolve.queryResult;
   },
 };
 
@@ -50,6 +64,17 @@ function DashboardWidgetCtrl($location, $uibModal, $window, Events, currentUser)
         widget: this.widget,
       },
     });
+  };
+
+  this.openWidgetModal = () => {
+    $uibModal.open({
+      windowClass: 'modal-widget',
+      component: 'widgetModal',
+      resolve: {
+        widget: this.widget,
+        queryResult : this.queryResult
+      }
+    })
   };
 
   this.localParametersDefs = () => {
@@ -108,6 +133,7 @@ function DashboardWidgetCtrl($location, $uibModal, $window, Events, currentUser)
 
 export default function (ngModule) {
   ngModule.component('editTextBox', EditTextBoxComponent);
+  ngModule.component('widgetModal', WidgetModalComponent);
   ngModule.component('dashboardWidget', {
     template,
     controller: DashboardWidgetCtrl,
