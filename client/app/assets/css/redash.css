@@ -392,7 +392,7 @@ counter-renderer counter {
 
 counter-renderer value,
 counter-renderer counter-target {
-  font-size: 80px;
+  font-size: 40px;
   display: block;
 }
 

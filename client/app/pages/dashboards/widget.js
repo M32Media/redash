@@ -31,7 +31,7 @@ function DashboardWidgetCtrl($location, $uibModal, $window, Events, currentUser)
   //A negative widget id means a spacer
   this.isSpacer = false;
   if(typeof this.widget === 'number') {
-    //1 is 50%, 2 is 100%(unused), 3 is 25% and 4 is 75%.
+    //1 is 50%, 2 is 100%(unused), 3 is 25% and 4 is 75%
     const spacerIdToWidth = {'-1':3, '-2':1, '-3':4};
 
     var width = spacerIdToWidth[parseInt(this.widget)];
@@ -41,6 +41,7 @@ function DashboardWidgetCtrl($location, $uibModal, $window, Events, currentUser)
   }
 
   this.canViewQuery = currentUser.hasPermission('view_query');
+  this.canViewQueryLink = currentUser.hasPermission('admin');
 
   this.editTextBox = () => {
     $uibModal.open({
