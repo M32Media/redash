@@ -1,3 +1,4 @@
+/* eslint-disable */
 import counterTemplate from './counter.html';
 import counterEditorTemplate from './counter-editor.html';
 
@@ -5,7 +6,7 @@ function CounterRenderer() {
   return {
     restrict: 'E',
     template: counterTemplate,
-    link($scope) {
+    link($scope, element) {
       const refreshData = () => {
         const queryData = $scope.queryResult.getData();
         if (queryData) {
@@ -30,9 +31,20 @@ function CounterRenderer() {
             $scope.targetValue = null;
           }
         }
+        //$compile(element.contents())($scope);
       };
+      $scope.refreshData = refreshData;
+      //Fix for visualizations that have been created before this code.
+      if($scope.visualization.options.shorten === undefined) {
+        $scope.visualization.options.shorten = "false";
+      }
+
+      $scope.shorten = JSON.parse($scope.visualization.options.shorten);
+      //undefined is there to get the default behavior from angulars number filter.
+      $scope.decimals = $scope.shorten ? 1: undefined;
 
       $scope.$watch('visualization.options', refreshData, true);
+      $scope.$watch('visualization.options.shorten', refreshData, true);
       $scope.$watch('queryResult && queryResult.getData()', refreshData);
     },
   };
