@@ -1,4 +1,4 @@
-import json
+import json, os
 from redash.handlers import routes
 from flask import request, render_template, jsonify, make_response
 from flask_restful import Resource, abort
@@ -11,8 +11,10 @@ from funcy import project
 API key validation decorator
 """
 def validate_api_key(func):
-
+    
     def validation_wrapper():
+        
+        #print(os.getenv('REFRESH_TOKEN'))        
 
         token = request.values.get('token')
         ext = request.args.get('ext') or 'json'
@@ -101,7 +103,7 @@ def RefreshQueriesData():
     token = req['token']
 
     #If token was valid
-    if token == 'mJ4Yg3X41qIEn9UPv3lg1E3WTWdeXa6Z':
+    if token == os.getenv('REFRESH_TOKEN'):
 
         #Refresh all queries here
         jobs = refresh_queries_http()
