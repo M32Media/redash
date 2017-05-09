@@ -52,6 +52,12 @@ function CounterRenderer() {
       //If the currency option is set, we want 2 decimals no matter what.
       $scope.decimals = $scope.visualization.options.currency === "false" ? $scope.decimals : 2;
 
+      if($scope.visualization.options.currency === "false"){
+        $scope.suffix = "";
+      } else {
+        $scope.suffix = $scope.visualization.options.currency === "CAD" ? " CAD" : " USD";
+      }
+
       $scope.$watch('visualization.options', refreshData, true);
       $scope.$watch('visualization.options.shorten', refreshData, true);
       $scope.$watch('queryResult && queryResult.getData()', refreshData);
