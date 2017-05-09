@@ -43,7 +43,7 @@ function CounterRenderer() {
         $scope.visualization.options.shorten = "false";
       }
       if($scope.visualization.options.currency === undefined) {
-        $scope.visualization.options.shorten = "false";
+        $scope.visualization.options.currency = "false";
       }
 
       $scope.shorten = JSON.parse($scope.visualization.options.shorten);
