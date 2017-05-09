@@ -3,8 +3,8 @@
         <div class="t-header widget">
             <div class="th-title">
                 <p class="hidden-print">
-                    <visualization-name visualization="$ctrl.widget.visualization"/>
-                    <query-link query="$ctrl.query" visualization="$ctrl.widget.visualization" ng-show="$ctrl.canViewQueryLink"></query-link>
+                    <span class="m32-blue"><visualization-name visualization="$ctrl.widget.visualization"/></span>
+                    <!--<query-link query="$ctrl.query" visualization="$ctrl.widget.visualization" ng-show="$ctrl.canViewQueryLink"></query-link>-->
                     <small><span ng-hide="$ctrl.canViewQueryLink">{{$ctrl.query.name}}</span></small>
                 </p>
                 <p class="visible-print">
@@ -13,7 +13,7 @@
                 </p>
                 <div class="text-muted" ng-bind-html="$ctrl.query.description | markdown"></div>
             </div>
-          <div class="actions dropdown" uib-dropdown ng-if="!$ctrl.public" style="padding-right:35px">
+          <div ng-style="$ctrl.showEnlarge() && {'padding-right':'35px'}" class="actions dropdown" uib-dropdown ng-if="!$ctrl.public">
             <a data-toggle="dropdown" uib-dropdown-toggle><i class="zmdi zmdi-more"></i></a>
 
             <ul class="dropdown-menu pull-right" uib-dropdown-menu style="z-index:1000000">
@@ -23,7 +23,7 @@
               <li><a ng-show="$ctrl.dashboard.canEdit()" ng-click="$ctrl.deleteWidget()">Remove From Dashboard</a></li>
             </ul>
           </div>
-          <div class="actions">
+          <div class="actions" ng-if="$ctrl.showEnlarge()">
             <a ng-click="$ctrl.openWidgetModal($ctrl.widget.visualization)"><i class="zmdi zmdi-fullscreen"></i></a>
           </div>
         </div>

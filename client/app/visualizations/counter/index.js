@@ -31,17 +31,32 @@ function CounterRenderer() {
             $scope.targetValue = null;
           }
         }
-        //$compile(element.contents())($scope);
+        //Fix for when the data doesnt change but the filter parameter does.
+        var tmp = $scope.counterValue;
+        $scope.counterValue = 0;
+        $scope.counterValue = tmp;
       };
       $scope.refreshData = refreshData;
-      //Fix for visualizations that have been created before this code.
+
+      //Fixes for visualizations that have been created before this code.
       if($scope.visualization.options.shorten === undefined) {
         $scope.visualization.options.shorten = "false";
+      }
+      if($scope.visualization.options.currency === undefined) {
+        $scope.visualization.options.currency = "false";
       }
 
       $scope.shorten = JSON.parse($scope.visualization.options.shorten);
       //undefined is there to get the default behavior from angulars number filter.
       $scope.decimals = $scope.shorten ? 1: undefined;
+      //If the currency option is set, we want 2 decimals no matter what.
+      $scope.decimals = $scope.visualization.options.currency === "false" ? $scope.decimals : 2;
+
+      if($scope.visualization.options.currency === "false"){
+        $scope.suffix = "";
+      } else {
+        $scope.suffix = $scope.visualization.options.currency === "CAD" ? " CAD" : " USD";
+      }
 
       $scope.$watch('visualization.options', refreshData, true);
       $scope.$watch('visualization.options.shorten', refreshData, true);

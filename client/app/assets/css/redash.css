@@ -20,6 +20,10 @@ div.modal-widget > div.modal-dialog {
   min-width:1200px !important;
 }
 
+.m32-blue {
+  color: #2CB9D9 !important;
+}
+
 .container {
   background-color: #FFFFFF;
 }
