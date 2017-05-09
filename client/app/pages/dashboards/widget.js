@@ -106,6 +106,10 @@ function DashboardWidgetCtrl($location, $uibModal, $window, Events, currentUser)
     });
   };
 
+  this.showEnlarge = function() {
+    return this.widget.visualization.type !== "COUNTER" && this.widget.visualization.type !== "MULTICOUNTER";
+  }
+
   Events.record('view', 'widget', this.widget.id);
 
   this.reload = (force) => {
