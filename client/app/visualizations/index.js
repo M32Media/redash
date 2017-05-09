@@ -97,7 +97,7 @@ function VisualizationRenderer(Visualization) {
     // TODO: using switch here (and in the options editor) might introduce errors and bad
     // performance wise. It's better to eventually show the correct template based on the
     // visualization type and not make the browser render all of them.
-    template: `<filters filters="filters"></filters>\n${Visualization.renderVisualizationsTemplate}`,
+    template: `${Visualization.renderVisualizationsTemplate}`,
     replace: false,
     link(scope) {
       scope.$watch('queryResult && queryResult.getFilters()', (filters) => {
