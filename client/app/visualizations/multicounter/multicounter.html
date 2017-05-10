@@ -1,5 +1,5 @@
-<multicounter class="container" ng-class="{'positive': targetValue && trendPositive, 'negative': targetValue && !trendPositive}">
-    <div class="row">
+<multicounter style="height:300px" class="container" ng-class="{'positive': targetValue && trendPositive, 'negative': targetValue && !trendPositive}">
+    <div class="row" style="height:50%">
         <div class="col-xs-6">
             <h4 class="m32-blue multicounter-renderer">{{visualization.options[0].counterName}}</h2>
             <value>{{counterValues[0] | customNumbers : shortens[0] : decimals[0]}} {{suffixes[0]}}</value>
@@ -12,7 +12,7 @@
             <counter-target ng-if="targetValue">({{targetValues[1] | customNumbers[1]}})</counter-target>
         </div>
     </div>
-    <div class="row">
+    <div class="row" style="height:50%">
         <div class="col-xs-6">
             <h4 class="m32-blue multicounter-renderer">{{visualization.options[2].counterName}}</h2>
             <value>{{counterValues[2] | customNumbers : shortens[2] : decimals[2]}} {{suffixes[2]}}</value>
