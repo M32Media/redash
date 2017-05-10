@@ -33,7 +33,7 @@ function boxPlotRenderer() {
         const parentWidth = d3.select(elm[0].parentNode).node().getBoundingClientRect().width;
         const margin = { top: 10, right: 50, bottom: 40, left: 50, inner: 25 };
         const width = parentWidth - margin.right - margin.left;
-        const height = 500 - margin.top - margin.bottom;
+        const height = 300 - margin.top - margin.bottom;
 
         let min = Infinity;
         let max = -Infinity;
