@@ -816,3 +816,16 @@ ul.dashgroups{
   transition: .8s;
   background-color: #337ab7;
 }
+
+ul.api-keys{
+  list-style-type: none;
+}
+
+.api-keys li p.key-name{
+  color: #2CB9D9 !important;
+  font-size: 1.2em;
+}
+
+.api-keys li p{
+  
+}

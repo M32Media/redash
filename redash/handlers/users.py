@@ -1,4 +1,5 @@
-import time
+import time, json
+from flask_login import login_required
 from flask import request
 from flask_restful import abort
 from funcy import project
@@ -128,5 +129,19 @@ class UserResource(BaseResource):
         })
 
         return user.to_dict(with_api_key=is_admin_or_owner(user_id))
+
+class UserQueryKeys(BaseResource):
+    @login_required
+    def get(self):
+
+        user_id = request.values.get('user_id')
+
+        queries = models.UserQuery.get_user_queries(user_id)
+
+        print(queries)
+
+        return [q.to_dict() for q in queries]
+
+
 
 

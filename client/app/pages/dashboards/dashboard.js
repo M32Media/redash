@@ -2,6 +2,7 @@
 import * as _ from 'underscore';
 import template from './dashboard.html';
 import shareDashboardTemplate from './share-dashboard.html';
+import moment from 'moment';
 
 function DashboardCtrl($rootScope, $routeParams, $location, $timeout, $q, $uibModal,
   Title, AlertDialog, Dashboard, currentUser, clientConfig, Events) {
@@ -27,6 +28,18 @@ function DashboardCtrl($rootScope, $routeParams, $location, $timeout, $q, $uibMo
       this.autoRefresh();
     }
   };
+
+  this.getMaxUpdateDate = () => {
+    var update_dates = [];
+    var widgets = _.flatten(this.dashboard.widgets);
+    for (var i = 0; i < widgets.length; i++) {
+      if(widgets[i].visualization !== undefined) {
+        update_dates.push(widgets[i].query.queryResult.getUpdatedAt());
+      }
+    }
+    console.log(update_dates);
+    return _.min(update_dates, function(time){return moment(time).millisecond()});
+  }
 
   this.extractGlobalParameters = () => {
     let globalParams = {};
