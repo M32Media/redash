@@ -12,7 +12,7 @@ from redash.handlers.data_sources import DataSourceTypeListResource, DataSourceL
 from redash.handlers.events import EventResource
 from redash.handlers.queries import QueryForkResource, QueryRefreshResource, QueryListResource, QueryRecentResource, QuerySearchResource, QueryResource, MyQueriesResource
 from redash.handlers.query_results import QueryResultListResource, QueryResultResource, JobResource
-from redash.handlers.users import UserResource, UserListResource, UserInviteResource, UserResetPasswordResource
+from redash.handlers.users import UserResource, UserListResource, UserInviteResource, UserResetPasswordResource, UserQueryKeys
 from redash.handlers.visualizations import VisualizationListResource
 from redash.handlers.visualizations import VisualizationResource
 from redash.handlers.widgets import WidgetResource, WidgetListResource
@@ -50,6 +50,8 @@ api.add_org_resource(DashgroupList, '/api/dashgroups/groups')
 api.add_org_resource(DashgroupDashboardList, '/api/dashgroups/dashboards')
 api.add_org_resource(NewDashgroup, '/api/dashgroups/create')
 api.add_org_resource(DashgroupDashboardResource, '/api/dashgroups/<dashgroup_id>/dashboards/<dashboard_id>')
+api.add_org_resource(UserQueryKeys, '/api/users/keys')
+
 
 #-------------------------------------------------------------------
 

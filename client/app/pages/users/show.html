@@ -46,6 +46,15 @@
   <div ng-show="selectedTab == 'apiKey'" class="p-10">
     API Key:
     <input type="text" value="{{user.api_key}}" size="44" readonly/>
+    <p>
+      <h1> Queries </h1>
+    </p>
+    <ul class="api-keys">
+      <li ng-repeat="k in keys">
+        <p class="key-name"> {{k.query_name}} </h1>
+        <p class="key"> {{k.api_key}} </p>
+      </li>
+    </ul>
   </div>
   <div ng-show="selectedTab == 'settings'" class="p-10">
     <div class="col-md-6">
