@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { isArray } from 'underscore';
 
 function transformSingle(user) {
@@ -24,6 +25,7 @@ function User($resource, $http) {
     save: { method: 'POST', transformResponse },
     query: { method: 'GET', isArray: true, transformResponse },
     delete: { method: 'DELETE', transformResponse },
+    keys: { method: 'GET', url: 'api/users/keys', isArray: true, transformResponse },
   };
 
   const UserResource = $resource('api/users/:id', { id: '@id' }, actions);

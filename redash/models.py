@@ -1420,6 +1420,7 @@ class DashgroupDashboard(db.Model):
 
 # For linking Users with dashgroups
 class UserDashgroup(db.Model):
+
     user_id = Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
     user = db.relationship(User)
     dashgroup_id = Column(db.Integer, db.ForeignKey("dashgroups.id", ondelete='cascade'), primary_key=True)
@@ -1441,6 +1442,32 @@ class UserDashgroup(db.Model):
         query = UserDashgroup.query.filter(cls.user_id == user_id).distinct()
 
         return query
+
+class UserQuery(db.Model):
+
+    user_id = Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
+    user = db.relationship(User)
+    query_id = Column(db.Integer, db.ForeignKey("queries.id", ondelete='cascade'), primary_key=True)
+    qquery = db.relationship(Query)
+
+    __tablename__ = 'users_queries'
+
+    def to_dict(self):
+
+        return {
+            'user_id': self.user_id,
+            'query_id': self.query_id, 
+            'query_name': self.qquery.name,
+            'api_key': self.qquery.api_key
+        }
+
+    @classmethod 
+    def get_user_queries(cls, user_id):
+
+        query = UserQuery.query.filter(cls.user_id == user_id).distinct()
+
+        return query
+    
 
 #-------------------------------------------------------------------
 

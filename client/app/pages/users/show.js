@@ -13,6 +13,10 @@ function UserCtrl($scope, $routeParams, $http, $location, toastr,
     $scope.userId = currentUser.id;
   }
 
+  User.keys({ user_id: $scope.userId }).$promise.then( (keys) => {
+    $scope.keys = keys
+  });
+
   Events.record('view', 'user', $scope.userId);
   $scope.canEdit = currentUser.hasPermission('admin') || currentUser.id === parseInt($scope.userId, 10);
   $scope.showSettings = false;
