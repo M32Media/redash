@@ -1,4 +1,4 @@
 <counter style="height:300px" ng-class="{'positive': targetValue && trendPositive, 'negative': targetValue && !trendPositive}">
-  <value>{{counterValue | customNumbers : shorten : decimals}}{{suffix}}</value>
+  <value style="line-height:250px">{{counterValue | customNumbers : shorten : decimals}}{{suffix}}</value>
   <counter-target ng-if="targetValue">({{targetValue | customNumbers}})</counter-target>
 </counter>
