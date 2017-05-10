@@ -87,7 +87,8 @@ export default function (ngModule) {
     const defaultOptions = {
       counterColName: 'counter',
       rowNumber: 1,
-      targetRowNumber: 1,
+      currency: "false",
+      shorten: "false"
     };
 
     VisualizationProvider.registerVisualization({
