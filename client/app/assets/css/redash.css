@@ -386,38 +386,44 @@ pivot-table-renderer > table, grid-renderer > div, visualization-renderer > div 
   overflow: auto;
 }
 
-counter-renderer {
+multicounter-renderer, counter-renderer {
   display: block;
   text-align: center;
+}
+
+multicounter-renderer multicounter {
+  margin: 0 auto;
+  display: block;
+  padding: 15px 15px;
 }
 
 counter-renderer counter {
   margin: 0 auto;
-  padding: 15px 15px;
   display: block;
   text-align: center;
+  padding: 15px 15px;
 }
 
-counter-renderer value,
-counter-renderer counter-target {
+multicounter-renderer value, counter-renderer value,
+multicounter-renderer counter-target, counter-renderer counter-target {
   font-size: 25px;
   display: block;
 }
 
-counter-renderer counter-target {
+multicounter-renderer counter-target, counter-renderer counter-target {
   color: #ccc;
 }
 
-counter-renderer counter.positive value {
+multicounter-renderer counter.positive value, counter-renderer counter.positive value {
   color: #5cb85c;
 }
 
-counter-renderer counter.negative value {
+multicounter-renderer counter.negative value, counter-renderer counter.negative value {
   color: #d9534f;
   margin-right: 15px;
 }
 
-counter-renderer counter-name {
+multicounter-renderer counter-name, counter-renderer counter-name {
   font-size: 30px;
   display: block;
 }

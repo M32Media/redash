@@ -3,6 +3,7 @@ import { isEmpty, isArray, reduce } from 'underscore';
 
 import registerEditVisualizationDialog from './edit-visualization-dialog';
 import counterVisualization from './counter';
+import multicounterVisualization from './multicounter';
 import tableVisualization from './table';
 import chartVisualization from './chart';
 import sunburstVisualization from './sunburst';
@@ -153,6 +154,7 @@ export default function (ngModule) {
   registerEditVisualizationDialog(ngModule);
   chartVisualization(ngModule);
   counterVisualization(ngModule);
+  multicounterVisualization(ngModule);
   sunburstVisualization(ngModule);
   sankeyVisualization(ngModule);
   wordCloudVisualization(ngModule);
