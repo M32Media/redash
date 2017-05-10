@@ -1,0 +1,74 @@
+<!-- Since a multicounter is constituted of multiple counters, its option field is an array of what you'd normally find in a counter. -->
+
+<!-- Angular tabs are too obscure for me to bother. -->
+<div ng-repeat="option in visualization.options">
+  <h2>Counter {{$index + 1}}</h2>
+  <div class="form-horizontal">
+    <div class="form-group">
+      <label class="col-lg-6">Name</label>
+      <div class="col-lg-6">
+        <input type="text" ng-model="option.counterName" class="form-control">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-lg-6">Active ?</label>
+      <div class="col-lg-6">
+        <select ng-model="option.active" class="form-control">
+          <option value="true">Yes</option>
+          <option value="false">No</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-lg-6">Use short numbers ?</label>
+      <div class="col-lg-6">
+        <select ng-model="option.shorten" class="form-control">
+          <option value="false">No</option>
+          <option value="true">Yes</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+    <label class="col-lg-6">Currency ?</label>
+      <div class="col-lg-6">
+        <select ng-model="option.currency" class="form-control" ng-change="refreshData()">
+          <option value="false">No</option>
+          <option value="CAD">CAD</option>
+          <option value="USD">USD</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-lg-6">Counter Value Column Name</label>
+      <div class="col-lg-6">
+        <select ng-options="name for name in queryResult.getColumnNames()" ng-model="option.counterColName" class="form-control" ng-disabled="option.countRow"></select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-lg-6">Counter Value Row Number</label>
+      <div class="col-lg-6">
+        <input type="number" ng-model="option.rowNumber" min="1" class="form-control" ng-disabled="option.countRow">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-lg-6">Target Value Column Name</label>
+      <div class="col-lg-6">
+        <select ng-options="name for name in queryResult.getColumnNames()" ng-model="option.targetColName" class="form-control">
+          <option value="">No target value</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group" ng-if="option.targetColName">
+      <label class="col-lg-6">Target Value Row Number</label>
+      <div class="col-lg-6">
+        <input type="number" ng-model="option.targetRowNumber" min="1" class="form-control">
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-lg-6">
+        <input type="checkbox" ng-model="option.countRow">
+        <i class="input-helper"></i> Count Rows
+      </div>
+    </div>
+  </div>
+</div>
