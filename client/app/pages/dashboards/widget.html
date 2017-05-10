@@ -41,14 +41,6 @@
             <i class="zmdi zmdi-refresh zmdi-hc-spin zmdi-hc-5x"></i>
           </div>
         </div>
-
-        <div class="p-5 clearfix" style="line-height:28px;">
-            <span class="small hidden-print">Updated: <span am-time-ago="$ctrl.queryResult.getUpdatedAt()"></span></span>
-            <span class="visible-print">
-              Updated: {{$ctrl.queryResult.getUpdatedAt() | dateTime}}
-            </span>
-            <button class="btn btn-sm btn-default pull-right hidden-print" ng-click="$ctrl.reload(true)" ng-if="!$ctrl.public"><i class="zmdi zmdi-refresh"></i></button>
-        </div>
     </div>
 
   <div class="tile" ng-if="$ctrl.type=='restricted'">
