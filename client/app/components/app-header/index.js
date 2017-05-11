@@ -1,9 +1,10 @@
+/* eslint-disable */
 import debug from 'debug';
 
 import template from './app-header.html';
 import logoUrl from '../../assets/images/m32-40x40.png';
 import './app-header.css';
-
+import { message, language } from '../../i18n'
 const logger = debug('redash:appHeader');
 
 function controller($rootScope, $location, $uibModal, Auth, currentUser, Dashboard) {
@@ -13,6 +14,10 @@ function controller($rootScope, $location, $uibModal, Auth, currentUser, Dashboa
 
   this.showQueriesMenu = currentUser.hasPermission('view_query');
   this.showNewQueryMenu = currentUser.hasPermission('create_query');
+
+  this.message = message;
+
+  this.language = language;
 
   this.showSettingsMenu = currentUser.hasPermission('list_users');
   this.showDashboardsMenu = currentUser.hasPermission('list_dashboards');

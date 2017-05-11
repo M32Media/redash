@@ -2,6 +2,7 @@
 import template from './widget.html';
 import editTextBoxTemplate from './edit-text-box.html';
 import widgetModalTemplate from './widget-modal.html'
+import {message} from '../../i18n';
 const EditTextBoxComponent = {
   template: editTextBoxTemplate,
   bindings: {
@@ -34,6 +35,7 @@ const WidgetModalComponent = {
     close: '&',
     dismiss: '&',
   },
+  message: message,
   controller(toastr) {
     'ngInject';
     this.widget = this.resolve.widget;
@@ -42,6 +44,7 @@ const WidgetModalComponent = {
 };
 
 function DashboardWidgetCtrl($location, $uibModal, $window, Events, currentUser) {
+  this.message = message;
   //A negative widget id means a spacer
   this.isSpacer = false;
   if(typeof this.widget === 'number') {
@@ -72,7 +75,7 @@ function DashboardWidgetCtrl($location, $uibModal, $window, Events, currentUser)
       component: 'widgetModal',
       resolve: {
         widget: this.widget,
-        queryResult : this.queryResult
+        queryResult : this.queryResult,
       }
     })
   };
