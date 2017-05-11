@@ -1,4 +1,6 @@
+/* eslint-disable */
 import moment from 'moment';
+import {language} from '../i18n';
 
 export default function (ngModule) {
   ngModule.filter('toMilliseconds', () => value => value * 1000.0);
@@ -8,8 +10,7 @@ export default function (ngModule) {
        if (!value) {
          return '-';
        }
-
-       return moment(value).format(clientConfig.dateTimeFormat);
+       return moment(value).locale(language.getCurrentLanguage().toLowerCase()).format(clientConfig.dateTimeFormat);
      }
   );
 }

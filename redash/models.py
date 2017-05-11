@@ -1190,6 +1190,7 @@ class Dashboard(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model
     org = db.relationship(Organization, backref="dashboards")
     slug = Column(db.String(140), index=True, default=generate_slug)
     name = Column(db.String(100))
+    fr_name = Column(db.String(100))
     user_id = Column(db.Integer, db.ForeignKey("users.id"))
     user = db.relationship(User)
     # TODO: The layout should dynamically be built from position and size information on each widget.
@@ -1252,6 +1253,7 @@ class Dashboard(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model
             'id': self.id,
             'slug': self.slug,
             'name': self.name,
+            'name': self.fr_name,
             'user_id': self.user_id,
             'layout': layout,
             'dashboard_filters_enabled': self.dashboard_filters_enabled,
@@ -1478,6 +1480,7 @@ class Visualization(TimestampMixin, db.Model):
     # query_rel and not query, because db.Model already has query defined.
     query_rel = db.relationship(Query, back_populates='visualizations')
     name = Column(db.String(255))
+    fr_name = Column(db.String(255))
     description = Column(db.String(4096), nullable=True)
     options = Column(db.Text)
 
@@ -1488,6 +1491,7 @@ class Visualization(TimestampMixin, db.Model):
             'id': self.id,
             'type': self.type,
             'name': self.name,
+            'fr_name': self.fr_name,
             'description': self.description,
             'options': json.loads(self.options),
             'updated_at': self.updated_at,

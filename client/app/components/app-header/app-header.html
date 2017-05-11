@@ -13,12 +13,12 @@
       <ul class="nav navbar-nav">
         <li class="dropdown" ng-show="$ctrl.showDashboardsMenu" uib-dropdown>
           <a href="#" class="dropdown-toggle" uib-dropdown-toggle title="Dashboards">
-            <span class="visible-xs visible-md visible-lg">Dashboards <b class="caret"></b></span>
+            <span class="visible-xs visible-md visible-lg">{{$ctrl.message("dashboards")}} <b class="caret"></b></span>
             <span class="visible-sm"><i class="zmdi zmdi-view-dashboard"></i> <b class="caret"></b></span>
           </a>
           <ul class="dropdown-menu" uib-dropdown-menu>
             <li><a ng-show="$ctrl.currentUser.hasPermission('create_dashboard')" ng-click="$ctrl.newDashboard()">New Dashboard</a></li>
-            <li><a href="dashboards">Dashboards</a></li>
+            <li><a href="dashboards">{{$ctrl.message("dashboards")}}</a></li>
             <li class="divider" ng-if="$ctrl.dashboards | notEmpty"></li>
             <li ng-repeat="dashboard in $ctrl.dashboards">
               <a href="dashboard/{{dashboard.slug}}" ng-bind="dashboard.name"></a>
@@ -45,6 +45,9 @@
         </div>
       </form>
       <ul class="nav navbar-nav navbar-right">
+        <li>
+          <a href="#" ng-click="$ctrl.language.swapLanguage()">{{$ctrl.language.getOtherLanguage()}}</a>
+        </li>
         <li ng-show="$ctrl.currentUser.isAdmin">
           <a href="data_sources" title="Data Sources"><i class="fa fa-database"></i></a>
         </li>
@@ -72,7 +75,7 @@
             <li class="divider">
             </li>
             <li>
-              <a ng-click="$ctrl.logout()">Log out</a>
+              <a ng-click="$ctrl.logout()">{{$ctrl.message("logOut")}}</a>
             </li>
           </ul>
         </li>

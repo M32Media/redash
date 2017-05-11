@@ -9,11 +9,11 @@
     <div class="col-sm-3 text-right">
       <h3>
         <span ng-if="!$ctrl.dashboard.is_archived && !public" class="hidden-print">
-            <span class="small hidden-print">Updated: <span am-time-ago="$ctrl.getMaxUpdateDate()"></span></span>
+            <span class="small hidden-print">{{$ctrl.message("updated")}} <span am-time-ago="$ctrl.getMaxUpdateDate()"></span></span>
               <span class="visible-print">
                 Updated: {{$ctrl.getMaxUpdateDate() | dateTime}}
               </span>
-            <div class="btn-group" uib-dropdown>
+            <div ng-if="$ctrl.currentUser.hasPermission('admin')" class="btn-group" uib-dropdown>
               <button id="split-button" type="button"
                       ng-class="{'btn-default': $ctrl.refreshRate === null,'btn-primary':$ctrl.refreshRate !== null}"
                       class="btn" ng-click="$ctrl.loadDashboard(true)">

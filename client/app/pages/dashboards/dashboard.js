@@ -3,6 +3,7 @@ import * as _ from 'underscore';
 import template from './dashboard.html';
 import shareDashboardTemplate from './share-dashboard.html';
 import moment from 'moment';
+import {language, message} from '../../i18n';
 
 function DashboardCtrl($rootScope, $routeParams, $location, $timeout, $q, $uibModal,
   Title, AlertDialog, Dashboard, currentUser, clientConfig, Events) {
@@ -20,7 +21,7 @@ function DashboardCtrl($rootScope, $routeParams, $location, $timeout, $q, $uibMo
     { name: '30 minutes', rate: 60 * 30 },
     { name: '1 hour', rate: 60 * 60 },
   ];
-
+  this.message = message;
   this.setRefreshRate = (rate) => {
     this.refreshRate = rate;
     if (rate !== null) {
@@ -28,6 +29,9 @@ function DashboardCtrl($rootScope, $routeParams, $location, $timeout, $q, $uibMo
       this.autoRefresh();
     }
   };
+
+  //lol
+  moment.locale(language.getCurrentLanguage().toLowerCase());
 
   this.getMaxUpdateDate = () => {
     var update_dates = [];
