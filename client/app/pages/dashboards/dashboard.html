@@ -13,7 +13,7 @@
               <span class="visible-print">
                 Updated: {{$ctrl.getMaxUpdateDate() | dateTime}}
               </span>
-            <div class="btn-group" uib-dropdown>
+            <div ng-if="$ctrl.currentUser.hasPermission('admin')" class="btn-group" uib-dropdown>
               <button id="split-button" type="button"
                       ng-class="{'btn-default': $ctrl.refreshRate === null,'btn-primary':$ctrl.refreshRate !== null}"
                       class="btn" ng-click="$ctrl.loadDashboard(true)">
