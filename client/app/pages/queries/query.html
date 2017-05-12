@@ -240,7 +240,7 @@
                           <span class="remove" ng-click="deleteVisualization($event, vis)"
                                 ng-show="canEdit"> &times;</span>
                   </rd-tab>
-                  <li class="rd-tab"><a ng-click="openVisualizationEditor()" ng-if="sourceMode && canEdit">&plus; New Visualization</a></li>
+                  <li class="rd-tab"><a ng-click="openVisualizationEditor()" ng-if="canEdit && sourceMode">&plus; New Visualization</a></li>
                 </ul>
               </div>
             </div>
@@ -251,6 +251,7 @@
                   <grid-renderer query-result="queryResult" items-per-page="50"></grid-renderer>
                   <!-- the ng-repeat is a lame hack to find the table visualization... -->
                   <div class="bg-ace p-5" ng-repeat="vis in query.visualizations" ng-if="vis.type == 'TABLE'">
+                    <button class="btn btn-default" ng-click="openVisualizationEditor(vis)" ng-if="canEdit">Edit</button>
                     <button class="btn btn-default" ng-if="!query.isNew()" ng-click="showEmbedDialog(query, vis)"><i class="zmdi zmdi-code"></i> Embed</button>
                   </div>
                 </div>
