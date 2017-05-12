@@ -111,6 +111,7 @@ const EditDashboardDialog = {
         const request = {
           slug: this.dashboard.id,
           name: this.dashboard.name,
+          fr_name: this.dashboard.fr_name,
           version: this.dashboard.version,
           layout: JSON.stringify(layout),
           dashgroup_id: this.dashgroup.id,
@@ -135,6 +136,7 @@ const EditDashboardDialog = {
       } else {
         $http.post('api/dashboards', {
           name: this.dashboard.name,
+          fr_name: this.dashboard.fr_name,
           dashgroup_id: this.dashgroup.id,
           dashgroup_name: this.dashgroup.name
         }).success((response) => {

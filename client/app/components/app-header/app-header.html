@@ -21,7 +21,8 @@
             <li><a href="dashboards">{{$ctrl.message("dashboards")}}</a></li>
             <li class="divider" ng-if="$ctrl.dashboards | notEmpty"></li>
             <li ng-repeat="dashboard in $ctrl.dashboards">
-              <a href="dashboard/{{dashboard.slug}}" ng-bind="dashboard.name"></a>
+              <a ng-if="$ctrl.language.getCurrentLanguage() === 'En'" href="dashboard/{{dashboard.slug}}" ng-bind="dashboard.name"></a>
+              <a ng-if="$ctrl.language.getCurrentLanguage() === 'Fr'" href="dashboard/{{dashboard.slug}}" ng-bind="dashboard.fr_name"></a>
             </li>
           </ul>
         </li>

@@ -52,6 +52,7 @@ class DashboardListResource(BaseResource):
         dashboard_properties = request.get_json(force=True)
 
         dashboard = models.Dashboard(name=dashboard_properties['name'],
+                                     fr_name=dashboard_properties['fr_name'],
                                      org=self.current_org,
                                      user=self.current_user,
                                      is_draft=True,
@@ -145,7 +146,7 @@ class DashboardResource(BaseResource):
         require_object_modify_permission(dashboard, self.current_user)
 
         updates = project(dashboard_properties, ('name', 'layout', 'version',
-                                                 'is_draft'))
+                                                 'is_draft', 'fr_name'))
 
         dashgroup_id = dashboard_properties.get('dashgroup_id', '0')
 

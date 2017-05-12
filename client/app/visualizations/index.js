@@ -1,6 +1,8 @@
+/* eslint-disable */
 import moment from 'moment';
 import { isEmpty, isArray, reduce } from 'underscore';
 
+import {language} from '../i18n'
 import registerEditVisualizationDialog from './edit-visualization-dialog';
 import counterVisualization from './counter';
 import multicounterVisualization from './multicounter';
@@ -79,10 +81,7 @@ function VisualizationName(Visualization) {
     replace: false,
     link(scope) {
       if (Visualization.visualizations[scope.visualization.type]) {
-        const defaultName = Visualization.visualizations[scope.visualization.type].name;
-        if (defaultName !== scope.visualization.name) {
-          scope.name = scope.visualization.name;
-        }
+        scope.name = language.getCurrentLanguage() === "Fr" ? scope.visualization.fr_name: scope.visualization.name;
       }
     },
   };

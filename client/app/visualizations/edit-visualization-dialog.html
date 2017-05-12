@@ -18,8 +18,13 @@
             </div>
 
             <div class="form-group">
-              <label class="control-label">Visualization Name</label>
+              <label class="control-label">Visualization English Name</label>
               <input name="name" type="text" class="form-control" ng-model="$ctrl.visualization.name"
+                     placeholder="{{$ctrl.visualization.type | capitalize}}">
+            </div>
+            <div class="form-group">
+              <label class="control-label">Visualization French Name</label>
+              <input name="name" type="text" class="form-control" ng-model="$ctrl.visualization.fr_name"
                      placeholder="{{$ctrl.visualization.type | capitalize}}">
             </div>
 

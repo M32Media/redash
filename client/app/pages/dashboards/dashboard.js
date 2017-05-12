@@ -33,6 +33,10 @@ function DashboardCtrl($rootScope, $routeParams, $location, $timeout, $q, $uibMo
   //lol
   moment.locale(language.getCurrentLanguage().toLowerCase());
 
+  this.getDashboardName = () => {
+    return language.getCurrentLanguage() === "En" ? this.dashboard.name: this.dashboard.fr_name;
+  }
+
   this.getMaxUpdateDate = () => {
     var update_dates = [];
     var widgets = _.flatten(this.dashboard.widgets);

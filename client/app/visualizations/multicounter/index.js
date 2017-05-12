@@ -1,6 +1,7 @@
 /* eslint-disable */
 import multicounterTemplate from './multicounter.html';
 import multicounterEditorTemplate from './multicounter-editor.html';
+import { language } from '../../i18n'
 
 //Number of counters
 const counterNum = 4;
@@ -57,9 +58,13 @@ function multicounterRenderer() {
       $scope.decimals = [];
 
       $scope.suffixes = [];
+      $scope.displayNames = [];
+      $scope.actives = [];
 
       for (var i = 0; i < counterNum; i++) {
 
+        $scope.displayNames.push(language.getCurrentLanguage() === "Fr" ? $scope.visualization.options[i].counterNameFr: $scope.visualization.options[i].counterName);
+        $scope.actives.push($scope.visualization.options[i].active === "true" ? "block": "none");
         $scope.shortens.push($scope.visualization.options[i].shorten === "true" ? true: false);
         $scope.decimals.push($scope.shortens[i] ? 1: undefined);
         $scope.decimals[i] = $scope.visualization.options[i].currency === "false" ? $scope.decimals[i] : 2;
@@ -103,8 +108,10 @@ export default function (ngModule) {
         rowNumber: 1,
         currency: "false",
         shorten: "false",
+        //hack because angular doesn't do what I want it to.
         active: "true",
         counterName: "Counter #" + i,
+        counterNameFr: "Compteur #" + i,
       });
     }
     VisualizationProvider.registerVisualization({

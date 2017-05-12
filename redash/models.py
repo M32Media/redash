@@ -1253,7 +1253,7 @@ class Dashboard(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model
             'id': self.id,
             'slug': self.slug,
             'name': self.name,
-            'name': self.fr_name,
+            'fr_name': self.fr_name,
             'user_id': self.user_id,
             'layout': layout,
             'dashboard_filters_enabled': self.dashboard_filters_enabled,
