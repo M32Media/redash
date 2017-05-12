@@ -66,7 +66,7 @@
           <li><a ng-show="$ctrl.dashboard.canEdit()" ng-click="$ctrl.deleteWidget()">Remove From Dashboard</a></li>
         </ul>
       </div>
-      <p ng-bind-html="$ctrl.widget.text | markdown" class="p-5"></p>
+      <p style="overflow-wrap: break-word" ng-bind-html="$ctrl.widget.text | markdown" class="p-5"></p>
     </div>
   </div>
 </div>
