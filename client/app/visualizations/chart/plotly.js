@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { isEmpty, isEqual, isArray, isNumber, isUndefined, contains, min, max, has, each, values, sortBy, union, pluck, identity } from 'underscore';
 import d3 from 'd3';
 import Plotly from 'plotly.js/lib/core';
@@ -31,7 +32,7 @@ const BaseColors = {
 };
 
 // Additional colors for the user to choose from:
-const ColorPalette = Object.assign({}, BaseColors, {
+var ColorPalette = Object.assign({}, BaseColors, {
   'Indian Red': '#F8766D',
   'Green 2': '#53B400',
   'Green 3': '#00C094',
@@ -40,7 +41,26 @@ const ColorPalette = Object.assign({}, BaseColors, {
   'Pink 2': '#FB61D7',
 });
 
-const ColorPaletteArray = values(BaseColors);
+var pieChartColorArray = [
+  '#bee9f3',
+  '#a9e2ef',
+  '#93dbeb',
+  '#7ed4e7',
+  '#68cde3',
+  '#53c6df',
+  '#3dbedb',
+  '#28b7d7',
+  '#24a5c2',
+  '#2093ac',
+  '#1c8097',
+  '#186e81',
+  '#145c6c',
+];
+
+//Hardcode some things that makes more sense than the basic colors.
+var ColorPaletteArray = values(BaseColors);
+
+
 
 function fillXValues(seriesList) {
   const xValues = sortBy(union(...pluck(seriesList, 'x')), identity);
@@ -195,6 +215,8 @@ const PlotlyChart = () => {
       height: '=',
     },
     link(scope, element) {
+      ColorPaletteArray = scope.options.globalSeriesType !== 'pie' ? values(BaseColors) : pieChartColorArray;
+      console.log(ColorPaletteArray)
       function calculateHeight() {
         const height = Math.max(scope.height, (scope.height - 50) + bottomMargin);
         return height;
@@ -262,7 +284,7 @@ const PlotlyChart = () => {
                 y: [yPosition, yPosition + cellHeight - yPadding],
               },
             };
-
+            console.log(plotlySeries);
             series.data.forEach((row) => {
               plotlySeries.values.push(row.y);
               plotlySeries.labels.push(hasX ? row.x : `Slice ${index}`);
