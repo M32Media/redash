@@ -1,25 +1,25 @@
 <multicounter style="height:300px" class="container" ng-class="{'positive': targetValue && trendPositive, 'negative': targetValue && !trendPositive}">
     <div class="row" style="height:50%">
-        <div class="col-xs-6" ng-style="visualization.options[0].active === 'false' && display:none">
-            <h4 class="m32-blue multicounter-renderer">{{visualization.options[0].counterName}}</h2>
+        <div class="col-xs-6" style="display:{{actives[0]}}">
+            <h4 class="m32-blue multicounter-renderer">{{displayNames[0]}}</h4>
             <value>{{counterValues[0] | customNumbers : shortens[0] : decimals[0]}} {{suffixes[0]}}</value>
             <counter-target ng-if="targetValue">({{targetValues[0] | customNumbers[0]}})</counter-target>
         </div>
 
-        <div class="col-xs-6" ng-style="visualization.options[1].active === 'false' && display:none">
-            <h4 class="m32-blue multicounter-renderer">{{visualization.options[1].counterName}}</h2>
+        <div class="col-xs-6" style="display:{{actives[1]}}">
+            <h4 class="m32-blue multicounter-renderer">{{displayNames[1]}}</h4>
             <value>{{counterValues[1] | customNumbers : shortens[1] : decimals[1]}} {{suffixes[1]}}</value>
             <counter-target ng-if="targetValue">({{targetValues[1] | customNumbers[1]}})</counter-target>
         </div>
     </div>
     <div class="row" style="height:50%">
-        <div class="col-xs-6" ng-style="visualization.options[2].active === 'false' && display:none">
-            <h4 class="m32-blue multicounter-renderer">{{visualization.options[2].counterName}}</h2>
+        <div class="col-xs-6" style="display:{{actives[2]}}">
+            <h4 class="m32-blue multicounter-renderer">{{displayNames[2]}}</h4>
             <value>{{counterValues[2] | customNumbers : shortens[2] : decimals[2]}} {{suffixes[2]}}</value>
             <counter-target ng-if="targetValue">({{targetValues[2] | customNumbers[2]}})</counter-target>
         </div>
-        <div class="col-xs-6" ng-style="visualization.options[3].active === 'false' && display:none">
-            <h4 class="m32-blue multicounter-renderer">{{visualization.options[3].counterName}}</h2>
+        <div class="col-xs-6" style="display:{{actives[3]}}">
+            <h4 class="m32-blue multicounter-renderer">{{displayNames[3]}}</h4>
             <value>{{counterValues[3] | customNumbers : shortens[3] : decimals[3]}} {{suffixes[3]}}</value>
             <counter-target ng-if="targetValue">({{targetValues[3] | customNumbers[3]}})</counter-target>
         </div>

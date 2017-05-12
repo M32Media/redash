@@ -12,7 +12,7 @@ var messages = {
     "downloadAsCSV":{"Fr":"Télécharger en format CSV", "En": "Download as CSV File"},
     "downloadAsExcel":{"Fr":"Télécharger en format Excel", "En": "Download as Excel File"},
     "close" : {"Fr":"Fermer", "En": "Close"},
-
+    "filterValueSelect" : {"Fr":"Sélectionnez une valeur pour ", "En": "Select value for "},
 };
 
 var language = {
