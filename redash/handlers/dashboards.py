@@ -52,7 +52,7 @@ class DashboardListResource(BaseResource):
         dashboard_properties = request.get_json(force=True)
 
         dashboard = models.Dashboard(name=dashboard_properties['name'],
-                                     fr_name=dashboard_properties['fr_name'],
+                                     fr_name=dashboard_properties.get('fr_name', 'please set a french name'),
                                      org=self.current_org,
                                      user=self.current_user,
                                      is_draft=True,
