@@ -1,0 +1,11 @@
+For these scripts to work:
+
+- No users should be using the redash database
+
+- you need to invoke them as the redash user (likea majority of the other scripts)
+
+- You also need to make sure the redash user can read and write files in the directory 
+
+- finally that the redash user can create a database in psql. (You can add that permission with ALTER USER redash CREATEDB)
+
+- After having followed these steps everything should be fine.
