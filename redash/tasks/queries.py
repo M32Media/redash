@@ -23,8 +23,6 @@ def get_tasks(ids):
     if type(ids) is str:
 
         lists = QueryTaskTracker.ALL_LISTS
-        for _list in lists:
-            for tracker in QueryTaskTracker.all(_list):
     else:
         lists = QueryTaskTracker.ALL_LISTS
         #Each different list of query trackers
