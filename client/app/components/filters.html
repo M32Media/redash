@@ -1,6 +1,6 @@
 <div class="container bg-white p-5" ng-show="$ctrl.filters | notEmpty">
   <div class="row">
-    <div class="col-sm-12 m-t-5" ng-repeat="filter in $ctrl.filters">
+    <div class="col-sm-3 m-t-5" ng-repeat="filter in $ctrl.filters">
       <ui-select ng-model="filter.current" ng-if="!filter.multiple" on-select="$ctrl.filterChangeListener(filter, $model)" on-remove="$ctrl.filterChangeListener(filter, $model)">
         <ui-select-match placeholder="{{$ctrl.message('filterValueSelect')}} {{filter.friendlyName}}...">{{filter.friendlyName}}: {{$select.selected | filterValue:filter}}</ui-select-match>
         <ui-select-choices repeat="value in filter.values | filter: $select.search">

@@ -20,6 +20,18 @@ div.modal-widget > div.modal-dialog {
   min-width:1200px !important;
 }
 
+dynamic-table {
+  height: 300px;
+  display: block;
+  overflow: hidden;
+}
+
+.table-pagination {
+  position: absolute;
+  bottom: 0;
+  right: 40%;
+}
+
 .m32-blue {
   color: #2CB9D9 !important;
 }
