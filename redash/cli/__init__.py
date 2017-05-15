@@ -5,13 +5,15 @@ import click
 from flask.cli import FlaskGroup, run_command
 from flask import current_app
 
-
+from random import randint
 from redash import create_app, settings, __version__
 from redash.cli import users, groups, database, data_sources, organization, dashboard
 from redash.monitor import get_status
 from redash.tasks import refresh_queries
 from redash import models
+from subprocess import call
 
+from funcy import project
 
 def create(group):
     app = current_app or create_app()
@@ -61,6 +63,23 @@ def check_settings():
     """Show the settings as Redash sees them (useful for debugging)."""
     for name, item in settings.all_settings().iteritems():
         print "{} = {}".format(name, item)
+
+@manager.command()
+@click.argument('outfile_name')
+def dump_database(outfile_name):
+    with open(outfile_name, 'w') as out:
+        call(["pg_dump","redash"], stdout=out)
+
+@manager.command()
+@click.argument('infile_name')
+def restore_database(infile_name):
+    #random integer after backup to avoid overwriting anything.
+    with open("db_backup_{}".format(randint(0, 100000000000)), 'w') as backup:
+        call(["pg_dump","redash"], stdout=backup)
+    with open(infile_name, 'r') as dump:
+        call(["dropdb","redash"])
+        call(["createdb","redash"])
+        call(["psql", "redash"], stdin=dump)
 
 @manager.command()
 @click.argument('old_publisher')
