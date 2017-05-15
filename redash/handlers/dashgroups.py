@@ -44,8 +44,6 @@ class DashgroupDashboardList(BaseResource):
     def get(self):
         dashgroup_dashboards = models.DashgroupDashboard.get_dashgroup_dashboards()
 
-        print(dashgroup_dashboards)
-
         return [d.to_dict() for d in dashgroup_dashboards]
 
 
@@ -61,9 +59,6 @@ class NewDashgroup(BaseResource):
 class DashgroupDashboardResource(BaseResource):
     @require_permission("admin")
     def delete(self, dashgroup_id, dashboard_id):
-
-        print(dashgroup_id)
-        print(dashboard_id)
 
         models.DashgroupDashboard.delete(dashgroup_id, dashboard_id)
 

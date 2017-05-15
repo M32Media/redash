@@ -8,7 +8,6 @@ manager = AppGroup(help="Dashboard management commands.")
 def create_dashboard_logic(old_publisher, publisher, dashboard_id):
     old_dashboard = models.Dashboard.get_by_id(dashboard_id)
     dashboardname = old_dashboard.name.lower().replace(old_publisher.lower(), publisher.lower())
-    print(dashboardname)
 
     dashboard = models.Dashboard(name=dashboardname,
                                  org=models.Organization.get_by_id(1),
@@ -64,7 +63,6 @@ def create_dashboard_logic(old_publisher, publisher, dashboard_id):
 
     dashboard.layout = new_layout
     models.db.session.commit()
-    print 'dashboard created'
     return dashboard    
 
 

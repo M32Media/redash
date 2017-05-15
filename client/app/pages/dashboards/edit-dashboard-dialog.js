@@ -42,7 +42,6 @@ const EditDashboardDialog = {
         var extra_space = 0;
         row.forEach((widget, colIndex) => {
           if(typeof widget === 'number') {
-            console.log("passes");
             //the space a spacer takes is -(spacer_id)
             extra_space += (-widget) - 1;
             return
@@ -56,11 +55,9 @@ const EditDashboardDialog = {
             name: widget.getName(), // visualization.query.name
           });
           extra_space += this.items[this.items.length -1 ].sizeX - 1;
-          console.log(this.items[this.items.length -1 ]);
         });
       });
     }
-    console.log(this.items);
 
     this.saveDashboard = () => {
       if(this.dashgroup == '-1') {

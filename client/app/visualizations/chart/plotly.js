@@ -282,7 +282,6 @@ const PlotlyChart = () => {
                 y: [yPosition, yPosition + cellHeight - yPadding],
               },
             };
-            console.log(plotlySeries);
             series.data.forEach((row) => {
               plotlySeries.values.push(row.y);
               plotlySeries.labels.push(hasX ? row.x : `Slice ${index}`);

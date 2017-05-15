@@ -45,7 +45,6 @@ function DashboardCtrl($rootScope, $routeParams, $location, $timeout, $q, $uibMo
         update_dates.push(widgets[i].query.queryResult.getUpdatedAt());
       }
     }
-    console.log(update_dates);
     return _.min(update_dates, function(time){return moment(time).millisecond()});
   }
 

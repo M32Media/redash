@@ -45,11 +45,6 @@ def version():
     print __version__
 
 @manager.command()
-def test():
-    print "test"
-    return 34
-
-@manager.command()
 def refresh_all_the_queries():
     refresh_queries()
 

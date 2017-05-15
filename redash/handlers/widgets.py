@@ -70,7 +70,6 @@ class WidgetListResource(BaseResource):
             widget_width_rows = [[widget_size_to_width[models.Widget.get_by_id(widget_id).width] if widget_id > 0 else widget_size_to_width[widget_id] for widget_id in widget_ids] for widget_ids in layout]
             #we need this to know if a row id full.
             row_sizes = [reduce((lambda x, y: x + y[0]), w_w, 0) for w_w in widget_width_rows]
-            print(row_sizes)
             #This bit of code tries to find a spacer that's big enough to put the widget in or a row
             #that isn't full.
             for i, widget_width_row in enumerate(widget_width_rows):
@@ -89,7 +88,6 @@ class WidgetListResource(BaseResource):
                         new_widget_idx = [i, j]
                         break
                 #if a space was found, we're done.
-                print("row_sizes: {}".format(row_sizes))
                 if found:
                     break
                 elif row_sizes[i] + widget_width <= 4:

@@ -12,8 +12,6 @@ function multicounterRenderer() {
     template: multicounterTemplate,
     link($scope, element) {
       const refreshData = () => {
-        //DEBUG
-        console.log("passes");
         const queryData = $scope.queryResult.getData();
         if (queryData) {
           var rowNumbers = [];

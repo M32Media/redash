@@ -34,7 +34,6 @@ function DashgroupsCtrl($scope, $http, $location, $q, currentUser, Events, Dashg
       //Add 
       group.dashboards = dashboards;
 
-      //console.log(group.dashboards)
 
       $scope.detailedDashgroups.push(group);
 
@@ -45,7 +44,6 @@ function DashgroupsCtrl($scope, $http, $location, $q, currentUser, Events, Dashg
 
   $scope.removeDashboard = (event, dgId, dbId) =>{
 
-    console.log("Remove " + dbId + " from " + dgId);
 
     const data = {};
     data.dbId = dbId;

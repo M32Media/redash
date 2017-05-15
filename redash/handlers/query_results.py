@@ -197,12 +197,10 @@ class QueryResultResource(BaseResource):
 
 class JobResource(BaseResource):
     def get(self, job_id):
-        print("-"*9 + "Called" + "-"*9)
         """
         Retrieve info about a running query job.
         """
         job = QueryTask(job_id=job_id)
-        print(job.to_dict())
         return {'job': job.to_dict()}
 
     def delete(self, job_id):

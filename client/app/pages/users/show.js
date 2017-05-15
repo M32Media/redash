@@ -131,21 +131,14 @@ function UserCtrl($scope, $routeParams, $http, $location, toastr,
   }
 
   $scope.addUserToDashgroup = () => {
-
-    console.log("Submit that")
     $scope.addInProgress = true;
-
-    console.log($scope.currentDashgroup.id)
 
     $http.post('/api/dashgroups/user_groups',{
           uid: $scope.userId,
           did: $scope.currentDashgroup.id
     }).success((data) => {
-      
-      console.log("ADDED TO DASHGROUP WITH SUCCESS");
 
     }).error(() => {
-      
     });
 
   };

@@ -28,7 +28,6 @@ var language = {
     //javascript weirdness, `this` can't be accessed in litteral object definition so we need a function to reference previous entries.
     init: function() {
         this.getOtherLanguage = () => {
-            console.log(this);
             return this.getCurrentLanguage() === "Fr" ? "En": "Fr";
         };
         this.swapLanguage = () => {
