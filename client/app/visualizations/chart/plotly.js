@@ -57,7 +57,7 @@ var pieChartColorArray = [
   '#145c6c',
 ];
 
-//Hardcode some things that makes more sense than the basic colors.
+
 var ColorPaletteArray = values(BaseColors);
 
 
@@ -215,8 +215,6 @@ const PlotlyChart = () => {
       height: '=',
     },
     link(scope, element) {
-      ColorPaletteArray = scope.options.globalSeriesType !== 'pie' ? values(BaseColors) : pieChartColorArray;
-      console.log(ColorPaletteArray)
       function calculateHeight() {
         const height = Math.max(scope.height, (scope.height - 50) + bottomMargin);
         return height;
@@ -257,8 +255,8 @@ const PlotlyChart = () => {
         delete scope.layout.xaxis;
         delete scope.layout.yaxis;
         delete scope.layout.yaxis2;
-
         if (scope.options.globalSeriesType === 'pie') {
+          ColorPaletteArray = pieChartColorArray;
           const hasX = contains(values(scope.options.columnMapping), 'x');
           const rows = scope.series.length > 2 ? 2 : 1;
           const cellsInRow = Math.ceil(scope.series.length / rows);
