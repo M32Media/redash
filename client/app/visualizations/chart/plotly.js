@@ -15,6 +15,19 @@ Plotly.setPlotConfig({
 
 // The following colors will be used if you pick "Automatic" color.
 const BaseColors = {
+  "m32blue1" :'#bee9f3',
+  "m32blue2" :'#a9e2ef',
+  "m32blue3" :'#93dbeb',
+  "m32blue4" :'#7ed4e7',
+  "m32blue5" :'#68cde3',
+  "m32blue6" :'#53c6df',
+  "m32blue7" :'#3dbedb',
+  "m32blue8" :'#28b7d7',
+  "m32blue9" :'#24a5c2',
+  "m32blue10": '#2093ac',
+  "m32blue11": '#1c8097',
+  "m32blue12": '#186e81',
+  "m32blue13": '#145c6c',
   Blue: '#4572A7',
   Red: '#AA4643',
   Green: '#89A54E',
@@ -29,6 +42,7 @@ const BaseColors = {
   Gray: '#808080',
   Pink: '#FFC0CB',
   'Dark Blue': '#00008b',
+
 };
 
 // Additional colors for the user to choose from:
@@ -40,22 +54,6 @@ var ColorPalette = Object.assign({}, BaseColors, {
   'Dark Violet': '#A58AFF',
   'Pink 2': '#FB61D7',
 });
-
-var pieChartColorArray = [
-  '#bee9f3',
-  '#a9e2ef',
-  '#93dbeb',
-  '#7ed4e7',
-  '#68cde3',
-  '#53c6df',
-  '#3dbedb',
-  '#28b7d7',
-  '#24a5c2',
-  '#2093ac',
-  '#1c8097',
-  '#186e81',
-  '#145c6c',
-];
 
 
 var ColorPaletteArray = values(BaseColors);
@@ -256,7 +254,6 @@ const PlotlyChart = () => {
         delete scope.layout.yaxis;
         delete scope.layout.yaxis2;
         if (scope.options.globalSeriesType === 'pie') {
-          ColorPaletteArray = pieChartColorArray;
           const hasX = contains(values(scope.options.columnMapping), 'x');
           const rows = scope.series.length > 2 ? 2 : 1;
           const cellsInRow = Math.ceil(scope.series.length / rows);
