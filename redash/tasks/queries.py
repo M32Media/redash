@@ -24,9 +24,6 @@ def get_tasks(ids):
     if type(ids) is str:
 
         lists = QueryTaskTracker.ALL_LISTS
-        for _list in lists:
-            for tracker in QueryTaskTracker.all(_list):
-                print("STUFF")
     else:
         lists = QueryTaskTracker.ALL_LISTS
         #Each different list of query trackers
@@ -46,7 +43,6 @@ def get_tasks(ids):
                             "query_result_id" : data.get('query_result_id', None),
                             "error": data.get('error', None)
                         }
-                        
 
     return tasks;
 
@@ -199,7 +195,6 @@ class QueryTask(object):
             updated_at = 0
 
         status = self.STATUSES[task_status]
-        print("-"*9 + str(result) + "-"*9)
         if isinstance(result, Exception):
             error = result.message
             status = 4
