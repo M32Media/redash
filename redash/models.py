@@ -35,6 +35,7 @@ from redash.metrics import database
 db = SQLAlchemy(session_options={
     'expire_on_commit': False
 })
+
 Column = functools.partial(db.Column, nullable=False)
 
 # AccessPermission and Change use a 'generic foreign key' approach to refer to
@@ -386,6 +387,10 @@ class User(TimestampMixin, db.Model, BelongsToOrgMixin, UserMixin, PermissionsCh
     @classmethod
     def get_by_api_key_and_org(cls, api_key, org):
         return cls.query.filter(cls.api_key == api_key, cls.org == org).one()
+
+    @classmethod
+    def get_all(cls):
+        return cls.query.distinct()
 
     @classmethod
     def all(cls, org):
