@@ -4,7 +4,7 @@ from flask import render_template
 from redash import settings
 from redash.tasks import send_mail
 from redash.utils import base_url
-from redash.models import User
+from redash.models import User, UserQuery
 # noinspection PyUnresolvedReferences
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 
@@ -42,6 +42,19 @@ def send_invite_email(inviter, invited, invite_url, org):
     subject = u"{} invited you to join Redash".format(inviter.name)
 
     send_mail.delay([invited.email], subject, html_content, text_content)
+
+def send_api_tokens(user, keys):
+
+    print("EMAIL")
+    print(user)
+    print(keys)
+
+    context = dict(keys=keys, user=user)
+    html_content = render_template('emails/keys.html', **context)
+    text_content = render_template('emails/keys.txt', **context)
+    subject = "Api Keys for M32"
+
+    send_mail.delay(["arnaud@m32.media"], subject, html_content, text_content)
 
 
 def send_password_reset_email(user):

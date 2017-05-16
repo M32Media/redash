@@ -1,0 +1,8 @@
+Hi {{ user.name }},
+
+Here are your new API keys :
+
+{% for key in keys %}
+    {{key.query_name}} : {{key.api_key}}
+{% endfor %}
+

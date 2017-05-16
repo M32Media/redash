@@ -3,9 +3,9 @@ from redash.handlers import routes
 from flask import request, render_template, jsonify, make_response
 from flask_restful import Resource, abort
 from redash import models
-from redash.tasks import refresh_queries_http, get_tasks
+from redash.tasks import refresh_queries_http, get_tasks, refresh_query_tokens
 from funcy import project
-
+from redash.authentication.account import send_api_tokens
 
 """
 API key validation decorator
@@ -147,5 +147,19 @@ def TasksStatus():
     response = make_response(jsonify(data), 200, headers)
 
     return response
+
+@routes.route('/api/email/test', methods=['GET'])
+def EmailTest():
+
+    refresh_query_tokens()
+
+    message = {
+        'message': "Sending Email",
+    }
+
+    resp = jsonify(message)
+    resp.status_code = 200
+
+    return resp
 
 

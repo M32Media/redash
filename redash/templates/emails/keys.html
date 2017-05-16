@@ -1,0 +1,14 @@
+{% extends "emails/layout.html" %}
+
+{% block content %}
+
+<p class="intercom-align-left" style="line-height: 1.5; margin: 0 0 17px; text-align: left !important" align="left">Hi {{ user.name }},</p>
+<p class="intercom-align-left" style="line-height: 1.5; margin: 0 0 17px; text-align: left !important" align="left">
+   Here are your API keys : 
+</p>
+{% for key in keys %}
+    <li> {{key.query_name}} : {{key.api_key}} </li>
+{% endfor %}
+
+
+{% endblock %}

@@ -10,6 +10,7 @@ from redash.utils import gen_query_hash
 from redash.worker import celery
 from redash.query_runner import InterruptException
 from .alerts import check_alerts_for_query
+from redash.authentication.account import send_api_tokens
 
 logger = get_task_logger(__name__)
 
@@ -23,6 +24,9 @@ def get_tasks(ids):
     if type(ids) is str:
 
         lists = QueryTaskTracker.ALL_LISTS
+        for _list in lists:
+            for tracker in QueryTaskTracker.all(_list):
+                print("STUFF")
     else:
         lists = QueryTaskTracker.ALL_LISTS
         #Each different list of query trackers
@@ -42,6 +46,7 @@ def get_tasks(ids):
                             "query_result_id" : data.get('query_result_id', None),
                             "error": data.get('error', None)
                         }
+                        
 
     return tasks;
 
@@ -194,6 +199,7 @@ class QueryTask(object):
             updated_at = 0
 
         status = self.STATUSES[task_status]
+        print("-"*9 + str(result) + "-"*9)
         if isinstance(result, Exception):
             error = result.message
             status = 4
@@ -570,6 +576,19 @@ def execute_query(self, query, data_source_id, metadata, user_id=None,
 @celery.task(name="redash.tasks.refresh_query_tokens")
 def refresh_query_tokens():
     logger.warning("Refreshing Query Tokens")
+
+    #Refresh Tokens
     models.Query.refresh_tokens()
+
+    #Send Emails
+    users = models.User.get_all()
+
+    for u in users:
+
+        user = u.to_dict()
+
+        queries = [q.to_dict() for q in models.UserQuery.get_user_queries(user['id'])]
+
+        send_api_tokens(user, queries)
 
 

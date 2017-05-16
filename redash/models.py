@@ -392,6 +392,10 @@ class User(TimestampMixin, db.Model, BelongsToOrgMixin, UserMixin, PermissionsCh
         return cls.query.filter(cls.org == org)
 
     @classmethod
+    def get_all(cls):
+        return cls.query.distinct()
+
+    @classmethod
     def find_by_email(cls, email):
         return cls.query.filter(cls.email == email)
 
@@ -1190,7 +1194,6 @@ class Dashboard(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model
     org = db.relationship(Organization, backref="dashboards")
     slug = Column(db.String(140), index=True, default=generate_slug)
     name = Column(db.String(100))
-    fr_name = Column(db.String(100))
     user_id = Column(db.Integer, db.ForeignKey("users.id"))
     user = db.relationship(User)
     # TODO: The layout should dynamically be built from position and size information on each widget.
@@ -1253,7 +1256,6 @@ class Dashboard(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model
             'id': self.id,
             'slug': self.slug,
             'name': self.name,
-            'fr_name': self.fr_name,
             'user_id': self.user_id,
             'layout': layout,
             'dashboard_filters_enabled': self.dashboard_filters_enabled,
@@ -1480,7 +1482,6 @@ class Visualization(TimestampMixin, db.Model):
     # query_rel and not query, because db.Model already has query defined.
     query_rel = db.relationship(Query, back_populates='visualizations')
     name = Column(db.String(255))
-    fr_name = Column(db.String(255), default="Please set a french name")
     description = Column(db.String(4096), nullable=True)
     options = Column(db.Text)
 
@@ -1491,7 +1492,6 @@ class Visualization(TimestampMixin, db.Model):
             'id': self.id,
             'type': self.type,
             'name': self.name,
-            'fr_name': self.fr_name,
             'description': self.description,
             'options': json.loads(self.options),
             'updated_at': self.updated_at,
