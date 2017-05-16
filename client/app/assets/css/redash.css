@@ -20,13 +20,13 @@ div.modal-widget > div.modal-dialog {
   min-width:1200px !important;
 }
 
-dynamic-table {
+.short-dynamic-table {
   height: 300px;
   display: block;
   overflow: hidden;
 }
 
-.table-pagination {
+.short-table-pagination {
   position: absolute;
   bottom: 0;
   right: 40%;

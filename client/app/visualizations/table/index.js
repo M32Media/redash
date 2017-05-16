@@ -1,7 +1,9 @@
+/* eslint-disable */
 import moment from 'moment';
 import { _, partial, isString } from 'underscore';
 import { getColumnCleanName } from '../../services/query-result';
 import template from './table.html';
+import tableEditorTemplate from './table-editor.html';
 
 function formatValue($filter, clientConfig, value, type) {
   let formattedValue = value;
@@ -43,12 +45,18 @@ function GridRenderer(clientConfig) {
     scope: {
       queryResult: '=',
       itemsPerPage: '=',
+      visualization: '=',
     },
     template,
     replace: false,
     controller($scope, $filter) {
+      //DEBUG
+      console.log($scope);
       $scope.gridColumns = [];
       $scope.gridRows = [];
+      if($scope.visualization !== undefined) {
+        $scope.heightClass = $scope.visualization.options.format === 'short' ? 'short-dynamic-table' : '';
+      }
 
       $scope.$watch('queryResult && queryResult.getData()', (queryResult) => {
         if (!queryResult) {
@@ -75,14 +83,27 @@ function GridRenderer(clientConfig) {
   };
 }
 
+function TableEditor() {
+  return {
+    restrict: 'E',
+    template: tableEditorTemplate,
+  };
+}
+
+
 export default function (ngModule) {
+  ngModule.directive('tableEditor', TableEditor);
+  ngModule.directive('gridRenderer', GridRenderer);
+  const defaultOptions = {
+    format: "short"
+  };
   ngModule.config((VisualizationProvider) => {
     VisualizationProvider.registerVisualization({
       type: 'TABLE',
       name: 'Table',
-      renderTemplate: '<grid-renderer options="visualization.options" query-result="queryResult"></grid-renderer>',
-      skipTypes: true,
+      defaultOptions,
+      renderTemplate: '<grid-renderer visualization="visualization" query-result="queryResult"></grid-renderer>',
+      editorTemplate: '<table-editor></table-editor>',
     });
   });
-  ngModule.directive('gridRenderer', GridRenderer);
 }

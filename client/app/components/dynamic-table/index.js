@@ -1,15 +1,17 @@
+/* eslint-disable */
 import { sortBy } from 'underscore';
 import template from './dynamic-table.html';
 import './dynamic-table.css';
 
 function DynamicTable($sanitize) {
   'ngInject';
-
-  this.itemsPerPage = this.count = 5;
+  this.itemsPerPage = this.count = this.format === 'short' ? 5 : 15;
   this.page = 1;
   this.rowsCount = 0;
   this.orderByField = undefined;
   this.orderByReverse = false;
+
+  this.shortStyle = this.format === 'short' ? "short-table-pagination" : "";
 
   this.pageChanged = () => {
     const first = this.count * (this.page - 1);
@@ -71,6 +73,7 @@ export default function (ngModule) {
     bindings: {
       rows: '<',
       columns: '<',
+      format: '<',
       count: '<',
     },
   });
