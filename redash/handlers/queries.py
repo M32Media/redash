@@ -51,7 +51,7 @@ class QuerySearchResource(BaseResource):
 
 
 class QueryRecentResource(BaseResource):
-    @require_permission('view_query')
+    @require_permission('view_query_results')
     def get(self):
         """
         Retrieve up to 20 queries modified in the last 7 days.
@@ -137,7 +137,7 @@ class QueryListResource(BaseResource):
 
         Responds with an array of :ref:`query <query-response-label>` objects.
         """
-        
+
         results = models.Query.all_queries(self.current_user.group_ids, self.current_user.id)
         page = request.args.get('page', 1, type=int)
         page_size = request.args.get('page_size', 25, type=int)

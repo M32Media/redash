@@ -92,7 +92,7 @@ class QueryResultResource(BaseResource):
                 headers['Access-Control-Allow-Origin'] = origin
                 headers['Access-Control-Allow-Credentials'] = str(settings.ACCESS_CONTROL_ALLOW_CREDENTIALS).lower()
 
-    @require_permission('view_query')
+    @require_permission('view_query_results')
     def options(self, query_id=None, query_result_id=None, filetype='json'):
         headers = {}
         self.add_cors_headers(headers)
@@ -105,7 +105,7 @@ class QueryResultResource(BaseResource):
 
         return make_response("", 200, headers)
 
-    @require_permission('view_query')
+    @require_permission('view_query_results')
     def get(self, query_id=None, query_result_id=None, filetype='json'):
         """
         Retrieve query results.
