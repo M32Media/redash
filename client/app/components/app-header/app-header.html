@@ -27,17 +27,37 @@
           </ul>
         </li>
 
-        <li class="dropdown" ng-repeat="subcat in $ctrl.dashboardHierarchy[0].subcats" ng-if="!$ctrl.currentUser.hasPermission('admin') && !ctrl.multigroups" uib-dropdown>
-          <a href="#" class="dropdown-toggle" uib-dropdown-toggle title="subcat">
-            <span>{{subcat.name}} <b class="caret"></b></span>
-          </a>
-          <ul class="dropdown-menu" uib-dropdown-menu>
-            <li ng-repeat="dashboard in subcat.dashboards">
-              <a ng-if="$ctrl.language.getCurrentLanguage() === 'En'" href="dashboard/{{dashboard.slug}}" ng-bind="dashboard.name"></a>
-              <a ng-if="$ctrl.language.getCurrentLanguage() === 'Fr'" href="dashboard/{{dashboard.slug}}" ng-bind="dashboard.fr_name"></a>
+            <li class="dropdown" ng-repeat="subcat in $ctrl.dashboardHierarchy[0].subcats" ng-if="(!$ctrl.currentUser.hasPermission('admin')) && (!$ctrl.multigroups)"  uib-dropdown>
+              <a href="#" class="dropdown-toggle" uib-dropdown-toggle title="subcat">
+                <span>{{subcat.name}} <b class="caret"></b></span>
+              </a>
+              <ul class="dropdown-menu" uib-dropdown-menu>
+                <li ng-repeat="dashboard in subcat.dashboards">
+                  <a ng-if="$ctrl.language.getCurrentLanguage() === 'En'" href="dashboard/{{dashboard.slug}}" ng-bind="dashboard.name.split(':')[2]"></a>
+                  <a ng-if="$ctrl.language.getCurrentLanguage() === 'Fr'" href="dashboard/{{dashboard.slug}}" ng-bind="dashboard.fr_name.split(':')[2]"></a>
+                </li>
+              </ul>
             </li>
-          </ul>
-        </li>
+
+            <li class="dropdown" ng-repeat="dashgroup in $ctrl.dashboardHierarchy" ng-if="(!$ctrl.currentUser.hasPermission('admin')) && ($ctrl.multigroups)" uib-dropdown>
+              <a href="#" class="dropdown-toggle" uib-dropdown-toggle title="dashgroup.name">
+                <span>{{dashgroup.name}} <b class="caret"></b></span>
+              </a>
+              <ul class="dropdown-menu">
+                <span ng-repeat="subcat in dashgroup.subcats" ng-class="ng-scope">
+                  <li class="dropdown-submenu">
+                    <a href="#" ng-bind="subcat.name" class="ng-binding"></a>
+                    <ul class="dropdown-menu">
+                      <li ng-repeat="dashboard in subcat.dashboards" role="presentation" class="ng-scope">
+                        <a role="menu-item" class="ng-binding" ng-if="$ctrl.language.getCurrentLanguage() === 'En'" href="dashboard/{{dashboard.slug}}" ng-bind="dashboard.name.split(':')[2]"></a>
+                        <a role="menu-item" class="ng-binding" ng-if="$ctrl.language.getCurrentLanguage() === 'Fr'" href="dashboard/{{dashboard.slug}}" ng-bind="dashboard.fr_name.split(':')[2]"></a>
+                      </li>
+                    </ul>
+                  </li>
+                </span>
+              </ul>
+            </li>
+
 
         <li class="dropdown" ng-show="$ctrl.showQueriesMenu" uib-dropdown>
           <a href="#" class="dropdown-toggle" uib-dropdown-toggle>Queries <b class="caret"></b></a>

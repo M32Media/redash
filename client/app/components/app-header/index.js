@@ -28,7 +28,7 @@ function controller($rootScope, $location, $uibModal, Auth, currentUser, Dashboa
     //This can probably be unperformant if the number of groups is very large.
     if(!currentUser.hasPermission("admin")) {
       Dashgroup.userGroups().$promise.then((dg_results) => {
-        this.multgroups = dg_results.length === 1 ? false : true;
+        this.multigroups = dg_results.length === 1 ? false : true;
         this.dashgroupsDashboards = {};
         this.dashboardHierarchy = [];
         for (let i = 0; i < dg_results.length; i++) {
