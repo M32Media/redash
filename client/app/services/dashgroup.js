@@ -24,6 +24,11 @@ function Dashgroup($resource, $http, currentUser) {
       isArray: true,
       url: 'api/dashgroups/dashboards'
     },
+    oneDashgroupDashboards: {
+      method: 'get',
+      isArray: true,
+      url: 'api/dashgroups/dashboards/:id'
+    },
     newDashgroup: {
       //should probably be post
       method: 'get',

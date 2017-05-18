@@ -11,7 +11,7 @@
     </div>
     <div class="collapse navbar-collapse" uib-collapse="!isNavOpen">
       <ul class="nav navbar-nav">
-        <li class="dropdown" ng-show="$ctrl.showDashboardsMenu" uib-dropdown>
+        <li class="dropdown" ng-if="$ctrl.currentUser.hasPermission('admin')" ng-show="$ctrl.showDashboardsMenu" uib-dropdown>
           <a href="#" class="dropdown-toggle" uib-dropdown-toggle title="Dashboards">
             <span class="visible-xs visible-md visible-lg">{{$ctrl.message("dashboards")}} <b class="caret"></b></span>
             <span class="visible-sm"><i class="zmdi zmdi-view-dashboard"></i> <b class="caret"></b></span>
@@ -26,6 +26,19 @@
             </li>
           </ul>
         </li>
+
+        <li class="dropdown" ng-repeat="subcat in $ctrl.dashboardHierarchy[0].subcats" ng-if="!$ctrl.currentUser.hasPermission('admin') && !ctrl.multigroups" uib-dropdown>
+          <a href="#" class="dropdown-toggle" uib-dropdown-toggle title="subcat">
+            <span>{{subcat.name}} <b class="caret"></b></span>
+          </a>
+          <ul class="dropdown-menu" uib-dropdown-menu>
+            <li ng-repeat="dashboard in subcat.dashboards">
+              <a ng-if="$ctrl.language.getCurrentLanguage() === 'En'" href="dashboard/{{dashboard.slug}}" ng-bind="dashboard.name"></a>
+              <a ng-if="$ctrl.language.getCurrentLanguage() === 'Fr'" href="dashboard/{{dashboard.slug}}" ng-bind="dashboard.fr_name"></a>
+            </li>
+          </ul>
+        </li>
+
         <li class="dropdown" ng-show="$ctrl.showQueriesMenu" uib-dropdown>
           <a href="#" class="dropdown-toggle" uib-dropdown-toggle>Queries <b class="caret"></b></a>
           <ul class="dropdown-menu" uib-dropdown-menu>
