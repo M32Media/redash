@@ -46,6 +46,11 @@ class DashgroupDashboardList(BaseResource):
 
         return [d.to_dict() for d in dashgroup_dashboards]
 
+class OneDashgroupDashboard(BaseResource):
+    def get(self, dashgroup_id):
+        dashgroup_dashboards = models.DashgroupDashboard.get_by_dashgroup_id(dashgroup_id)
+
+        return [d.dashboard.to_dict() for d in dashgroup_dashboards]
 
 class NewDashgroup(BaseResource):
     @require_permission("admin")
