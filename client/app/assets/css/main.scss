@@ -1,0 +1,3 @@
+@for $i from 1 to 10 {
+  .test-stuff(#{$i}) { animation-delay: $i * 0.25s; }
+}

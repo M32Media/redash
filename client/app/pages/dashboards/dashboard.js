@@ -4,6 +4,7 @@ import template from './dashboard.html';
 import shareDashboardTemplate from './share-dashboard.html';
 import moment from 'moment';
 import {language, message} from '../../i18n';
+import '../../assets/css/custom_animations.css';
 
 function DashboardCtrl($rootScope, $routeParams, $location, $timeout, $q, $uibModal,
   Title, AlertDialog, Dashboard, currentUser, clientConfig, Events) {

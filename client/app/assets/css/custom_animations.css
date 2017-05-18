@@ -1,0 +1,192 @@
+/* Anything from area, scatter or lines*/
+dashboard-page .cartesianlayer .plot .scatterlayer .trace{
+    animation: scatter 1s cubic-bezier(0.215, 0.610, 0.355, 1.000) forwards;
+    animation-delay: 250ms;
+    -webkit-transform-origin : 50% 100%;
+    -moz-transform-origin : 50% 100%;
+    -o-transform-origin : 50% 100%;
+    -ms-transform-origin : 50% 100%;
+    transform-origin : 50% 100%;
+    opacity: 0;
+}
+
+@keyframes scatter {
+    from { transform: scaleY(0); opacity: 1;}
+    to   { transform: scaleY(1); opacity: 1;}
+}
+
+@-webkit-keyframes scatter {
+  from { transform: scaleY(0); opacity: 1;}
+  to   { transform: scaleY(1); opacity: 1;}
+}
+@-moz-keyframes scatter {
+  from { transform: scaleY(0); opacity: 1;}
+  to   { transform: scaleY(1); opacity: 1;}
+}
+@-o-keyframes scatter {
+  from { transform: scaleY(0); opacity: 1;}
+  to   { transform: scaleY(1); opacity: 1;}
+}
+@keyframes scatter {
+  from { transform: scaleY(0); opacity: 1;}
+  to   { transform: scaleY(1); opacity: 1;}
+}
+
+/* Pie Charts */
+dashboard-page .pielayer .trace .slice{
+    animation: pie 1s cubic-bezier(0.215, 0.610, 0.355, 1.000) forwards;
+    -webkit-transform-origin : 50% 100%;
+    -moz-transform-origin : 50% 100%;
+    -o-transform-origin : 50% 100%;
+    -ms-transform-origin : 50% 100%;
+    transform-origin : 50% 100%;
+    opacity: 0;
+}
+
+/* 
+  Animation delay is diferent for each quarter 
+  Would be easier with SCSS
+*/
+.pielayer .trace .slice:nth-child(1){
+-webkit-animation-delay: 0.25s;
+animation-delay: 0.25s;
+}
+.pielayer .trace .slice:nth-child(2){
+-webkit-animation-delay: 0.5s;
+animation-delay: 0.5s;
+}
+.pielayer .trace .slice:nth-child(3){
+-webkit-animation-delay: 0.75s;
+animation-delay: 0.75s;
+}
+.pielayer .trace .slice:nth-child(4){
+-webkit-animation-delay: 1s;
+animation-delay: 1s;
+}
+.pielayer .trace .slice:nth-child(5){
+-webkit-animation-delay: 1.25s;
+animation-delay: 1.25s;
+}
+.pielayer .trace .slice:nth-child(6){
+-webkit-animation-delay: 1.5s;
+animation-delay: 1.5s;
+}
+.pielayer .trace .slice:nth-child(7){
+-webkit-animation-delay: 1.75s;
+animation-delay: 1.75s;
+}
+.pielayer .trace .slice:nth-child(8){
+-webkit-animation-delay: 2s;
+animation-delay: 2s;
+}
+.pielayer .trace .slice:nth-child(9){
+-webkit-animation-delay: 2.25s;
+animation-delay: 2.25s;
+}
+.pielayer .trace .slice:nth-child(10){
+-webkit-animation-delay: 2.5s;
+animation-delay: 2.5s;
+}
+.pielayer .trace .slice:nth-child(11){
+-webkit-animation-delay: 2.75s;
+animation-delay: 2.75s;
+}
+.pielayer .trace .slice:nth-child(12){
+-webkit-animation-delay: 3s;
+animation-delay: 3s;
+}
+.pielayer .trace .slice:nth-child(13){
+-webkit-animation-delay: 3.25s;
+animation-delay: 3.25s;
+}
+.pielayer .trace .slice:nth-child(14){
+-webkit-animation-delay: 3.5s;
+animation-delay: 3.5s;
+}
+.pielayer .trace .slice:nth-child(15){
+-webkit-animation-delay: 3.75s;
+animation-delay: 3.75s;
+}
+.pielayer .trace .slice:nth-child(16){
+-webkit-animation-delay: 4s;
+animation-delay: 4s;
+}
+.pielayer .trace .slice:nth-child(17){
+-webkit-animation-delay: 4.25s;
+animation-delay: 4.25s;
+}
+.pielayer .trace .slice:nth-child(18){
+-webkit-animation-delay: 4.5s;
+animation-delay: 4.5s;
+}
+.pielayer .trace .slice:nth-child(19){
+-webkit-animation-delay: 4.75s;
+animation-delay: 4.75s;
+}
+.pielayer .trace .slice:nth-child(20){
+-webkit-animation-delay: 5s;
+animation-delay: 5s;
+}
+.pielayer .trace .slice:nth-child(21){
+-webkit-animation-delay: 5.25s;
+animation-delay: 5.25s;
+}
+.pielayer .trace .slice:nth-child(22){
+-webkit-animation-delay: 5.5s;
+animation-delay: 5.5s;
+}
+.pielayer .trace .slice:nth-child(23){
+-webkit-animation-delay: 5.75s;
+animation-delay: 5.75s;
+}
+.pielayer .trace .slice:nth-child(24){
+-webkit-animation-delay: 6s;
+animation-delay: 6s;
+}
+.pielayer .trace .slice:nth-child(25){
+-webkit-animation-delay: 6.25s;
+animation-delay: 6.25s;
+}
+.pielayer .trace .slice:nth-child(26){
+-webkit-animation-delay: 6.5s;
+animation-delay: 6.5s;
+}
+.pielayer .trace .slice:nth-child(27){
+-webkit-animation-delay: 6.75s;
+animation-delay: 6.75s;
+}
+.pielayer .trace .slice:nth-child(28){
+-webkit-animation-delay: 7s;
+animation-delay: 7s;
+}
+.pielayer .trace .slice:nth-child(29){
+-webkit-animation-delay: 7.25s;
+animation-delay: 7.25s;
+}
+.pielayer .trace .slice:nth-child(30){
+-webkit-animation-delay: 7.5s;
+animation-delay: 7.5s;
+}
+
+
+@keyframes pie {
+  from { opacity: 0;}
+  to   { opacity: 1;}
+}
+
+@-webkit-keyframes pie {
+  from { opacity: 0;}
+  to   { opacity: 1;}
+}
+@-moz-keyframes pie {
+  from { opacity: 0;}
+  to   { opacity: 1;}
+}
+@-o-keyframes pie {
+  from { opacity: 0;}
+  to   { opacity: 1;}
+}
+@keyframes pie {
+  from { opacity: 0;}
+  to   { opacity: 1;}
+}

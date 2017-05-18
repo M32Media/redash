@@ -101,7 +101,7 @@ function VisualizationRenderer(Visualization) {
     replace: false,
     link(scope) {
       scope.$watch('queryResult && queryResult.getFilters()', (filters) => {
-        console.log(scope);
+        //console.log(scope);
         if (filters) {
           scope.filters = filters;
         }
