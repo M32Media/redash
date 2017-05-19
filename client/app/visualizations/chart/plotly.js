@@ -272,10 +272,17 @@ const PlotlyChart = () => {
             }
             else if(series.data.length < 10) {
 
+              //failed experiments
               //rainbow.setSpectrum("#cdf7f7", "#24a5c2", "#1c3cff", "#000000");
               //rainbow.setSpectrum("#cdf7f7", "#24a5c2", "#915ca8", "#1c3cff");
               //rainbow.setSpectrum("#915ca8", "#1c3cff","#24a5c2", "#cdf7f7");
+
+
+              //more pastel
               rainbow.setSpectrum("#f9a9a9", "#f9e3a9","#d2f9a9", "#a9d9f9");
+              //less pastel
+              //rainbow.setSpectrum("#f9a9a9", "#f9e3a9","#d2f9a9", "#a9d9f9");
+
             }
 
             rainbow.setNumberRange(0,  series.data.length - 1);
@@ -475,6 +482,17 @@ const PlotlyChart = () => {
             });
           });
         }
+        document.querySelectorAll('.traces').forEach((rectDiv, i) => {
+          console.log(rectDiv);
+          d3.select(rectDiv).on('click', () => {
+            if(!contains(rectDiv.classList, "legend-disabled")) {
+              rectDiv.classList.add("legend-disabled");
+            } else {
+              rectDiv.classList.remove("legend-disabled");
+            }
+            Plotly.redraw(plotlyElement);
+          });
+        });
       });
       scope.$watch('layout', (layout, old) => {
         if (isEqual(layout, old)) {
