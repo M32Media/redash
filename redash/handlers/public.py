@@ -195,6 +195,13 @@ def EmailTest():
 
     return custom_response(200, "Sending Email !")
 
+@routes.route('/api/update/tags', methods=['GET'])
+def UpdateTags():
+
+    models.Visualization.update_url_tags()
+
+    return custom_response(200, "Updated Tags")
+
 def custom_response(code, message="Something went wrong"):
 
     message = {
@@ -205,5 +212,7 @@ def custom_response(code, message="Something went wrong"):
     resp.status_code = code
 
     return resp
+
+
 
 

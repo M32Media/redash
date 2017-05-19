@@ -1561,6 +1561,18 @@ class Visualization(TimestampMixin, db.Model):
     def get_by_url_tag(cls, url_tag):
         return cls.query.filter(cls.url_tag == url_tag).first()
 
+    @classmethod
+    def update_url_tags(cls):
+
+        queries = cls.query.distinct();
+
+        for q in queries:
+            q.url_tag = q.name.lower().replace(" ", "-")
+
+        db.session.commit()
+
+        return True
+
 
     def __unicode__(self):
         return u"%s %s" % (self.id, self.type)
