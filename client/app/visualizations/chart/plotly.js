@@ -5,6 +5,7 @@ import Plotly from 'plotly.js/lib/core';
 import bar from 'plotly.js/lib/bar';
 import pie from 'plotly.js/lib/pie';
 import histogram from 'plotly.js/lib/histogram';
+import { Rainbow } from '../rainbowvis.js';
 
 import moment from 'moment';
 
@@ -15,19 +16,16 @@ Plotly.setPlotConfig({
 
 // The following colors will be used if you pick "Automatic" color.
 const BaseColors = {
-  "m32blue1" :'#bee9f3',
-  "m32blue2" :'#a9e2ef',
-  "m32blue3" :'#93dbeb',
-  "m32blue4" :'#7ed4e7',
-  "m32blue5" :'#68cde3',
-  "m32blue6" :'#53c6df',
-  "m32blue7" :'#3dbedb',
-  "m32blue8" :'#28b7d7',
-  "m32blue9" :'#24a5c2',
   "m32blue10": '#2093ac',
-  "m32blue11": '#1c8097',
-  "m32blue12": '#186e81',
-  "m32blue13": '#145c6c',
+  "m32blue9" :'#24a5c2',
+  "m32blue8" :'#28b7d7',
+  "m32blue7" :'#3dbedb',
+  "m32blue6" :'#53c6df',
+  "m32blue5" :'#68cde3',
+  "m32blue4" :'#7ed4e7',
+  "m32blue3" :'#93dbeb',
+  "m32blue2" :'#a9e2ef',
+  "m32blue1" :'#bee9f3',
   Blue: '#4572A7',
   Red: '#AA4643',
   Green: '#89A54E',
@@ -254,6 +252,7 @@ const PlotlyChart = () => {
         delete scope.layout.yaxis;
         delete scope.layout.yaxis2;
         if (scope.options.globalSeriesType === 'pie') {
+
           const hasX = contains(values(scope.options.columnMapping), 'x');
           const rows = scope.series.length > 2 ? 2 : 1;
           const cellsInRow = Math.ceil(scope.series.length / rows);
@@ -263,6 +262,26 @@ const PlotlyChart = () => {
           const yPadding = 0.05;
 
           each(scope.series, (series, index) => {
+            console.log(series);
+            var colorArray = [];
+            var rainbow = new Rainbow();
+            //If we have few data points, our color gradient can go from colours that are relatively near
+            //each other.
+            if(series.data.length < 5) {
+              rainbow.setSpectrum('#24a5c2', "#d1f2f9");
+            }
+            else if(series.data.length < 10) {
+
+              //rainbow.setSpectrum("#cdf7f7", "#24a5c2", "#1c3cff", "#000000");
+              //rainbow.setSpectrum("#cdf7f7", "#24a5c2", "#915ca8", "#1c3cff");
+              //rainbow.setSpectrum("#915ca8", "#1c3cff","#24a5c2", "#cdf7f7");
+              rainbow.setSpectrum("#f9a9a9", "#f9e3a9","#d2f9a9", "#a9d9f9");
+            }
+
+            rainbow.setNumberRange(0,  series.data.length - 1);
+            for (var i = series.data.length - 1; i >= 0; i--) {
+              colorArray.push(rainbow.colorAt(i));
+            }
             const xPosition = (index % cellsInRow) * cellWidth;
             const yPosition = Math.floor(index / cellsInRow) * cellHeight;
             const plotlySeries = {
@@ -270,9 +289,10 @@ const PlotlyChart = () => {
               labels: [],
               type: 'pie',
               hole: 0.4,
-              marker: { colors: ColorPaletteArray },
+              marker: { colors: colorArray },
               text: series.name,
               textposition: 'inside',
+              textfont:{color:"#000000"},
               name: series.name,
               domain: {
                 x: [xPosition, xPosition + cellWidth - xPadding],
