@@ -3,8 +3,8 @@
         <div class="t-header widget">
             <div class="th-title">
                 <p class="hidden-print">
-                    <span class="m32-blue"><visualization-name visualization="$ctrl.widget.visualization"/></span>
-                    <!--<query-link query="$ctrl.query" visualization="$ctrl.widget.visualization" ng-show="$ctrl.canViewQueryLink"></query-link>-->
+                    <span class="m32-blue" ng-click="$ctrl.showApiLink($ctrl.dashboard)"><visualization-name visualization="$ctrl.widget.visualization"/></span>
+                    <small><span ng-show="$ctrl.isApiLink"> {{$ctrl.apiLink}} </span></small>
                     <small><span ng-if="$ctrl.canViewQueryLink">{{$ctrl.query.name}}</span></small>
                 </p>
                 <p class="visible-print">
