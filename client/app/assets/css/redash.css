@@ -8,6 +8,10 @@ body.headless {
   padding-bottom: 0px;
 }
 
+.legend-disabled {
+  opacity: 0.2 !important;
+}
+
 body.headless nav.app-header {
   display: none;
 }
