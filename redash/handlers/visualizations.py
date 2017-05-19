@@ -37,7 +37,7 @@ class VisualizationResource(BaseResource):
         kwargs.pop('id', None)
         kwargs.pop('query_id', None)
 
-        kwargs['slug'] = kwargs['name'].lower().replace(" ", "-")
+        kwargs['url_tag'] = kwargs['name'].lower().replace(" ", "-")
 
         self.update_model(vis, kwargs)
         d = vis.to_dict(with_query=False)

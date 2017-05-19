@@ -12,7 +12,7 @@ API key validation decorator
 """
 def validate_api_key(func):
     
-    def validation_wrapper(dashgroup_name, subcategory_name, dashboard_name, data_slug):
+    def validation_wrapper(dashgroup_name, subcategory_name, dashboard_name, url_tag):
         
         #print(os.getenv('REFRESH_TOKEN'))        
 
@@ -28,7 +28,7 @@ def validate_api_key(func):
             user = models.User.get_by_token(token)
 
             if (user):
-                return func(dashgroup_name, subcategory_name, dashboard_name, data_slug, user, ext)
+                return func(dashgroup_name, subcategory_name, dashboard_name, url_tag, user, ext)
 
             #When the token is invalid
             else:
@@ -46,9 +46,9 @@ def validate_api_key(func):
 """
 Expose Data to client
 """
-@routes.route('/api/data/<dashgroup_name>/<subcategory_name>/<dashboard_name>/<data_slug>', methods=['GET'])
+@routes.route('/api/data/<dashgroup_name>/<subcategory_name>/<dashboard_name>/<url_tag>', methods=['GET'])
 @validate_api_key
-def ExposeData(dashgroup_name, subcategory_name, dashboard_name, data_slug, user, ext):
+def ExposeData(dashgroup_name, subcategory_name, dashboard_name, url_tag, user, ext):
 
     print(ext)
 
@@ -71,7 +71,7 @@ def ExposeData(dashgroup_name, subcategory_name, dashboard_name, data_slug, user
 
                 print("Dashboard found")
 
-                visualization = models.Visualization.get_by_slug(data_slug)
+                visualization = models.Visualization.get_by_url_tag(url_tag)
 
                 #Analyze slug here
                 if visualization:

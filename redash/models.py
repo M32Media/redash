@@ -1528,7 +1528,7 @@ class Visualization(TimestampMixin, db.Model):
     fr_name = Column(db.String(255), default="Please set a french name")
     description = Column(db.String(4096), nullable=True)
     options = Column(db.Text)
-    slug = Column(db.String(50), default=generate_slug_visualization)
+    url_tag = Column(db.String(50), default=generate_slug_visualization)
 
     __tablename__ = 'visualizations'
 
@@ -1542,7 +1542,7 @@ class Visualization(TimestampMixin, db.Model):
             'options': json.loads(self.options),
             'updated_at': self.updated_at,
             'created_at': self.created_at,
-            'slug': self.slug
+            'url_tag': self.url_tag
         }
 
         if with_query:
@@ -1558,9 +1558,8 @@ class Visualization(TimestampMixin, db.Model):
             Query.org == org).one()
 
     @classmethod
-    def get_by_slug(cls, slug):
-        return cls.query.filter(cls.slug == slug).first()
-
+    def get_by_url_tag(cls, url_tag):
+        return cls.query.filter(cls.url_tag == url_tag).first()
 
 
     def __unicode__(self):
