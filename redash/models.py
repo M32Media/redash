@@ -1209,15 +1209,15 @@ def generate_slug(ctx):
         tries += 1
     return slug
 
-def generate_slug_visualisation(ctx):
+def generate_slug_visualization(ctx):
+    
+    print(ctx.current_parameters)
+
     slug = ctx.current_parameters['name'].lower()
     #Replace spaces
     slug = slug.replace(" ", "-")
 
-    print(slug)
-
     return slug
-
 
 
 class Dashboard(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model):
@@ -1528,7 +1528,7 @@ class Visualization(TimestampMixin, db.Model):
     fr_name = Column(db.String(255), default="Please set a french name")
     description = Column(db.String(4096), nullable=True)
     options = Column(db.Text)
-    slug = Column(db.String(50), default=generate_slug_visualisation, onupdate=generate_slug_visualisation)
+    slug = Column(db.String(50), default=generate_slug_visualization)
 
     __tablename__ = 'visualizations'
 
@@ -1560,6 +1560,8 @@ class Visualization(TimestampMixin, db.Model):
     @classmethod
     def get_by_slug(cls, slug):
         return cls.query.filter(cls.slug == slug).first()
+
+
 
     def __unicode__(self):
         return u"%s %s" % (self.id, self.type)
