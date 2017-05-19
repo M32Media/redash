@@ -43,18 +43,20 @@ def send_invite_email(inviter, invited, invite_url, org):
 
     send_mail.delay([invited.email], subject, html_content, text_content)
 
-def send_api_tokens(user, keys):
+def send_api_token(user, test=False):
 
     print("EMAIL")
     print(user)
-    print(keys)
 
-    context = dict(keys=keys, user=user)
+    context = dict(key=user.api_key, user=user.name)
     html_content = render_template('emails/keys.html', **context)
     text_content = render_template('emails/keys.txt', **context)
     subject = "Api Keys for M32"
 
-    send_mail.delay(["arnaud@m32.media"], subject, html_content, text_content)
+    if test:
+        send_mail.delay(["arnaud@m32.media"], subject, html_content, text_content)
+    else:
+        send_mail.delay([user.email], subject, html_content, text_content)
 
 
 def send_password_reset_email(user):

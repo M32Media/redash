@@ -10,7 +10,7 @@ from redash.utils import gen_query_hash
 from redash.worker import celery
 from redash.query_runner import InterruptException
 from .alerts import check_alerts_for_query
-from redash.authentication.account import send_api_tokens
+from redash.authentication.account import send_api_token
 
 logger = get_task_logger(__name__)
 
@@ -570,10 +570,10 @@ def execute_query(self, query, data_source_id, metadata, user_id=None,
 #Update tokens for API data access
 @celery.task(name="redash.tasks.refresh_query_tokens")
 def refresh_query_tokens():
-    logger.warning("Refreshing Query Tokens")
+    logger.warning("Refreshing User Tokens")
 
     #Refresh Tokens
-    models.Query.refresh_tokens()
+    models.User.refresh_tokens()
 
     #Send Emails
     users = models.User.get_all()
@@ -582,8 +582,6 @@ def refresh_query_tokens():
 
         user = u.to_dict()
 
-        queries = [q.to_dict() for q in models.UserQuery.get_user_queries(user['id'])]
-
-        send_api_tokens(user, queries)
+        send_api_token(user)
 
 

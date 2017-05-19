@@ -13,6 +13,8 @@ const EditTextBoxComponent = {
   controller(toastr) {
     'ngInject';
 
+    this.isApiLink = false;
+    this.apiLink = "";
     this.saveInProgress = false;
     this.widget = this.resolve.widget;
     this.saveWidget = () => {
@@ -108,6 +110,14 @@ function DashboardWidgetCtrl($location, $uibModal, $window, Events, currentUser)
       }
     });
   };
+
+  this.showApiLink = function(dashboard){
+
+    this.isApiLink = !this.isApiLink;
+
+    this.apiLink = '/api/data/' + dashboard.name.split(":").join("/") + "/" + this.widget.visualization.slug;
+
+  }
 
   this.showEnlarge = function() {
     return this.widget.visualization.type !== "COUNTER" && this.widget.visualization.type !== "MULTICOUNTER";

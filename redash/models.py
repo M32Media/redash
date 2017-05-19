@@ -400,6 +400,16 @@ class User(TimestampMixin, db.Model, BelongsToOrgMixin, UserMixin, PermissionsCh
     def find_by_email(cls, email):
         return cls.query.filter(cls.email == email)
 
+    @classmethod
+    def get_by_token(cls, token):
+
+        query = cls.query.filter(cls.api_key==token).one_or_none()
+
+        if query:
+            return query
+        else:
+            return None
+
     def __unicode__(self):
         return u'%s (%s)' % (self.name, self.email)
 
@@ -417,6 +427,18 @@ class User(TimestampMixin, db.Model, BelongsToOrgMixin, UserMixin, PermissionsCh
 
     def has_access(self, obj, access_type):
         return AccessPermission.exists(obj, access_type, grantee=self)
+
+    @classmethod
+    def refresh_tokens(cls):
+
+        queries = cls.query.distinct();
+
+        for q in queries:
+            q.api_key = generate_token(40)
+
+        db.session.commit()
+
+        return True
 
 
 class Configuration(TypeDecorator):
@@ -1187,6 +1209,16 @@ def generate_slug(ctx):
         tries += 1
     return slug
 
+def generate_slug_visualisation(ctx):
+    slug = ctx.current_parameters['name'].lower()
+    #Replace spaces
+    slug = slug.replace(" ", "-")
+
+    print(slug)
+
+    return slug
+
+
 
 class Dashboard(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model):
     id = Column(db.Integer, primary_key=True)
@@ -1337,6 +1369,10 @@ class Dashboard(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model
     def get_by_id(cls, id):
         return cls.query.filter(cls.id == id).one()
 
+    @classmethod
+    def get_by_name(cls, name):
+        return cls.query.filter(cls.name == name).first()
+
     def __unicode__(self):
         return u"%s=%s" % (self.id, self.name)
 
@@ -1450,6 +1486,10 @@ class UserDashgroup(db.Model):
 
         return query
 
+    @classmethod
+    def find_by_ids(cls, user_id, dashgroup_id):
+        return UserDashgroup.query.filter(cls.user_id == user_id, cls.dashgroup_id == dashgroup_id).one_or_none()
+
 class UserQuery(db.Model):
 
     user_id = Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
@@ -1488,6 +1528,7 @@ class Visualization(TimestampMixin, db.Model):
     fr_name = Column(db.String(255), default="Please set a french name")
     description = Column(db.String(4096), nullable=True)
     options = Column(db.Text)
+    slug = Column(db.String(50), default=generate_slug_visualisation, onupdate=generate_slug_visualisation)
 
     __tablename__ = 'visualizations'
 
@@ -1500,11 +1541,13 @@ class Visualization(TimestampMixin, db.Model):
             'description': self.description,
             'options': json.loads(self.options),
             'updated_at': self.updated_at,
-            'created_at': self.created_at
+            'created_at': self.created_at,
+            'slug': self.slug
         }
 
         if with_query:
             d['query'] = self.query_rel.to_dict()
+            d['query_id'] = self.query_id
 
         return d
 
@@ -1513,6 +1556,10 @@ class Visualization(TimestampMixin, db.Model):
         return db.session.query(Visualization).join(Query).filter(
             cls.id == visualization_id,
             Query.org == org).one()
+
+    @classmethod
+    def get_by_slug(cls, slug):
+        return cls.query.filter(cls.slug == slug).first()
 
     def __unicode__(self):
         return u"%s %s" % (self.id, self.type)
@@ -1568,6 +1615,10 @@ class Widget(TimestampMixin, db.Model):
     @classmethod
     def get_by_id(cls, id):
         return cls.query.filter(cls.id == id).first()
+
+    @classmethod
+    def get_by_ids(cls, dashboard_id, visualization_id):
+        return cls.query.filter(cls.dashboard_id == dashboard_id, cls.visualization_id == visualization_id).first()
 
 
 class Event(db.Model):
