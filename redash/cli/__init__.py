@@ -52,7 +52,10 @@ def refresh_all_the_queries():
 def status():
     print json.dumps(get_status(), indent=2)
 
-
+@manager.command()
+def refresh_url_tags():
+    models.Visualization.update_url_tags()
+    print("Tags Updated")
 @manager.command()
 def check_settings():
     """Show the settings as Redash sees them (useful for debugging)."""
