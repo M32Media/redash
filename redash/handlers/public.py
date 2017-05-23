@@ -71,17 +71,18 @@ def ExposeData(dashgroup_name, subcategory_name, dashboard_name, url_tag, user, 
 
                 print("Dashboard found")
 
-                visualization = models.Visualization.get_by_url_tag(url_tag)
+                visualizations = models.Visualization.get_by_url_tag(url_tag)
 
                 #Analyze slug here
-                if visualization:
+                if visualizations:
 
-                    print("Visualization found")
+                    print("Visualization(s) found")
+
+                    visualization = models.Widget.get_by_ids(dashboard.id, visualizations)
 
                     #Check if the dashboard contains a widget with visualization
-                    if models.Widget.get_by_ids(dashboard.id, visualization.id):
+                    if visualization:
 
-                        
                         #Find the query
                         query = models.db.session.query(models.Query).filter(models.Query.id == visualization.query_id).first()
 

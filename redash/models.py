@@ -1559,7 +1559,7 @@ class Visualization(TimestampMixin, db.Model):
 
     @classmethod
     def get_by_url_tag(cls, url_tag):
-        return cls.query.filter(cls.url_tag == url_tag).first()
+        return cls.query.filter(cls.url_tag == url_tag).distinct()
 
     @classmethod
     def update_url_tags(cls):
@@ -1630,8 +1630,19 @@ class Widget(TimestampMixin, db.Model):
         return cls.query.filter(cls.id == id).first()
 
     @classmethod
-    def get_by_ids(cls, dashboard_id, visualization_id):
-        return cls.query.filter(cls.dashboard_id == dashboard_id, cls.visualization_id == visualization_id).first()
+    def get_by_ids(cls, dashboard_id, visualizations):
+
+        for visualization in visualizations:
+
+            print(visualization.name)
+
+            wid = cls.query.filter(cls.dashboard_id == dashboard_id, cls.visualization_id == visualization.id).first()
+
+            if wid:
+                print("Found visualization {} in {}".format(wid.visualization_id, wid.dashboard_id))
+                return visualization
+
+        return None
 
 
 class Event(db.Model):
