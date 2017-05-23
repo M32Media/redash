@@ -82,17 +82,28 @@ def ExposeData(dashgroup_name, subcategory_name, dashboard_name, url_tag, user, 
                     if models.Widget.get_by_ids(dashboard.id, visualization.id):
 
                         
-                        result = models.db.session.query(models.QueryResult).filter(models.QueryResult.id == visualization.query_id).one()
+                        #Find the query
+                        query = models.db.session.query(models.Query).filter(models.Query.id == visualization.query_id).first()
 
-                        #Check the data format we want (Case Insensitive)
-                        if ext.lower() == 'csv':
-                            headers = {'Content-Type': "text/csv; charset=UTF-8"}
-                            response = make_response(result.make_csv_content(), 200, headers)
+                        if query :
+
+                            result = models.db.session.query(models.QueryResult).filter(models.QueryResult.id == query.latest_query_data_id).first()
+
+                            #Check the data format we want (Case Insensitive)
+                            if ext.lower() == 'csv':
+                                headers = {'Content-Type': "text/csv; charset=UTF-8"}
+                                response = make_response(result.make_csv_content(), 200, headers)
+                            else:
+                                headers = {'Content-Type': "application/json"}
+                                response = make_response(result.data, 200, headers)
+                            
+                            return response
+
                         else:
-                            headers = {'Content-Type': "application/json"}
-                            response = make_response(result.data, 200, headers)
-                        
-                        return response
+
+                            print("No Query found")
+
+                            return custom_response(403)
                         
                     else:
 
