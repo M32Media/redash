@@ -312,6 +312,27 @@ const PlotlyChart = () => {
 
             scope.data.push(plotlySeries);
           });
+          console.log("ddddddddd");
+            console.log(scope.data);
+            console.log("ddddddddd");
+          if(scope.series.length === 0) {
+            scope.data.push({
+              values: [""],
+              labels: [""],
+              type: 'pie',
+              hole: 0.4,
+              marker: { colors: ["#ffffff"] },
+              text: "",
+              textposition: 'inside',
+              textfont:{color:"#ffffff"},
+              name: "",
+              domain: {
+                x: [0, 0],
+                y: [0, 0],
+              },
+            });
+            scope.layout.showlegend = false;
+          }
           return;
         }
 
