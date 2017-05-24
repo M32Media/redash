@@ -312,9 +312,6 @@ const PlotlyChart = () => {
 
             scope.data.push(plotlySeries);
           });
-          console.log("ddddddddd");
-            console.log(scope.data);
-            console.log("ddddddddd");
           if(scope.series.length === 0) {
             scope.data.push({
               values: [""],
