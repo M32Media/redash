@@ -115,7 +115,7 @@ function DashboardWidgetCtrl($location, $uibModal, $window, Events, currentUser)
 
     this.isApiLink = !this.isApiLink;
 
-    this.apiLink = '/api/data/' + dashboard.name.split(":").join("/") + "/" + this.widget.visualization.slug;
+    this.apiLink = '/api/data/' + dashboard.name.split(":").join("/") + "/" + this.widget.visualization.url_tag;
 
   }
 

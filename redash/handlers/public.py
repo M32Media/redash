@@ -12,7 +12,7 @@ API key validation decorator
 """
 def validate_api_key(func):
     
-    def validation_wrapper(dashgroup_name, subcategory_name, dashboard_name, data_slug):
+    def validation_wrapper(dashgroup_name, subcategory_name, dashboard_name, url_tag):
         
         #print(os.getenv('REFRESH_TOKEN'))        
 
@@ -28,7 +28,7 @@ def validate_api_key(func):
             user = models.User.get_by_token(token)
 
             if (user):
-                return func(dashgroup_name, subcategory_name, dashboard_name, data_slug, user, ext)
+                return func(dashgroup_name, subcategory_name, dashboard_name, url_tag, user, ext)
 
             #When the token is invalid
             else:
@@ -46,9 +46,9 @@ def validate_api_key(func):
 """
 Expose Data to client
 """
-@routes.route('/api/data/<dashgroup_name>/<subcategory_name>/<dashboard_name>/<data_slug>', methods=['GET'])
+@routes.route('/api/data/<dashgroup_name>/<subcategory_name>/<dashboard_name>/<url_tag>', methods=['GET'])
 @validate_api_key
-def ExposeData(dashgroup_name, subcategory_name, dashboard_name, data_slug, user, ext):
+def ExposeData(dashgroup_name, subcategory_name, dashboard_name, url_tag, user, ext):
 
     print(ext)
 
@@ -71,28 +71,40 @@ def ExposeData(dashgroup_name, subcategory_name, dashboard_name, data_slug, user
 
                 print("Dashboard found")
 
-                visualization = models.Visualization.get_by_slug(data_slug)
+                visualizations = models.Visualization.get_by_url_tag(url_tag)
 
                 #Analyze slug here
-                if visualization:
+                if visualizations:
 
-                    print("Visualization found")
+                    print("Visualization(s) found")
+
+                    visualization = models.Widget.get_by_ids(dashboard.id, visualizations)
 
                     #Check if the dashboard contains a widget with visualization
-                    if models.Widget.get_by_ids(dashboard.id, visualization.id):
+                    if visualization:
 
-                        
-                        result = models.db.session.query(models.QueryResult).filter(models.QueryResult.id == visualization.query_id).one()
+                        #Find the query
+                        query = models.db.session.query(models.Query).filter(models.Query.id == visualization.query_id).first()
 
-                        #Check the data format we want (Case Insensitive)
-                        if ext.lower() == 'csv':
-                            headers = {'Content-Type': "text/csv; charset=UTF-8"}
-                            response = make_response(result.make_csv_content(), 200, headers)
+                        if query :
+
+                            result = models.db.session.query(models.QueryResult).filter(models.QueryResult.id == query.latest_query_data_id).first()
+
+                            #Check the data format we want (Case Insensitive)
+                            if ext.lower() == 'csv':
+                                headers = {'Content-Type': "text/csv; charset=UTF-8"}
+                                response = make_response(result.make_csv_content(), 200, headers)
+                            else:
+                                headers = {'Content-Type': "application/json"}
+                                response = make_response(result.data, 200, headers)
+                            
+                            return response
+
                         else:
-                            headers = {'Content-Type': "application/json"}
-                            response = make_response(result.data, 200, headers)
-                        
-                        return response
+
+                            print("No Query found")
+
+                            return custom_response(403)
                         
                     else:
 
@@ -195,6 +207,7 @@ def EmailTest():
 
     return custom_response(200, "Sending Email !")
 
+
 def custom_response(code, message="Something went wrong"):
 
     message = {
@@ -205,5 +218,7 @@ def custom_response(code, message="Something went wrong"):
     resp.status_code = code
 
     return resp
+
+
 
 

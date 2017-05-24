@@ -37,9 +37,14 @@ class VisualizationResource(BaseResource):
         kwargs.pop('id', None)
         kwargs.pop('query_id', None)
 
+        kwargs['url_tag'] = kwargs['name'].lower().replace(" ", "-")
+
         self.update_model(vis, kwargs)
         d = vis.to_dict(with_query=False)
         models.db.session.commit()
+
+        print(d)
+
         return d
 
     @require_permission('edit_query')
