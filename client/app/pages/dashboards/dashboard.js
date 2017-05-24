@@ -125,6 +125,16 @@ function DashboardCtrl($rootScope, $routeParams, $location, $timeout, $q, $uibMo
       });
 
       this.filters = _.values(filters);
+      console.log(this.filters);
+      //We want all the filters to get all the possible values.
+      for (var i = 0; i < this.filters.length; i++) {
+        this.filters[i].originFilters = _.sortBy(this.filters[i].originFilters, (origFilt) => -origFilt.values.length)
+        this.filters[i].values = _.clone(this.filters[i].originFilters[0].values);
+        for (var j = 0; j < this.filters[i].originFilters.length; j++) {
+          this.filters[i].originFilters[j].values = _.clone(this.filters[i].originFilters[0].values);
+        }
+      }
+      console.log(this.filters);
       this.filtersOnChange = (filter) => {
         _.each(filter.originFilters, (originFilter) => {
           originFilter.current = filter.current;
