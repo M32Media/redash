@@ -262,7 +262,6 @@ const PlotlyChart = () => {
           const yPadding = 0.05;
 
           each(scope.series, (series, index) => {
-            console.log(series);
             var colorArray = [];
             var rainbow = new Rainbow();
             //If we have few data points, our color gradient can go from colours that are relatively near
@@ -483,7 +482,6 @@ const PlotlyChart = () => {
           });
         }
         document.querySelectorAll('.traces').forEach((rectDiv, i) => {
-          console.log(rectDiv);
           d3.select(rectDiv).on('click', () => {
             if(!contains(rectDiv.classList, "legend-disabled")) {
               rectDiv.classList.add("legend-disabled");

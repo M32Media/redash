@@ -130,6 +130,7 @@ function DashboardCtrl($rootScope, $routeParams, $location, $timeout, $q, $uibMo
           originFilter.current = filter.current;
         });
       };
+      this.filtersOnChange(this.filters[0]);
     });
   };
 
