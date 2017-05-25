@@ -134,13 +134,17 @@ function DashboardCtrl($rootScope, $routeParams, $location, $timeout, $q, $uibMo
           this.filters[i].originFilters[j].values = _.clone(this.filters[i].originFilters[0].values);
         }
       }
-      console.log(this.filters);
+
       this.filtersOnChange = (filter) => {
         _.each(filter.originFilters, (originFilter) => {
           originFilter.current = filter.current;
         });
       };
-      this.filtersOnChange(this.filters[0]);
+
+      if(this.filters.length > 0) {
+        this.filtersOnChange(this.filters[0]);
+      }
+
     });
   };
 
