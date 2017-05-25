@@ -34,6 +34,15 @@ function DynamicTable($sanitize) {
     this.pageChanged();
   };
 
+  //This aligns numbers to the left but could do other things in the future.
+  this.getCellStyle = (data) => {
+    if (typeof data === "number") {
+      return "text-align:right";
+    } else {
+      return "";
+    }
+  }
+
   this.orderBy = (column) => {
     if (column === this.orderByField) {
       this.orderByReverse = !this.orderByReverse;
