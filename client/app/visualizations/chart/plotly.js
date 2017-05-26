@@ -121,7 +121,7 @@ function lastVisibleY(seriesList, lastSeriesIndex, yIndex) {
   return 0;
 }
 
-function percentAreaStacking(seriesList) {
+/*function percentAreaStacking(seriesList) {
   if (seriesList.length === 0) {
     return;
   }
@@ -141,7 +141,7 @@ function percentAreaStacking(seriesList) {
       series.text.push(`Value: ${series.original_y[yIndex]}<br>Relative: ${percentage.toFixed(2)}%`);
     });
   });
-}
+}*/
 
 function percentBarStacking(seriesList) {
   if (seriesList.length === 0) {
@@ -234,7 +234,7 @@ var labelSetColorMappings = [];
 for (var i = 0; i < labelSetNames.length; i++) {
   labelSetColorMappings.push({});
   for (var j = 0; j < labelSetNames[i].length; j++) {
-    labelSetColorMappings[labelSetNames[i][j]] = rainbow.colorAt(j);
+    labelSetColorMappings[i][labelSetNames[i][j]] = rainbow.colorAt(j);
   }
 }
 
@@ -290,7 +290,6 @@ const PlotlyChart = () => {
         delete scope.layout.yaxis;
         delete scope.layout.yaxis2;
         if (scope.options.globalSeriesType === 'pie') {
-
           const hasX = contains(values(scope.options.columnMapping), 'x');
           const rows = scope.series.length > 2 ? 2 : 1;
           const cellsInRow = Math.ceil(scope.series.length / rows);
@@ -309,15 +308,13 @@ const PlotlyChart = () => {
             series.data.forEach((row) => {
               xLabels.push(hasX ? row.x : `Slice ${index}`);
             });
-            console.log(xLabels);
             for (var i = 0; i < labelSetNames.length; i++) {
               var colorArr = []
               //If our labels match, we want an array composed of every colors in the right order to make sure we honor the mapping.
               if(difference(xLabels, labelSetNames[i]).length === 0) {
                 //DEBUG
-                console.log("fits")
                 for (var j = 0; j < xLabels.length; j++) {
-                  colorArr.push(labelSetColorMappings[xLabels[j]]);
+                  colorArr.push(labelSetColorMappings[i][xLabels[j]]);
                 }
                 //sets the colors we pass to plotly to the colors we just built.
                 colorArray = colorArr;
@@ -326,8 +323,6 @@ const PlotlyChart = () => {
             //If the colorArray is empty (which should'nt happen in the long term) then we don't have
             //a fixed color mapping for the data so we can just generate something on the fly whith the same basic color scheme.
             if(colorArray.length === 0) {
-              //DEBUG
-              console.log("doesn't fit");
               //This spectrum is the same as the other but inverted to get lighter colors first.
               rainbow.setSpectrum("#615d77","#021f8c","#1E90FF",'#53c6df', "#fefefe");
               //Once again, strange range to get better colors.
@@ -336,8 +331,6 @@ const PlotlyChart = () => {
                 colorArray.push(rainbow.colorAt(i));
               }
             }
-            //DEBUG
-            console.log(colorArray);
             const xPosition = (index % cellsInRow) * cellWidth;
             const yPosition = Math.floor(index / cellsInRow) * cellHeight;
             const plotlySeries = {
