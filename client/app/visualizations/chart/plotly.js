@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { isEmpty, isEqual, isArray, isNumber, isUndefined, contains, min, max, has, each, values, sortBy, union, pluck, identity } from 'underscore';
+import { isEmpty, isEqual, isArray, isNumber, isUndefined, contains, min, max, has, each, values, sortBy, union, pluck, identity, difference} from 'underscore';
 import d3 from 'd3';
 import Plotly from 'plotly.js/lib/core';
 import bar from 'plotly.js/lib/bar';
@@ -200,6 +200,44 @@ function getColor(index) {
   return ColorPaletteArray[index % ColorPaletteArray.length];
 }
 
+//Invariant color mappings for certain pie chart labels sets.
+
+var rainbow = new Rainbow();
+
+var labelSetNames = [
+  [ "300 x 250",
+    "728 x 90",
+    "320 x 50",
+    "970 x 250",
+    "300 x 600",
+    "160 x 600",
+    "300 X 65",
+    "940 x 200",
+    "Out-of-page",
+  ],
+  [
+    "AdSense",
+    "Direct",
+    "Indirect",
+    "Header Bidding",
+    "Remnant",
+    "Unsold",
+    "FaceBook AN",
+  ],
+]
+//The strange range (bigger than what we need) is there to generate the right color gradient
+rainbow.setNumberRange(-2, 9);
+rainbow.setSpectrum("#fefefe",'#53c6df',"#1E90FF","#021f8c", "#615d77");
+
+//The mapping of every label in every set to its own color.
+var labelSetColorMappings = [];
+for (var i = 0; i < labelSetNames.length; i++) {
+  labelSetColorMappings.push({});
+  for (var j = 0; j < labelSetNames[i].length; j++) {
+    labelSetColorMappings[labelSetNames[i][j]] = rainbow.colorAt(j);
+  }
+}
+
 const PlotlyChart = () => {
   let bottomMargin = 50;
   return {
@@ -262,32 +300,44 @@ const PlotlyChart = () => {
           const yPadding = 0.05;
 
           each(scope.series, (series, index) => {
+
             var colorArray = [];
-            var rainbow = new Rainbow();
+
             //If we have few data points, our color gradient can go from colours that are relatively near
             //each other.
-            if(series.data.length < 5) {
-              rainbow.setSpectrum('#24a5c2', "#d1f2f9");
+            var xLabels = [];
+            series.data.forEach((row) => {
+              xLabels.push(hasX ? row.x : `Slice ${index}`);
+            });
+            console.log(xLabels);
+            for (var i = 0; i < labelSetNames.length; i++) {
+              var colorArr = []
+              //If our labels match, we want an array composed of every colors in the right order to make sure we honor the mapping.
+              if(difference(xLabels, labelSetNames[i]).length === 0) {
+                //DEBUG
+                console.log("fits")
+                for (var j = 0; j < xLabels.length; j++) {
+                  colorArr.push(labelSetColorMappings[xLabels[j]]);
+                }
+                //sets the colors we pass to plotly to the colors we just built.
+                colorArray = colorArr;
+              }
             }
-            else if(series.data.length < 10) {
-
-              //failed experiments
-              //rainbow.setSpectrum("#cdf7f7", "#24a5c2", "#1c3cff", "#000000");
-              //rainbow.setSpectrum("#cdf7f7", "#24a5c2", "#915ca8", "#1c3cff");
-              //rainbow.setSpectrum("#915ca8", "#1c3cff","#24a5c2", "#cdf7f7");
-
-
-              //more pastel
-              rainbow.setSpectrum("#f9a9a9", "#f9e3a9","#d2f9a9", "#a9d9f9");
-              //less pastel
-              //rainbow.setSpectrum("#f9a9a9", "#f9e3a9","#d2f9a9", "#a9d9f9");
-
+            //If the colorArray is empty (which should'nt happen in the long term) then we don't have
+            //a fixed color mapping for the data so we can just generate something on the fly whith the same basic color scheme.
+            if(colorArray.length === 0) {
+              //DEBUG
+              console.log("doesn't fit");
+              //This spectrum is the same as the other but inverted to get lighter colors first.
+              rainbow.setSpectrum("#615d77","#021f8c","#1E90FF",'#53c6df', "#fefefe");
+              //Once again, strange range to get better colors.
+              rainbow.setNumberRange(-1, series.data.length);
+              for (var i = series.data.length - 1; i >= 0; i--) {
+                colorArray.push(rainbow.colorAt(i));
+              }
             }
-
-            rainbow.setNumberRange(0,  series.data.length - 1);
-            for (var i = series.data.length - 1; i >= 0; i--) {
-              colorArray.push(rainbow.colorAt(i));
-            }
+            //DEBUG
+            console.log(colorArray);
             const xPosition = (index % cellsInRow) * cellWidth;
             const yPosition = Math.floor(index / cellsInRow) * cellHeight;
             const plotlySeries = {
