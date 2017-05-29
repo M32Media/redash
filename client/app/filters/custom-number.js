@@ -13,16 +13,7 @@ export default function(ngModule){
             suffix = "K";
           }
         }
-        //We use the angular number filter to keep most of the old behavior intact
-
-        //apparently, if you pass undefined to the number filter it still registers it as a parameter and it doesn't want to
-        //do its default behavior...
-
-        //if (decimals === undefined) {
-        //  return numberFilter(num) + suffix;
-        //} else {
           return numberFilter(num, decimals) + suffix;
-        //}
       }
     });
 }

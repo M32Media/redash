@@ -121,7 +121,7 @@ function lastVisibleY(seriesList, lastSeriesIndex, yIndex) {
   return 0;
 }
 
-/*function percentAreaStacking(seriesList) {
+function percentAreaStacking(seriesList) {
   if (seriesList.length === 0) {
     return;
   }
@@ -141,7 +141,7 @@ function lastVisibleY(seriesList, lastSeriesIndex, yIndex) {
       series.text.push(`Value: ${series.original_y[yIndex]}<br>Relative: ${percentage.toFixed(2)}%`);
     });
   });
-}*/
+}
 
 function percentBarStacking(seriesList) {
   if (seriesList.length === 0) {
@@ -198,6 +198,23 @@ function getScaleType(scale) {
 
 function getColor(index) {
   return ColorPaletteArray[index % ColorPaletteArray.length];
+}
+
+//Assumes most of the fractionnary things we want to display is cash.
+function formatNumber(num, shorten, decimals) {
+  shorten = shorten == undefined ? false : shorten;
+  console.log(shorten);
+  var suffix = "";
+  if(shorten) {
+    if(num >= 1000000) {
+      num /= 1000000;
+      suffix = "M";
+    } else if (num >= 1000) {
+      num /= 1000;
+      suffix = "K";
+    }
+  }
+  return num.toLocaleString("En",{"minimumFractionDigits":0, "maximumFractionDigits":2}) + suffix;
 }
 
 //Invariant color mappings for certain pie chart labels sets.
@@ -339,7 +356,9 @@ const PlotlyChart = () => {
               type: 'pie',
               hole: 0.4,
               marker: { colors: colorArray },
-              text: series.name,
+              text: [],
+              hoverinfo: "text",
+              textinfo:"percent",
               textposition: 'inside',
               textfont:{color:"#000000"},
               name: series.name,
@@ -353,8 +372,16 @@ const PlotlyChart = () => {
               plotlySeries.labels.push(hasX ? row.x : `Slice ${index}`);
             });
 
+            var total = plotlySeries.values.reduce(function(a, b) {
+              return a + b;
+            });
+            series.data.forEach((row) => {
+              plotlySeries.text.push(`${series.name}\n${row.x}\n${formatNumber(row.y, false, 2)}\n${((row.y/total)*100).toFixed(1)}%`);
+            });
             scope.data.push(plotlySeries);
           });
+          //If there is no data, we need to push a mostly empty pie to get the display to refresh
+          //to something empty.
           if(scope.series.length === 0) {
             scope.data.push({
               values: [""],
@@ -407,7 +434,8 @@ const PlotlyChart = () => {
           if (sortX) {
             data = sortBy(data, 'x');
           }
-
+          plotlySeries.text = [];
+          plotlySeries.hoverinfo = "text+x+name";
           if (useUnifiedXaxis && index === 0) {
             const yValues = {};
             const eValues = {};
@@ -422,6 +450,7 @@ const PlotlyChart = () => {
             unifiedX.forEach((x) => {
               plotlySeries.x.push(normalizeValue(x));
               plotlySeries.y.push(normalizeValue(yValues[x] || null));
+              plotlySeries.text.push(`${formatNumber(yValues[x], true, 2)}`);
               if (!isUndefined(eValues[x])) {
                 plotlySeries.error_y.array.push(normalizeValue(eValues[x] || null));
               }
@@ -430,6 +459,7 @@ const PlotlyChart = () => {
             data.forEach((row) => {
               plotlySeries.x.push(normalizeValue(row.x));
               plotlySeries.y.push(normalizeValue(row.y));
+              plotlySeries.text.push(`${formatNumber(row.y, true, 2)}`);
               if (row.yError) {
                 plotlySeries.error_y.array.push(normalizeValue(row.yError));
               }
@@ -521,6 +551,9 @@ const PlotlyChart = () => {
       };
       scope.plotlyOptions = { showLink: false, displaylogo: false };
       scope.data = [];
+
+      //Adds our cutom text to the graph to get custom number formatting.
+      console.log(scope);
 
       const plotlyElement = element[0].children[0];
       Plotly.newPlot(plotlyElement, scope.data, scope.layout, scope.plotlyOptions);
