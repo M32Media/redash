@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { find } from 'underscore';
 import template from './visualization-embed.html';
 import logoUrl from '../../assets/images/m32-40x40.png';
@@ -25,25 +26,17 @@ const VisualizationEmbed = {
 export default function (ngModule) {
   ngModule.component('visualizationEmbed', VisualizationEmbed);
 
-  function session($http, $route, Auth) {
-    'ngInject';
-
-    const apiKey = $route.current.params.api_key;
-    Auth.setApiKey(apiKey);
-    return Auth.loadConfig();
-  }
-
-  function loadData($http, $route, $q, Auth) {
-    return session($http, $route, Auth).then(() => {
-      const queryId = $route.current.params.queryId;
-      const query = $http.get(`/api/queries/${queryId}`).then(response => response.data);
-      const queryResult = $http.get(`/api/queries/${queryId}/results.json`).then(response => response.data);
-      return $q.all([query, queryResult]);
-    });
+  function loadData($http, $route, $q) {
+    console.log(document.referrer);
+    const queryToken = $route.current.params.queryToken;
+    const visualizationId = $route.current.params.visualizationId;
+    const query = $http.post(`/api/embeded/query/${visualizationId}/${queryToken}`, {referrer:document.referrer}).then(response => response.data);
+    const queryResult = $http.post(`/api/embeded/result/${visualizationId}/${queryToken}`,{referrer:document.referrer}).then(response => response.data);
+    return $q.all([query, queryResult]);
   }
 
   ngModule.config(($routeProvider) => {
-    $routeProvider.when('/embed/query/:queryId/visualization/:visualizationId', {
+    $routeProvider.when('/embed/:visualizationId/:queryToken', {
       template: '<visualization-embed data="$resolve.data"></visualization-embed>',
       resolve: {
         data: loadData,

@@ -67,17 +67,21 @@ def run_query_sync(data_source, parameter_values, query_text, max_age=0):
         return None
 
 
-@routes.route(org_scoped_rule('/embed/query/<query_id>/visualization/<visualization_id>'), methods=['GET'])
-@login_required
-def embed(query_id, visualization_id, org_slug=None):
+@routes.route(org_scoped_rule('/embed/<visualization_id>/<query_token>'), methods=['GET'])
+def embed(query_token, visualization_id):
+    query = models.Query.get_by_token(query_token)
     record_event(current_org, current_user._get_current_object(), {
         'action': 'view',
-        'object_id': visualization_id,
-        'object_type': 'visualization',
-        'query_id': query_id,
+        'object_type': 'query',
+        'query_id': query.id,
         'embed': True,
         'referer': request.headers.get('Referer')
     })
+
+    print(request.headers.get('Referer'))
+    referrer = request.headers.get('Referer')
+    if not models.VisualizationReferrer.find_by_ids(visualization_id, referrer):
+            abort(403)
 
     full_path = safe_join(settings.STATIC_ASSETS_PATHS[-2], 'index.html')
     models.db.session.commit()

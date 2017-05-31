@@ -81,6 +81,28 @@ class QueryResultListResource(BaseResource):
 
 ONE_YEAR = 60 * 60 * 24 * 365.25
 
+class EmbededQueryResultResource(BaseResource):
+    """Lots of copy-pasta, we'll find a more elegant solution eventually"""
+    def post(self, query_token, visualization_id):
+        query = models.Query.get_by_token(query_token)
+        query_result_id = query.latest_query_data_id
+        query_result = models.QueryResult.get_by_id(query.latest_query_data_id)
+        #This is unsafe, anyone could change the referrer in their post request but at least the route uses query api tokens.
+        referrer = request.get_json(force=True)["referrer"]
+        if not models.VisualizationReferrer.find_by_ids(visualization_id, referrer):
+            abort(403)
+
+
+        response = self.make_json_response(query_result)
+
+        if len(settings.ACCESS_CONTROL_ALLOW_ORIGIN) > 0:
+            self.add_cors_headers(response.headers)
+
+        return response
+    def make_json_response(self, query_result):
+        data = json.dumps({'query_result': query_result.to_dict()}, cls=utils.JSONEncoder)
+        headers = {'Content-Type': "application/json"}
+        return make_response(data, 200, headers)
 
 class QueryResultResource(BaseResource):
     @staticmethod

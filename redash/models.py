@@ -630,6 +630,10 @@ class QueryResult(db.Model, BelongsToOrgMixin):
         }
 
     @classmethod
+    def get_by_id(cls, id):
+        return cls.query.filter(cls.id == id).first()
+
+    @classmethod
     def unused(cls, days=7):
         age_threshold = datetime.datetime.now() - datetime.timedelta(days=days)
 
@@ -1482,13 +1486,13 @@ class UserDashgroup(db.Model):
 
     @classmethod
     def get_dashgroups(cls, user_id):
-        query = UserDashgroup.query.filter(cls.user_id == user_id).distinct()
+        query = cls.query.filter(cls.user_id == user_id).distinct()
 
         return query
 
     @classmethod
     def find_by_ids(cls, user_id, dashgroup_id):
-        return UserDashgroup.query.filter(cls.user_id == user_id, cls.dashgroup_id == dashgroup_id).one_or_none()
+        return cls.query.filter(cls.user_id == user_id, cls.dashgroup_id == dashgroup_id).one_or_none()
 
 class UserQuery(db.Model):
 
@@ -1503,7 +1507,7 @@ class UserQuery(db.Model):
 
         return {
             'user_id': self.user_id,
-            'query_id': self.query_id, 
+            'query_id': self.query_id,
             'query_name': self.qquery.name,
             'api_key': self.qquery.api_key
         }
@@ -1511,10 +1515,9 @@ class UserQuery(db.Model):
     @classmethod 
     def get_user_queries(cls, user_id):
 
-        query = UserQuery.query.filter(cls.user_id == user_id).distinct()
+        query = cls.query.filter(cls.user_id == user_id).distinct()
 
         return query
-    
 
 #-------------------------------------------------------------------
 
@@ -1841,6 +1844,27 @@ class QuerySnippet(TimestampMixin, db.Model, BelongsToOrgMixin):
         return d
 
 _gfk_types = {'queries': Query, 'dashboards': Dashboard}
+
+class VisualizationReferrer(db.Model):
+    """This db column represents an association between a visualization and an authorized referrer for embeding"""
+    visualization_id = Column(db.Integer, db.ForeignKey("visualization.id"), primary_key=True)
+    referrer = Column(db.Text, primary_key=True)
+    __tablename__ = 'visualization_referrer'
+
+    def to_dict(self):
+
+        return {
+            'visualization_id': self.visualization_id,
+            'referrer': self.referrer,
+        }
+
+    @classmethod
+    def find_by_ids(cls, visualization_id, referrer):
+        return cls.query.filter(cls.visualization_id == visualization_id, cls.referrer == referrer).one_or_none()
+
+    @classmethod
+    def find_by_visualization_id(cls, visualization_id):
+        return list(cls.query.filter(cls.visualization_id == visualization_id))
 
 
 def init_db():

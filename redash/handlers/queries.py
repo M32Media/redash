@@ -161,6 +161,18 @@ class MyQueriesResource(BaseResource):
         page_size = request.args.get('page_size', 25, type=int)
         return paginate(results, page, page_size, lambda q: q.to_dict(with_stats=True, with_last_modified_by=False))
 
+class EmbededQueryResource(BaseResource):
+    def post(self, visualization_id, query_token):
+        query = models.Query.get_by_token(query_token)
+
+        #As for the EmbededQueryResultResource, this is sketchy and not really secure.
+        referrer = request.get_json(force=True)["referrer"]
+        if not models.VisualizationReferrer.find_by_ids(visualization_id, referrer):
+            abort(403)
+
+        result = query.to_dict(with_visualizations=True)
+
+        return result
 
 class QueryResource(BaseResource):
     @require_permission('edit_query')

@@ -10,8 +10,8 @@ from redash.handlers.dashboards import DashboardListResource, RecentDashboardsRe
 from redash.handlers.dashgroups import DashgroupList, UserDashgroupList, OneUserDashgroupList, DashgroupDashboardList, NewDashgroup, DashgroupDashboardResource, OneDashgroupDashboard
 from redash.handlers.data_sources import DataSourceTypeListResource, DataSourceListResource, DataSourceSchemaResource, DataSourceResource, DataSourcePauseResource, DataSourceTestResource
 from redash.handlers.events import EventResource
-from redash.handlers.queries import QueryForkResource, QueryRefreshResource, QueryListResource, QueryRecentResource, QuerySearchResource, QueryResource, MyQueriesResource
-from redash.handlers.query_results import QueryResultListResource, QueryResultResource, JobResource
+from redash.handlers.queries import QueryForkResource, QueryRefreshResource, QueryListResource, QueryRecentResource, QuerySearchResource, QueryResource, MyQueriesResource, EmbededQueryResource
+from redash.handlers.query_results import QueryResultListResource, QueryResultResource, JobResource, EmbededQueryResultResource
 from redash.handlers.users import UserResource, UserListResource, UserInviteResource, UserResetPasswordResource, UserQueryKeys
 from redash.handlers.visualizations import VisualizationListResource
 from redash.handlers.visualizations import VisualizationResource
@@ -73,6 +73,9 @@ api.add_org_resource(DataSourceSchemaResource, '/api/data_sources/<data_source_i
 api.add_org_resource(DataSourcePauseResource, '/api/data_sources/<data_source_id>/pause')
 api.add_org_resource(DataSourceTestResource, '/api/data_sources/<data_source_id>/test')
 api.add_org_resource(DataSourceResource, '/api/data_sources/<data_source_id>', endpoint='data_source')
+
+api.add_org_resource(EmbededQueryResultResource, '/api/embeded/result/<visualization_id>/<query_token>')
+api.add_org_resource(EmbededQueryResource, '/api/embeded/query/<visualization_id>/<query_token>')
 
 api.add_org_resource(GroupListResource, '/api/groups', endpoint='groups')
 api.add_org_resource(GroupResource, '/api/groups/<group_id>', endpoint='group')
