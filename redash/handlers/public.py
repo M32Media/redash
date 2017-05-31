@@ -50,8 +50,6 @@ Expose Data to client
 @validate_api_key
 def ExposeData(dashgroup_name, subcategory_name, dashboard_name, url_tag, user, ext):
 
-    print(ext)
-
     print("Dashgroup : {} - Sub : {} - Dashboard : {}".format(dashgroup_name, subcategory_name, dashboard_name));
 
     dashgroup = models.Dashgroup.get_by_name(dashgroup_name);
@@ -61,8 +59,23 @@ def ExposeData(dashgroup_name, subcategory_name, dashboard_name, url_tag, user, 
 
         print("Dashgroup found")
 
+        # Check if this user has admin rights
+        admin = False
+
+        for _id in user.group_ids:
+
+            #Get the group associated with this id
+            group = models.Group.get_by_id(_id)
+
+            print(group.permissions)
+
+            # Check permissions
+            if not admin:
+                admin = all(x in group.permissions for x in ['admin', 'super_admin'])
+
+
         #Verify user has access to this dashgroup
-        if models.UserDashgroup.find_by_ids(user.id, dashgroup.id):
+        if models.UserDashgroup.find_by_ids(user.id, dashgroup.id) or admin:
 
             dashboard = models.Dashboard.get_by_name("{}:{}:{}".format(dashgroup_name,subcategory_name,dashboard_name))
 
