@@ -54,100 +54,69 @@ def ExposeData(dashgroup_name, subcategory_name, dashboard_name, url_tag, user, 
 
     dashgroup = models.Dashgroup.get_by_name(dashgroup_name);
 
-    #If dashgroup with the specified name exists
-    if dashgroup:
 
-        print("Dashgroup found")
+    if not dashgroup:
+        print("Dashgroup does not exist")
+        return custom_response(403)
 
-        # Check if this user has admin rights
-        admin = False
+    # Check if this user has admin rights
+    admin = False
 
-        for _id in user.group_ids:
+    for _id in user.group_ids:
 
-            #Get the group associated with this id
-            group = models.Group.get_by_id(_id)
+        #Get the group associated with this id
+        group = models.Group.get_by_id(_id)
 
-            print(group.permissions)
+        print(group.permissions)
 
-            # Check permissions
-            if not admin:
-                admin = all(x in group.permissions for x in ['admin', 'super_admin'])
+        # Check permissions
+        if not admin:
+            admin = all(x in group.permissions for x in ['admin', 'super_admin'])
 
+    #Verify user has access to this dashgroup
+    if not models.UserDashgroup.find_by_ids(user.id, dashgroup.id):
+        
+        print("Not allowed to access this dashgroup")
 
-        #Verify user has access to this dashgroup
-        if models.UserDashgroup.find_by_ids(user.id, dashgroup.id) or admin:
-
-            dashboard = models.Dashboard.get_by_name("{}:{}:{}".format(dashgroup_name,subcategory_name,dashboard_name))
-
-            #If a dashboard with this name exists
-            if dashboard:
-
-                print("Dashboard found")
-
-                visualizations = models.Visualization.get_by_url_tag(url_tag)
-
-                #Analyze slug here
-                if visualizations:
-
-                    print("Visualization(s) found")
-
-                    visualization = models.Widget.get_by_ids(dashboard.id, visualizations)
-
-                    #Check if the dashboard contains a widget with visualization
-                    if visualization:
-
-                        #Find the query
-                        query = models.db.session.query(models.Query).filter(models.Query.id == visualization.query_id).first()
-
-                        if query :
-
-                            result = models.db.session.query(models.QueryResult).filter(models.QueryResult.id == query.latest_query_data_id).first()
-
-                            #Check the data format we want (Case Insensitive)
-                            if ext.lower() == 'csv':
-                                headers = {'Content-Type': "text/csv; charset=UTF-8"}
-                                response = make_response(result.make_csv_content(), 200, headers)
-                            else:
-                                headers = {'Content-Type': "application/json"}
-                                response = make_response(result.data, 200, headers)
-                            
-                            return response
-
-                        else:
-
-                            print("No Query found")
-
-                            return custom_response(403)
-                        
-                    else:
-
-                        print("No widget with visualization in this dashboard")
-
-                        return custom_response(403)
-
-                else:
-
-                    print("No visualization with slug")
-
-                    return custom_response(403)
-
-            else:
-
-                print("Dashboard does not exist")
-
-                return custom_response(403)
-
-        else:
-
-            print("Not allowed to access this dashgroup")
-
+        if not admin:
+            print("Not Admin")
             return custom_response(403)
 
-    else:
+    dashboard = models.Dashboard.get_by_name("{}:{}:{}".format(dashgroup_name,subcategory_name,dashboard_name))
 
-        print("Dashgroup does not exist")
-
+    if not dashboard:
+        print("Dashboard does not exist in this dashgroup")
         return custom_response(403)
+
+    visualizations = models.Visualization.get_by_url_tag(url_tag)
+
+    if not visualizations:
+        print("No visualization with slug")
+        return custom_response(403)
+
+    visualization = models.Widget.get_by_ids(dashboard.id, visualizations)
+
+    if not visualization:
+        print("No widget with visualization in this dashboard")
+        return custom_response(403)
+
+    query = models.db.session.query(models.Query).filter(models.Query.id == visualization.query_id).first()
+
+    if not query:
+        print("No Query Found")
+        return custom_response(403)
+
+    result = models.db.session.query(models.QueryResult).filter(models.QueryResult.id == query.latest_query_data_id).first()
+
+    #Check the data format we want (Case Insensitive)
+    if ext.lower() == 'csv':
+        headers = {'Content-Type': "text/csv; charset=UTF-8"}
+        response = make_response(result.make_csv_content(), 200, headers)
+    else:
+        headers = {'Content-Type': "application/json"}
+        response = make_response(result.data, 200, headers)
+
+    return response
 
 
 """
