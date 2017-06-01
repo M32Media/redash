@@ -1,3 +1,4 @@
+import language from '../i18n'
 /* eslint-disable */
 export default function(ngModule){
     ngModule.filter("customNumbers", function($log, numberFilter) {
@@ -13,7 +14,10 @@ export default function(ngModule){
             suffix = "K";
           }
         }
-          return numberFilter(num, decimals) + suffix;
+        if(num === undefined) {
+          return getCurrentLanguage() === 'En' ? "An error occured" : "Une erreur est survenue";
+        }
+        return numberFilter(num, decimals) + suffix;
       }
     });
 }

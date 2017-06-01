@@ -1,0 +1,1 @@
+select visualizations.id from visualizations join queries on queries.id=visualizations.query_id where queries.api_key='yourkeyhere';

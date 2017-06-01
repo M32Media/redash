@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { find } from 'underscore';
 import template from './visualization-embed.html';
 import logoUrl from '../../assets/images/m32-40x40.png';
@@ -7,9 +8,13 @@ const VisualizationEmbed = {
   bindings: {
     data: '<',
   },
-  controller($routeParams, Query, QueryResult) {
+  controller($routeParams, currentUser, Query, QueryResult) {
     'ngInject';
-
+    //waaaat
+    console.log("_________________");
+    console.log(currentUser);
+    console.log("_________________");
+    currentUser.permissions = ["view_query_results"];
     document.querySelector('body').classList.add('headless');
     const visualizationId = parseInt($routeParams.visualizationId, 10);
     this.showQueryDescription = $routeParams.showDescription;
@@ -25,25 +30,23 @@ const VisualizationEmbed = {
 export default function (ngModule) {
   ngModule.component('visualizationEmbed', VisualizationEmbed);
 
-  function session($http, $route, Auth) {
-    'ngInject';
-
-    const apiKey = $route.current.params.api_key;
-    Auth.setApiKey(apiKey);
-    return Auth.loadConfig();
-  }
-
-  function loadData($http, $route, $q, Auth) {
-    return session($http, $route, Auth).then(() => {
-      const queryId = $route.current.params.queryId;
-      const query = $http.get(`/api/queries/${queryId}`).then(response => response.data);
-      const queryResult = $http.get(`/api/queries/${queryId}/results.json`).then(response => response.data);
-      return $q.all([query, queryResult]);
-    });
+  function loadData($http, $route, $q, currentUser) {
+    console.log(document.referrer);
+    console.log("_________________");
+    console.log(currentUser);
+    console.log("_________________");
+    currentUser = {};
+    currentUser.permissions = ["admin"];
+    console.log(currentUser);
+    const queryToken = $route.current.params.queryToken;
+    const visualizationId = $route.current.params.visualizationId;
+    const query = $http.post(`/api/embeded/query/${visualizationId}/${queryToken}`, {referrer:document.referrer}).then(response => response.data);
+    const queryResult = $http.post(`/api/embeded/result/${visualizationId}/${queryToken}`,{referrer:document.referrer}).then(response => response.data);
+    return $q.all([query, queryResult]);
   }
 
   ngModule.config(($routeProvider) => {
-    $routeProvider.when('/embed/query/:queryId/visualization/:visualizationId', {
+    $routeProvider.when('/embed/:visualizationId/:queryToken', {
       template: '<visualization-embed data="$resolve.data"></visualization-embed>',
       resolve: {
         data: loadData,

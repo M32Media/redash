@@ -81,7 +81,6 @@ class QueryResultListResource(BaseResource):
 
 ONE_YEAR = 60 * 60 * 24 * 365.25
 
-
 class QueryResultResource(BaseResource):
     @staticmethod
     def add_cors_headers(headers):

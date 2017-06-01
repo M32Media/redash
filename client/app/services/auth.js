@@ -1,4 +1,5 @@
 import debug from 'debug';
+import * as _ from 'underscore';
 
 const logger = debug('redash:auth');
 const SESSION_ITEM = 'session';
@@ -74,7 +75,9 @@ function AuthService($window, $location, $q, $http) {
 function CurrentUserService() {
   const sessionData = getLocalSessionData();
   Object.assign(this, sessionData.user);
-
+  if (_.isEmpty(this)) {
+    this.permissions = [];
+  }
   this.canEdit = (object) => {
     const userId = object.user_id || (object.user && object.user.id);
     return this.hasPermission('admin') || (userId && (userId === this.id));
