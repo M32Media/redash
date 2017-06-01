@@ -2,10 +2,11 @@ import json, os
 from redash.handlers import routes
 from flask import request, render_template, jsonify, make_response
 from flask_restful import Resource, abort
-from redash import models
+from redash import models, utils
 from redash.tasks import refresh_queries_http, get_tasks, refresh_query_tokens
 from funcy import project
 from redash.authentication.account import send_api_token
+from redash.utils import collect_query_parameters, collect_parameters_from_request, json_dumps
 
 """
 API key validation decorator
@@ -57,8 +58,7 @@ def ExposeData(dashgroup_name, subcategory_name, dashboard_name, url_tag, user, 
     dashgroup = models.Dashgroup.get_by_name(dashgroup_name);
 
     #If dashgroup with the specified name exists
-    if dashgroup:
-
+    if not dashgroup:
         print("Dashgroup found")
 
         #Verify user has access to this dashgroup
@@ -135,6 +135,43 @@ def ExposeData(dashgroup_name, subcategory_name, dashboard_name, url_tag, user, 
         print("Dashgroup does not exist")
 
         return custom_response(403)
+
+
+@routes.route('/api/embeded/query/<visualization_id>/<query_token>', methods=['POST'])
+def embededQueryResource(query_token, visualization_id):
+    query = models.Query.get_by_token(query_token)
+
+    #As for the EmbededQueryResultResource, this is sketchy and not really secure.
+    referrer = request.get_json(force=True)["referrer"]
+    if not models.VisualizationReferrer.find_by_ids(visualization_id, referrer):
+        abort(403)
+
+    result = query.to_dict(with_visualizations=True)
+    headers = {'Content-Type': "application/json"}
+    print(result)
+    return make_response(json_dumps(result), 200, headers)
+
+@routes.route('/api/embeded/result/<visualization_id>/<query_token>', methods=['POST'])
+def embededQueryResultResource(visualization_id, query_token):
+
+    def make_json_response(query_result):
+        data = json.dumps({'query_result': query_result.to_dict()}, cls=utils.JSONEncoder)
+        headers = {'Content-Type': "application/json"}
+        return make_response(data, 200, headers)
+
+    query = models.Query.get_by_token(query_token)
+    query_result_id = query.latest_query_data_id
+    query_result = models.QueryResult.get_by_id(query.latest_query_data_id)
+    #This is unsafe, anyone could change the referrer in their post request but at least the route uses query api tokens.
+    referrer = request.get_json(force=True)["referrer"]
+    if not models.VisualizationReferrer.find_by_ids(visualization_id, referrer):
+        abort(403)
+
+
+    response = make_json_response(query_result)
+
+    return response
+
 
 
 """

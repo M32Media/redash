@@ -70,13 +70,13 @@ def run_query_sync(data_source, parameter_values, query_text, max_age=0):
 @routes.route(org_scoped_rule('/embed/<visualization_id>/<query_token>'), methods=['GET'])
 def embed(query_token, visualization_id):
     query = models.Query.get_by_token(query_token)
-    record_event(current_org, current_user._get_current_object(), {
-        'action': 'view',
-        'object_type': 'query',
-        'query_id': query.id,
-        'embed': True,
-        'referer': request.headers.get('Referer')
-    })
+    # record_event(current_org, current_user._get_current_object(), {
+    #     'action': 'view',
+    #     'object_type': 'query',
+    #     'query_id': query.id,
+    #     'embed': True,
+    #     'referer': request.headers.get('Referer')
+    # })
 
     print(request.headers.get('Referer'))
     referrer = request.headers.get('Referer')
