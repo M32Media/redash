@@ -55,25 +55,6 @@ def ExposeData(dashgroup_name, subcategory_name, dashboard_name, url_tag, user, 
 
     dashgroup = models.Dashgroup.get_by_name(dashgroup_name);
 
-<<<<<<< HEAD
-=======
-    #If dashgroup with the specified name exists
-    if not dashgroup:
-        print("Dashgroup found")
-
-        #Verify user has access to this dashgroup
-        if models.UserDashgroup.find_by_ids(user.id, dashgroup.id):
-
-            dashboard = models.Dashboard.get_by_name("{}:{}:{}".format(dashgroup_name,subcategory_name,dashboard_name))
-
-            #If a dashboard with this name exists
-            if dashboard:
-
-                print("Dashboard found")
-
-                visualizations = models.Visualization.get_by_url_tag(url_tag)
->>>>>>> unauthenticated_embed
-
     if not dashgroup:
         print("Dashgroup does not exist")
         return custom_response(403)
@@ -94,7 +75,7 @@ def ExposeData(dashgroup_name, subcategory_name, dashboard_name, url_tag, user, 
 
     #Verify user has access to this dashgroup
     if not models.UserDashgroup.find_by_ids(user.id, dashgroup.id):
-        
+
         print("Not allowed to access this dashgroup")
 
         if not admin:
