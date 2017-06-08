@@ -1,5 +1,5 @@
-import language from '../i18n'
 /* eslint-disable */
+import language from '../i18n'
 export default function(ngModule){
     ngModule.filter("customNumbers", function($log, numberFilter) {
       return function formatNumber(num, shorten, decimals) {

@@ -7,7 +7,7 @@ import {language, message} from '../../i18n';
 import '../../assets/css/custom_animations.css';
 
 function DashboardCtrl($rootScope, $routeParams, $location, $timeout, $q, $uibModal,
-  Title, AlertDialog, Dashboard, currentUser, clientConfig, Events) {
+  Title, AlertDialog, Dashboard, currentUser, clientConfig, Events, Dashgroup) {
   this.isFullscreen = false;
   this.refreshRate = null;
   this.showPermissionsControl = clientConfig.showPermissionsControl;
@@ -34,8 +34,32 @@ function DashboardCtrl($rootScope, $routeParams, $location, $timeout, $q, $uibMo
   //lol
   moment.locale(language.getCurrentLanguage().toLowerCase());
 
+  if(!currentUser.hasPermission("admin")) {
+    Dashgroup.userGroups().$promise.then((dg_results) => {
+      this.multigroups = dg_results.length === 1 ? false : true;
+    });
+  }
+
+  String.prototype.capitalize = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+  }
+
   this.getDashboardName = () => {
-    return language.getCurrentLanguage() === "En" ? this.dashboard.name: this.dashboard.fr_name;
+    
+    //We want the more formal name for viewers of many dashgroups
+    var name = language.getCurrentLanguage() === "En" ? this.dashboard.name: this.dashboard.fr_name;
+    // wat
+    if(name === undefined) {
+      return
+    }
+    if(this.multigroups || currentUser.hasPermission("admin")) {
+      return name;
+    } else {
+      console.log(name);
+      var parts = name.split(':');
+      return parts[1].capitalize() + " - " + parts[2].capitalize() + " (" + parts[0].capitalize() +")";
+    }
+    
   }
 
   this.getMaxUpdateDate = () => {

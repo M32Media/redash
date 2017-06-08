@@ -46,8 +46,6 @@ function controller($rootScope, $location, $uibModal, Auth, currentUser, Dashboa
             }
           }));
         }
-        //debug
-        console.log(this.dashboardHierarchy);
       });
     }
     this.dashboards = Dashboard.recent();
