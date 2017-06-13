@@ -67,7 +67,7 @@ function multicounterRenderer() {
         $scope.decimals.push($scope.shortens[i] ? 1: undefined);
         $scope.decimals[i] = $scope.visualization.options[i].currency === "false" ? $scope.decimals[i] : 2;
 
-        if($scope.visualization.options[i].currency === "false"){
+        if($scope.visualization.options.currency === "false" || $scope.counterValue === null || $scope.counterValue === undefined){
           $scope.suffixes.push("");
         } else {
           $scope.suffixes.push($scope.visualization.options[i].currency === "CAD" ? " CAD" : " USD");

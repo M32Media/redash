@@ -52,7 +52,8 @@ function CounterRenderer() {
       //If the currency option is set, we want 2 decimals no matter what.
       $scope.decimals = $scope.visualization.options.currency === "false" ? $scope.decimals : 2;
 
-      if($scope.visualization.options.currency === "false"){
+      // we check for null and undefine to avoid an awkward "An error occured CAD" in the widget.
+      if($scope.visualization.options.currency === "false" || $scope.counterValue === null || $scope.counterValue === undefined){
         $scope.suffix = "";
       } else {
         $scope.suffix = $scope.visualization.options.currency === "CAD" ? " CAD" : " USD";

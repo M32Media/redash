@@ -1,5 +1,5 @@
 /* eslint-disable */
-import language from '../i18n'
+import { language } from '../i18n'
 export default function(ngModule){
     ngModule.filter("customNumbers", function($log, numberFilter) {
       return function formatNumber(num, shorten, decimals) {
@@ -14,8 +14,8 @@ export default function(ngModule){
             suffix = "K";
           }
         }
-        if(num === undefined) {
-          return getCurrentLanguage() === 'En' ? "An error occured" : "Une erreur est survenue";
+        if(num === undefined || num === null) {
+          return language.getCurrentLanguage() === 'En' ? "An error occured" : "Une erreur est survenue";
         }
         return numberFilter(num, decimals) + suffix;
       }
