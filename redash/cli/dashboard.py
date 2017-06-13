@@ -8,8 +8,8 @@ manager = AppGroup(help="Dashboard management commands.")
 #Click prevents us from simply calling a command from another command, hence this function.
 def create_dashboard_logic(old_publisher, publisher, dashboard_id):
     old_dashboard = models.Dashboard.get_by_id(dashboard_id)
-    dashboardname = old_dashboard.name.lower().replace(old_publisher.lower(), publisher.lower())
-    dashboardfr_name = old_dashboard.fr_name.lower().replace(old_publisher.lower(), publisher.lower())
+    dashboardname = old_dashboard.name.replace(old_publisher, publisher)
+    dashboardfr_name = old_dashboard.fr_name.replace(old_publisher, publisher)
 
     dashboard = models.Dashboard(name=dashboardname,
                                fr_name=dashboardfr_name,
