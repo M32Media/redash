@@ -1,6 +1,7 @@
 from flask.cli import AppGroup
 from click import argument, option
 from redash import models
+import json
 
 manager = AppGroup(help="Dashboard management commands.")
 
@@ -8,17 +9,24 @@ manager = AppGroup(help="Dashboard management commands.")
 def create_dashboard_logic(old_publisher, publisher, dashboard_id):
     old_dashboard = models.Dashboard.get_by_id(dashboard_id)
     dashboardname = old_dashboard.name.lower().replace(old_publisher.lower(), publisher.lower())
+    dashboardfr_name = old_dashboard.fr_name.lower().replace(old_publisher.lower(), publisher.lower())
 
     dashboard = models.Dashboard(name=dashboardname,
-                                 org=models.Organization.get_by_id(1),
-                                 user=models.User.get_by_id(1),
-                                 dashboard_filters_enabled = old_dashboard.dashboard_filters_enabled,
-                                 layout='[]')
+                               fr_name=dashboardfr_name,
+                               org=models.Organization.get_by_id(1),
+                               user=models.User.get_by_id(1),
+                               dashboard_filters_enabled = old_dashboard.dashboard_filters_enabled,
+                               layout='[]')
     models.db.session.add(dashboard)
     models.db.session.commit()
-    new_layout = ''
-    for widget in old_dashboard.layout.replace(' ', '').replace('[', '').replace(']', '').split(','):
-        old_widget = models.Widget.get_by_id(widget)
+    json.dumps
+    layout_list = json.loads(old_dashboard.layout)
+    # List of (widget_id, row_num) to copy the old layout to the new.
+    row_labeled_layout = [ (layout_list[i][j], i) for i in range(len(layout_list)) for j in range(len(layout_list[i]))]
+    # We create a new list with as many empty lists as the origi
+    new_layout = [[] for i in range(len(layout_list))]
+    for widget in row_labeled_layout:
+        old_widget = models.Widget.get_by_id(widget[0])
         if old_widget.visualization != None:
             query_id = old_widget.visualization.query_rel.id
             new_query_sql = create_query_definition(query_id, publisher, old_publisher)
@@ -56,14 +64,15 @@ def create_dashboard_logic(old_publisher, publisher, dashboard_id):
             models.db.session.add(new_widget)
             models.db.session.commit()
 
-            new_layout = new_layout + '[' + str(new_widget.id) + '],'
+            #Appends the widgets id at the same row as the original.
+            new_layout[widget[1]].append(new_widget.id)
 
-    new_layout = new_layout.rstrip(',')
-    new_layout = '[' + new_layout + ']'
+
+    new_layout = json.dumps(new_layout).replace(' ', '')
 
     dashboard.layout = new_layout
     models.db.session.commit()
-    return dashboard    
+    return dashboard
 
 
 @manager.command()
