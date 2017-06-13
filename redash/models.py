@@ -1006,6 +1006,16 @@ class Query(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model):
 
         return "Kappa"
 
+    @classmethod
+    def get_by_result_id(cls, qr_id):
+
+        query = cls.query.filter(cls.latest_query_data_id==qr_id).one_or_none()
+        
+        if query:
+            return query
+        else:
+            return None 
+
     def __unicode__(self):
         return unicode(self.id)
 
@@ -1486,7 +1496,7 @@ class UserDashgroup(db.Model):
 
     @classmethod
     def get_dashgroups(cls, user_id):
-        query = cls.query.filter(cls.user_id == user_id).distinct()
+        query = cls.query.filter(cls.user_id == user_id).all()
 
         return query
 
@@ -1575,6 +1585,10 @@ class Visualization(TimestampMixin, db.Model):
         db.session.commit()
 
         return True
+
+    @classmethod
+    def get_by_query_id(cls, qid):
+        return cls.query.filter(cls.query_id==qid).distinct()
 
 
     def __unicode__(self):
