@@ -10,10 +10,6 @@ const VisualizationEmbed = {
   },
   controller($routeParams, currentUser, Query, QueryResult) {
     'ngInject';
-    //waaaat
-    console.log("_________________");
-    console.log(currentUser);
-    console.log("_________________");
     currentUser.permissions = ["view_query_results"];
     document.querySelector('body').classList.add('headless');
     const visualizationId = parseInt($routeParams.visualizationId, 10);
@@ -31,13 +27,8 @@ export default function (ngModule) {
   ngModule.component('visualizationEmbed', VisualizationEmbed);
 
   function loadData($http, $route, $q, currentUser) {
-    console.log(document.referrer);
-    console.log("_________________");
-    console.log(currentUser);
-    console.log("_________________");
     currentUser = {};
     currentUser.permissions = ["admin"];
-    console.log(currentUser);
     const queryToken = $route.current.params.queryToken;
     const visualizationId = $route.current.params.visualizationId;
     const query = $http.post(`/api/embeded/query/${visualizationId}/${queryToken}`, {referrer:document.referrer}).then(response => response.data);

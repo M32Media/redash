@@ -203,7 +203,6 @@ function getColor(index) {
 //Assumes most of the fractionnary things we want to display is cash.
 function formatNumber(num, shorten, decimals) {
   shorten = shorten == undefined ? false : shorten;
-  console.log(shorten);
   var suffix = "";
   if(shorten) {
     if(num >= 1000000) {
@@ -446,7 +445,7 @@ const PlotlyChart = () => {
                 eValues[row.x] = row.yError;
               }
             });
-
+            //Adds our cutom text to the graph to get custom number formatting.
             unifiedX.forEach((x) => {
               plotlySeries.x.push(normalizeValue(x));
               plotlySeries.y.push(normalizeValue(yValues[x] || null));
@@ -551,9 +550,6 @@ const PlotlyChart = () => {
       };
       scope.plotlyOptions = { showLink: false, displaylogo: false };
       scope.data = [];
-
-      //Adds our cutom text to the graph to get custom number formatting.
-      console.log(scope);
 
       const plotlyElement = element[0].children[0];
       Plotly.newPlot(plotlyElement, scope.data, scope.layout, scope.plotlyOptions);

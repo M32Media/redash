@@ -50,8 +50,6 @@ function GridRenderer(clientConfig) {
     template,
     replace: false,
     controller($scope, $filter) {
-      //DEBUG
-      console.log($scope);
       $scope.gridColumns = [];
       $scope.gridRows = [];
       if($scope.visualization !== undefined) {

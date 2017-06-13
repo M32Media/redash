@@ -45,7 +45,7 @@ function DashboardCtrl($rootScope, $routeParams, $location, $timeout, $q, $uibMo
   }
 
   this.getDashboardName = () => {
-    
+
     //We want the more formal name for viewers of many dashgroups
     var name = language.getCurrentLanguage() === "En" ? this.dashboard.name: this.dashboard.fr_name;
     // wat
@@ -55,11 +55,10 @@ function DashboardCtrl($rootScope, $routeParams, $location, $timeout, $q, $uibMo
     if(this.multigroups || currentUser.hasPermission("admin")) {
       return name;
     } else {
-      console.log(name);
       var parts = name.split(':');
       return parts[1].capitalize() + " - " + parts[2].capitalize() + " (" + parts[0].capitalize() +")";
     }
-    
+
   }
 
   this.getMaxUpdateDate = () => {
@@ -149,7 +148,7 @@ function DashboardCtrl($rootScope, $routeParams, $location, $timeout, $q, $uibMo
       });
 
       this.filters = _.values(filters);
-      console.log(this.filters);
+
       //We want all the filters to get all the possible values.
       for (var i = 0; i < this.filters.length; i++) {
         this.filters[i].originFilters = _.sortBy(this.filters[i].originFilters, (origFilt) => -origFilt.values.length)
