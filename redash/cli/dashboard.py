@@ -16,7 +16,8 @@ def create_dashboard_logic(old_publisher, publisher, dashboard_id):
                                org=models.Organization.get_by_id(1),
                                user=models.User.get_by_id(1),
                                dashboard_filters_enabled = old_dashboard.dashboard_filters_enabled,
-                               layout='[]')
+                               layout='[]',
+                               is_draft=old_dashboard.is_draft)
     models.db.session.add(dashboard)
     models.db.session.commit()
     json.dumps
