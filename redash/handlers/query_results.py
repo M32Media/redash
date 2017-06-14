@@ -1,6 +1,6 @@
 import json
 import time
-
+import logging
 import pystache
 from flask import make_response, request
 from flask_login import current_user
@@ -11,6 +11,75 @@ from redash.permissions import require_permission, not_view_only, has_access, re
 from redash.handlers.base import BaseResource, get_object_or_404
 from redash.utils import collect_query_parameters, collect_parameters_from_request
 from redash.tasks.queries import enqueue_query
+
+def match_dashboard_visualization(dids, visualizations):
+
+    for did in dids:
+
+        widget = models.Widget.get_by_ids(did, visualizations)
+
+        if widget: 
+            return True
+
+    return False
+
+    
+
+# decorator for checking if the User has an access to this view
+def has_access_to_results(func):
+
+    def wrapper(self, query_id=None, query_result_id=None, filetype='json'):
+
+        #Admin check
+        if current_user.has_permission("admin"):
+            return func(self, query_id, query_result_id, filetype)
+
+
+        print("Result ID : {} - Current User ID : {}".format(query_result_id, current_user))
+
+        if not current_user.id:
+
+            return make_response("No current User", 404)
+
+        if not query_result_id:
+
+            return make_response("No Query Result ID", 404)
+
+        #Find query object 
+        query = get_object_or_404(models.Query.get_by_result_id, query_result_id)
+
+        if not query:
+
+            return make_response("No Query found", 404)
+
+        visualizations = get_object_or_404(models.Visualization.get_by_query_id, query.id)
+
+        if not visualizations:
+
+            return make_response("No visualization found", 404)
+
+        #If you have a dashboard that has widget that has a visualization in this list you are fine
+
+        dashgroups = get_object_or_404(models.UserDashgroup.get_dashgroups, current_user.id)
+
+        if not dashgroups:
+
+            return make_response("User has no dashgroups", 404)
+
+        # Check for a match in each dashboard from each dashgroup
+        for dg in dashgroups:
+
+            dashboard_ids = [dgdb.dashboard_id for dgdb in models.DashgroupDashboard.get_by_dashgroup_id(dg.dashgroup_id)]
+  
+        #If we don't find a match between visualizations and dashboard
+        if not match_dashboard_visualization(dashboard_ids, visualizations):
+
+            return make_response("Nope", 403)
+
+
+        return func(self, query_id, query_result_id, filetype)
+
+    return wrapper
 
 
 def error_response(message):
@@ -92,7 +161,7 @@ class QueryResultResource(BaseResource):
                 headers['Access-Control-Allow-Credentials'] = str(settings.ACCESS_CONTROL_ALLOW_CREDENTIALS).lower()
 
     @require_permission('view_query_results')
-    def options(self, query_id=None, query_result_id=None, filetype='json'):
+    def options(self, query_id, query_result_id, filetype):
         headers = {}
         self.add_cors_headers(headers)
 
@@ -104,6 +173,7 @@ class QueryResultResource(BaseResource):
 
         return make_response("", 200, headers)
 
+    @has_access_to_results
     @require_permission('view_query_results')
     def get(self, query_id=None, query_result_id=None, filetype='json'):
         """
@@ -125,6 +195,7 @@ class QueryResultResource(BaseResource):
         # This method handles two cases: retrieving result by id & retrieving result by query id.
         # They need to be split, as they have different logic (for example, retrieving by query id
         # should check for query parameters and shouldn't cache the result).
+
         should_cache = query_result_id is not None
         if query_result_id is None and query_id is not None:
             query = get_object_or_404(models.Query.get_by_id_and_org, query_id, self.current_org)
