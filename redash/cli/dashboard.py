@@ -26,46 +26,50 @@ def create_dashboard_logic(old_publisher, publisher, dashboard_id):
     # We create a new list with as many empty lists as the origi
     new_layout = [[] for i in range(len(layout_list))]
     for widget in row_labeled_layout:
-        old_widget = models.Widget.get_by_id(widget[0])
-        if old_widget.visualization != None:
-            query_id = old_widget.visualization.query_rel.id
-            new_query_sql = create_query_definition(query_id, publisher, old_publisher)
-            new_query = models.Query(
-                name=old_widget.visualization.query_rel.name + ' [' + publisher.lower() + ']',
-                description='',
-                query_text=new_query_sql,
-                user=models.User.get_by_id(1),
-                is_archived=False,
-                schedule=None,
-                data_source=old_widget.visualization.query_rel.data_source,
-                org=models.Organization.get_by_id(1)
-            )
-            models.db.session.add(new_query)
-            models.db.session.commit()
-            new_visualisation = models.Visualization(
-                type=old_widget.visualization.type,
-                query_rel=new_query,
-                name=old_widget.visualization.name,
-                description='',
-                options=old_widget.visualization.options
-            )
+        # Covers the case where the widget is a spacer.
+        if widget[0] < 0:
+            new_layout[widget[1]].append(widget[0])
+        else :
+            old_widget = models.Widget.get_by_id(widget[0])
+            if old_widget.visualization != None:
+                query_id = old_widget.visualization.query_rel.id
+                new_query_sql = create_query_definition(query_id, publisher, old_publisher)
+                new_query = models.Query(
+                    name=old_widget.visualization.query_rel.name + ' [' + publisher.lower() + ']',
+                    description='',
+                    query_text=new_query_sql,
+                    user=models.User.get_by_id(1),
+                    is_archived=False,
+                    schedule=None,
+                    data_source=old_widget.visualization.query_rel.data_source,
+                    org=models.Organization.get_by_id(1)
+                )
+                models.db.session.add(new_query)
+                models.db.session.commit()
+                new_visualisation = models.Visualization(
+                    type=old_widget.visualization.type,
+                    query_rel=new_query,
+                    name=old_widget.visualization.name,
+                    description='',
+                    options=old_widget.visualization.options
+                )
 
-            models.db.session.add(new_visualisation)
-            models.db.session.commit()
+                models.db.session.add(new_visualisation)
+                models.db.session.commit()
 
-            new_widget = models.Widget(
-                type=old_widget.type,
-                width=old_widget.width,
-                options=old_widget.options,
-                dashboard=dashboard,
-                visualization=new_visualisation
-            )
+                new_widget = models.Widget(
+                    type=old_widget.type,
+                    width=old_widget.width,
+                    options=old_widget.options,
+                    dashboard=dashboard,
+                    visualization=new_visualisation
+                )
 
-            models.db.session.add(new_widget)
-            models.db.session.commit()
+                models.db.session.add(new_widget)
+                models.db.session.commit()
 
-            #Appends the widgets id at the same row as the original.
-            new_layout[widget[1]].append(new_widget.id)
+                #Appends the widgets id at the same row as the original.
+                new_layout[widget[1]].append(new_widget.id)
 
 
     new_layout = json.dumps(new_layout).replace(' ', '')
