@@ -1,6 +1,6 @@
 from itertools import chain
 
-from flask import request, url_for
+from flask import request, url_for, redirect, make_response
 from flask import jsonify
 from flask_restful import abort
 from funcy import distinct, project, take
@@ -12,6 +12,55 @@ from redash.permissions import (can_modify, require_admin_or_owner,
                                 require_object_modify_permission,
                                 require_permission)
 
+
+#Custom decorator for checking dashboard access
+def has_dashboard_access(func):
+
+    def wrapper(self, dashboard_slug=None):
+
+        #Admin check
+        if self.current_user.has_permission("admin"):
+            return func(self,dashboard_slug)
+
+        #Check if slug
+        if not dashboard_slug:
+
+            return make_response("", 403)
+
+        #Check if exist
+        dashboard = models.Dashboard.get_by_slug_and_org(dashboard_slug, self.current_org)
+
+        if not dashboard:
+
+            print("Not exists")
+
+            return make_response("", 403)
+
+        #Check if user has access
+        dashgroups = models.UserDashgroup.get_dashgroups(self.current_user.id)
+
+        if not dashgroups:
+
+            return make_response("", 403)
+
+        for dg in dashgroups:
+
+            dashboards = models.DashgroupDashboard.get_by_dashgroup_id(dg.dashgroup_id)
+
+
+            for d in dashboards:
+
+                print(d)
+
+                if d.dashboard.slug == dashboard_slug:
+
+                    return func(self,dashboard_slug)
+
+
+        return make_response("", 403)
+
+
+    return wrapper
 
 
 
@@ -80,6 +129,7 @@ class DashboardListResource(BaseResource):
         return dashboard.to_dict()
 
 class DashboardResource(BaseResource):
+    @has_dashboard_access
     @require_permission('list_dashboards')
     def get(self, dashboard_slug=None):
         """

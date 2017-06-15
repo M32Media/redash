@@ -10,8 +10,10 @@ function DashboardCtrl($rootScope, $routeParams, $location, $timeout, $q, $uibMo
   Title, AlertDialog, Dashboard, currentUser, clientConfig, Events, Dashgroup) {
   this.isFullscreen = false;
   this.refreshRate = null;
+  this.dashboard = {}
   this.showPermissionsControl = clientConfig.showPermissionsControl;
   this.currentUser = currentUser;
+  this.retries = 0;
   this.globalParameters = [];
   this.refreshRates = [
     { name: '10 seconds', rate: 10 },
@@ -45,7 +47,7 @@ function DashboardCtrl($rootScope, $routeParams, $location, $timeout, $q, $uibMo
   }
 
   this.getDashboardName = () => {
-
+    
     //We want the more formal name for viewers of many dashgroups
     var name = language.getCurrentLanguage() === "En" ? this.dashboard.name: this.dashboard.fr_name;
     // wat
@@ -58,7 +60,7 @@ function DashboardCtrl($rootScope, $routeParams, $location, $timeout, $q, $uibMo
       var parts = name.split(':');
       return parts[1].capitalize() + " - " + parts[2].capitalize() + " (" + parts[0].capitalize() +")";
     }
-
+    
   }
 
   this.getMaxUpdateDate = () => {
@@ -148,7 +150,7 @@ function DashboardCtrl($rootScope, $routeParams, $location, $timeout, $q, $uibMo
       });
 
       this.filters = _.values(filters);
-
+      //console.log(this.filters);
       //We want all the filters to get all the possible values.
       for (var i = 0; i < this.filters.length; i++) {
         this.filters[i].originFilters = _.sortBy(this.filters[i].originFilters, (origFilt) => -origFilt.values.length)
@@ -171,20 +173,27 @@ function DashboardCtrl($rootScope, $routeParams, $location, $timeout, $q, $uibMo
     });
   };
 
-  this.loadDashboard = _.throttle((force) => {
-    this.dashboard = Dashboard.get({ slug: $routeParams.dashboardSlug }, (dashboard) => {
+
+  this.loadDashboard = (force) => {
+
+    Dashboard.get({ slug: $routeParams.dashboardSlug }).$promise.then((dashboard) => {
+
+      this.dashboard = dashboard
+
       Events.record('view', 'dashboard', dashboard.id);
       renderDashboard(dashboard, force);
-    }, () => {
-        // error...
-        // try again. we wrap loadDashboard with throttle so it doesn't happen too often.
-        // we might want to consider exponential backoff and also move this as a general
-        // solution in $http/$resource for all AJAX calls.
-      this.loadDashboard();
-    });
-  }, 1000);
 
-  this.loadDashboard();
+    }).catch((error) => {
+
+      console.log(error)
+
+      window.location = "/"
+
+    })
+
+  }
+
+  this.loadDashboard()
 
   this.autoRefresh = () => {
     $timeout(() => {

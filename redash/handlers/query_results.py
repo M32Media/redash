@@ -23,8 +23,6 @@ def match_dashboard_visualization(dids, visualizations):
 
     return False
 
-    
-
 # decorator for checking if the User has an access to this view
 def has_access_to_results(func):
 
@@ -52,7 +50,15 @@ def has_access_to_results(func):
 
             return make_response("No Query found", 404)
 
-        visualizations = get_object_or_404(models.Visualization.get_by_query_id, query.id)
+        visualizations = []
+
+        for q in query:
+            
+            visualizations += get_object_or_404(models.Visualization.get_by_query_id, q.id)
+
+            print("Query Name : {} - Visualizations found : {}".format(q.name, len(visualizations)))
+
+
 
         if not visualizations:
 
@@ -208,6 +214,7 @@ class QueryResultResource(BaseResource):
             query_result = None
 
         if query_result:
+            print("REQUIRE ACCESS")
             require_access(query_result.data_source.groups, self.current_user, view_only)
 
             if isinstance(self.current_user, models.ApiUser):

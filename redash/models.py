@@ -1009,12 +1009,9 @@ class Query(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model):
     @classmethod
     def get_by_result_id(cls, qr_id):
 
-        query = cls.query.filter(cls.latest_query_data_id==qr_id).one_or_none()
+        query = cls.query.filter(cls.latest_query_data_id==qr_id).all()
         
-        if query:
-            return query
-        else:
-            return None 
+        return query
 
     def __unicode__(self):
         return unicode(self.id)
@@ -1377,7 +1374,7 @@ class Dashboard(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model
 
     @classmethod
     def get_by_slug_and_org(cls, slug, org):
-        return cls.query.filter(cls.slug == slug, cls.org==org).one()
+        return cls.query.filter(cls.slug == slug, cls.org==org).one_or_none()
 
     @classmethod
     def get_by_id(cls, id):
@@ -1448,7 +1445,8 @@ class DashgroupDashboard(db.Model):
             'dashgroup_id': self.dashgroup_id,
             'dashgroup_name': self.dashgroup.name,
             'dashboard_id': self.dashboard_id,
-            'dashboard_name': self.dashboard.name
+            'dashboard_name': self.dashboard.name,
+            'dashboard_slug': self.dashboard.slug
         }
 
     @classmethod
@@ -1651,7 +1649,7 @@ class Widget(TimestampMixin, db.Model):
 
         for visualization in visualizations:
 
-            print(visualization.name)
+            #print(visualization.name)
 
             wid = cls.query.filter(cls.dashboard_id == dashboard_id, cls.visualization_id == visualization.id).first()
 

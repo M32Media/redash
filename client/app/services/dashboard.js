@@ -14,7 +14,11 @@ function Dashboard($resource, $http, currentUser, Widget) {
   }
 
   const transform = $http.defaults.transformResponse.concat((data) => {
-    if (isArray(data)) {
+
+    if(!data){
+      return undefined
+    }
+    else if (isArray(data)) {
       data.forEach(transformSingle);
     } else {
       transformSingle(data);
