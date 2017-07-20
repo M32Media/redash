@@ -51,6 +51,7 @@ def create_dashboard_logic(old_publisher, publisher, dashboard_id):
                     type=old_widget.visualization.type,
                     query_rel=new_query,
                     name=old_widget.visualization.name,
+                    fr_name=old_widget.visualization.fr_name,
                     description='',
                     options=old_widget.visualization.options
                 )
