@@ -82,7 +82,8 @@ def restore_database(infile_name):
 @manager.command()
 @click.argument('old_publisher')
 @click.argument('publishers')
-def clone_dashboards(old_publisher, publishers):
+@click.argument('dashboard_type', required=False)
+def clone_dashboards(old_publisher, publishers, dashboard_type=None):
 
     dashgroup = models.Dashgroup.query.filter(models.Dashgroup.name == old_publisher).one()
 
@@ -93,8 +94,14 @@ def clone_dashboards(old_publisher, publishers):
 
     #for every dashboards in the old publishers dashgroup, copy these dashboards with the new publisher
     publishers = publishers.split(',')
+    dashboard_type = dashboard_type.split(',') if dashboard_type is not None else dashboard_type
     for publisher in publishers:
         for dashboard_id in dashboard_ids:
+            # If we want to restrain copy to a certain type (where a type is defined in the naming convention of a dashboard
+            # publisher:type:name we check if the type fits, if it doesnt, we don't copy it.
+            if (dashboard_type is not None and models.Dashboard.get_by_id(dashboard_id).name.split(":")[1] not in dashboard_type):
+                continue
+
             created = dashboard.create_dashboard_logic(old_publisher, publisher, dashboard_id)
             #we want to put the created dashboard in a new dashgroup or one that has the right name
             new_pub_group = models.Dashgroup.create_or_get_dashgroup(publisher)
