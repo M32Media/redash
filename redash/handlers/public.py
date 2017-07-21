@@ -167,9 +167,31 @@ def RefreshQueriesData():
 
     #Convert object to dict
     token = req['token']
+    
+    try:
+        with open("refresh.cfg", "r") as f:
+
+            content = f.readlines()
+            content = [x.strip() for x in content]
+            cfg = {}
+
+            for c in content:
+                c = c.split("=")
+                cfg[c[0]] = c[1]
+
+    except Exception:
+
+        message = {
+            'message': "Your API token is invalid please contact M32",
+        }
+
+        resp = jsonify(message)
+        resp.status_code = 401
+
+        return resp
 
     #If token was valid
-    if token == os.getenv('REFRESH_TOKEN'):
+    if token == cfg["refresh_token"]:
 
         #Refresh all queries here
         jobs = refresh_queries_http()
