@@ -18,7 +18,7 @@ def match_dashboard_visualization(dids, visualizations):
 
         widget = models.Widget.get_by_ids(did, visualizations)
 
-        if widget: 
+        if widget:
             return True
 
     return False
@@ -43,7 +43,7 @@ def has_access_to_results(func):
 
             return make_response("No Query Result ID", 404)
 
-        #Find query object 
+        #Find query object
         query = get_object_or_404(models.Query.get_by_result_id, query_result_id)
 
         if not query:
@@ -53,7 +53,7 @@ def has_access_to_results(func):
         visualizations = []
 
         for q in query:
-            
+
             visualizations += get_object_or_404(models.Visualization.get_by_query_id, q.id)
 
             print("Query Name : {} - Visualizations found : {}".format(q.name, len(visualizations)))
@@ -72,11 +72,13 @@ def has_access_to_results(func):
 
             return make_response("User has no dashgroups", 404)
 
+        dashboard_ids = []
+
         # Check for a match in each dashboard from each dashgroup
         for dg in dashgroups:
 
-            dashboard_ids = [dgdb.dashboard_id for dgdb in models.DashgroupDashboard.get_by_dashgroup_id(dg.dashgroup_id)]
-  
+            dashboard_ids.extend([dgdb.dashboard_id for dgdb in models.DashgroupDashboard.get_by_dashgroup_id(dg.dashgroup_id)])
+
         #If we don't find a match between visualizations and dashboard
         if not match_dashboard_visualization(dashboard_ids, visualizations):
 
