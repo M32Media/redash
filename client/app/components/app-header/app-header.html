@@ -27,7 +27,7 @@
           </ul>
         </li>
 
-            <li class="dropdown" ng-repeat="subcat in $ctrl.dashboardHierarchy[0].subcats" ng-if="(!$ctrl.currentUser.hasPermission('admin')) && (!$ctrl.multigroups)"  uib-dropdown>
+            <li class="dropdown" ng-repeat="subcat in $ctrl.dashboardHierarchy[$ctrl.catName].subcats" ng-if="(!$ctrl.currentUser.hasPermission('admin')) && (!$ctrl.multigroups)"  uib-dropdown>
               <a href="#" class="dropdown-toggle" uib-dropdown-toggle title="subcat">
                 <span>{{subcat.name}} <b class="caret"></b></span>
               </a>
@@ -39,7 +39,7 @@
               </ul>
             </li>
 
-            <li class="dropdown" ng-repeat="dashgroup in $ctrl.dashboardHierarchy" ng-if="(!$ctrl.currentUser.hasPermission('admin')) && ($ctrl.multigroups)" uib-dropdown>
+            <li class="dropdown" ng-repeat="(key, dashgroup) in $ctrl.dashboardHierarchy" ng-if="(!$ctrl.currentUser.hasPermission('admin')) && ($ctrl.multigroups)" uib-dropdown>
               <a href="#" class="dropdown-toggle" uib-dropdown-toggle title="dashgroup.name">
                 <span>{{dashgroup.name}} <b class="caret"></b></span>
               </a>

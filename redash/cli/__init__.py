@@ -90,8 +90,8 @@ def make_users_from_file(infile):
     csv_users = csv.reader(open(infile))
     for user in csv_users:
         pwd = binascii.hexlify(os.urandom(11)).decode("utf-8")
-        print(user)
-        users.create_user_logic(email=user[0], name=user[0].split("@")[0], groups=user[1], password=pwd, dashgroups=user[2].replace(";", ","))
+        dashgroups = user[2].replace(";",",") if user[3] == "all" else ",".join(["{}.{}".format(publisher, dashtype) for publisher in user[2].split(';') for dashtype in user[3].split(";")])
+        users.create_user_logic(email=user[0], name=user[0].split("@")[0], groups=user[1], password=pwd, dashgroups=dashgroups)
         with open("generated_users", "a") as generated_user_file:
             generated_user_file.write("{},{}\n".format(user[0], pwd))
 
