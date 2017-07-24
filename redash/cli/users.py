@@ -14,7 +14,8 @@ manager = AppGroup(help="Users management commands.")
 def build_groups(org, groups, is_admin):
     if isinstance(groups, basestring):
         groups = groups.split(',')
-        groups.remove('')  # in case it was empty string
+        if "" in groups:
+            groups.remove('')  # in case it was empty string
         groups = [int(g) for g in groups]
 
     if groups is None:
@@ -51,26 +52,9 @@ def grant_admin(email, organization='default'):
         print "User [%s] not found." % email
 
 
-@manager.command()
-@argument('email')
-@argument('name')
-@option('--org', 'organization', default='default',
-        help="The organization the user belongs to (leave blank for "
-        "'default').")
-@option('--admin', 'is_admin', is_flag=True, default=False,
-        help="set user as admin")
-@option('--google', 'google_auth', is_flag=True,
-        default=False, help="user uses Google Auth to login")
-@option('--password', 'password', default=None,
-        help="Password for users who don't use Google Auth "
-        "(leave blank for prompt).")
-@option('--groups', 'groups', default=None,
-        help="Comma separated list of groups (leave blank for "
-        "default).")
-def create(email, name, groups, is_admin=False, google_auth=False,
-           password=None, organization='default'):
+def create_user_logic(email, name, groups, is_admin=False, google_auth=False, password=None, organization='default', dashgroups=None):
     """
-    Create user EMAIL with display name NAME.
+    Create user EMAIL with display name NAME. The dashgroups argument is a comma separated list of dashgroups names.
     """
     print "Creating user (%s, %s) in organization %s..." % (email, name,
                                                             organization)
@@ -90,9 +74,37 @@ def create(email, name, groups, is_admin=False, google_auth=False,
     try:
         models.db.session.add(user)
         models.db.session.commit()
+        # Creates a UserDashgroup for every passed dashgroup.
+        if dashgroups is not None:
+            for dg in dashgroups.split(','):
+                dashgroup = models.Dashgroup.get_by_name(dg)
+                user_dg = models.UserDashgroup(dashgroup_id=dashgroup.id, user_id=user.id)
+                models.db.session.add(user_dg)
+                models.db.session.commit()
+
     except Exception, e:
         print "Failed creating user: %s" % e.message
         exit(1)
+
+@manager.command("create")
+@argument('email')
+@argument('name')
+@option('--org', 'organization', default='default',
+        help="The organization the user belongs to (leave blank for "
+        "'default').")
+@option('--admin', 'is_admin', is_flag=True, default=False,
+        help="set user as admin")
+@option('--google', 'google_auth', is_flag=True,
+        default=False, help="user uses Google Auth to login")
+@option('--password', 'password', default=None,
+        help="Password for users who don't use Google Auth "
+        "(leave blank for prompt).")
+@option('--groups', 'groups', default=None,
+        help="Comma separated list of groups (leave blank for "
+        "default).")
+@option('--dashgroups', 'dashgroups', default=None, help="Comma separated list of dashgroups.")
+def create(email, name, groups, is_admin=False, google_auth=False,password=None, organization='default', dashgroups=None):
+    create_user_logic(email, name, groups, is_admin, google_auth, dashgroups)
 
 
 @manager.command()

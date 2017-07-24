@@ -12,6 +12,9 @@ from redash.monitor import get_status
 from redash.tasks import refresh_queries
 from redash import models
 from subprocess import call
+import csv
+import os
+import binascii
 
 from funcy import project
 
@@ -78,6 +81,19 @@ def restore_database(infile_name):
         call(["dropdb","redash"])
         call(["createdb","redash"])
         call(["psql", "redash"], stdin=dump)
+
+@manager.command()
+@click.argument('infile')
+def make_users_from_file(infile):
+    """The infile should be of the format : email, permission_group, dashgroup1;dashgroup2 , type1;type2
+    Right now, the types are unsupported. permission_group is an int that is the id of the group."""
+    csv_users = csv.reader(open(infile))
+    for user in csv_users:
+        pwd = binascii.hexlify(os.urandom(11)).decode("utf-8")
+        print(user)
+        users.create_user_logic(email=user[0], name=user[0].split("@")[0], groups=user[1], password=pwd, dashgroups=user[2].replace(";", ","))
+        with open("generated_users", "a") as generated_user_file:
+            generated_user_file.write("{},{}\n".format(user[0], pwd))
 
 @manager.command()
 @click.argument('old_publisher')
