@@ -95,6 +95,39 @@ def make_users_from_file(infile):
         with open("generated_users", "a") as generated_user_file:
             generated_user_file.write("{},{}\n".format(user[0], pwd))
 
+def create_subdashgroups_logic(publisher_names):
+    publisher_names = publisher_names.split(',')
+    for publisher in publisher_names:
+        models.Dashgroup.get_by_name(publisher)
+        dashgroup = models.Dashgroup.get_by_name(publisher)
+        # this gets all the dashboards associated with a dashgroup.
+        all_dashboards = [models.Dashboard.get_by_id(dgdb.dashboard_id) for dgdb in list(models.DashgroupDashboard.query.filter(models.DashgroupDashboard.dashgroup_id == dashgroup.id))]
+        for dashboard in all_dashboards:
+            # If the dashboard does not follow the naming convention, alerts the user and skips it.
+            if len(dashboard.name.split(":")) < 3:
+                print("The dashboard {} has a non compliant name. Skipping it.".format(dashboard.name))
+                continue
+            name = "{}.{}".format(publisher, dashboard.name.split(":")[1])
+            new_dashgroup = models.Dashgroup.get_by_name(name)
+            if new_dashgroup is None:
+                # if its none, we need to create it.
+                new_dashgroup = models.Dashgroup(name=name)
+                # We need to commit and add to have an id for the association
+                models.db.session.add(new_dashgroup)
+                models.db.session.commit()
+            new_dashgroup_dashboard = models.DashgroupDashboard(dashboard_id=dashboard.id, dashgroup_id=new_dashgroup.id)
+            models.db.session.add(new_dashgroup_dashboard)
+            models.db.session.commit()
+
+
+@manager.command()
+@click.argument("publisher_names")
+def create_subdashgroups(publisher_names):
+    """if a dashgroup pubX contains two dashboards: pubX:cat1:dash1 and pubX:cat2:dash1
+    This command will split the dashgroup. publisher_names is a comma separated list of publishers."""
+    create_subdashgroups_logic(publisher_names)
+
+
 @manager.command()
 @click.argument('old_publisher')
 @click.argument('publishers')
