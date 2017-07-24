@@ -1,2 +1,2 @@
-test1@testing,5,lcmedia;TeleQuebec
-test2@testing,5,TeleQuebec
+test1@testing,5,lcmedia;TeleQuebec,all
+test2@testing,5,lcmedia,m32;publisher
