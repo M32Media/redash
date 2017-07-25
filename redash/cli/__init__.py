@@ -96,7 +96,6 @@ def make_users_from_file(infile):
             generated_user_file.write("{},{}\n".format(user[0], pwd))
 
 def create_subdashgroups_logic(publisher_names):
-    publisher_names = publisher_names.split(',')
     for publisher in publisher_names:
         models.Dashgroup.get_by_name(publisher)
         dashgroup = models.Dashgroup.get_by_name(publisher)
@@ -125,7 +124,7 @@ def create_subdashgroups_logic(publisher_names):
 def create_subdashgroups(publisher_names):
     """if a dashgroup pubX contains two dashboards: pubX:cat1:dash1 and pubX:cat2:dash1
     This command will split the dashgroup. publisher_names is a comma separated list of publishers."""
-    create_subdashgroups_logic(publisher_names)
+    create_subdashgroups_logic(publisher_names.split(','))
 
 
 @manager.command()
@@ -157,6 +156,9 @@ def clone_dashboards(old_publisher, publishers, dashboard_type=None):
             grouping = models.DashgroupDashboard(dashboard_id=created.id, dashgroup_id=new_pub_group)
             models.db.session.add(grouping)
             models.db.session.commit()
+
+    # We also want to create subdashgroups for all these new groups.
+    create_subdashgroups_logic(publishers)
 
 
 @manager.command()
