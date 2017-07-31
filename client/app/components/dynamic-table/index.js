@@ -18,6 +18,8 @@ function DynamicTable($sanitize) {
     const last = this.count * (this.page);
 
     this.rowsToDisplay = this.rows.slice(first, last);
+    // We need to exclude some columns in some special cases.
+    this.columnsToDisplay = this.columns.filter((column) => {console.log(column);return column.name !== "Status__filter"});
   };
 
   this.$onChanges = (changes) => {
