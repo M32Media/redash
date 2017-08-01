@@ -15,6 +15,11 @@ export default function(ngModule){
           }
         }
         if(num === undefined || num === null) {
+          // getDate() is the true way to get the day of the month. getDay returns the day of the week -_-
+          if (new Date().getDate() !== 1) {
+            // Some queries return an undefined result the first of each month...
+            return "";
+          }
           return language.getCurrentLanguage() === 'En' ? "An error occured" : "Une erreur est survenue";
         }
         return numberFilter(num, decimals) + suffix;
