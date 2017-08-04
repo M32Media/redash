@@ -6,7 +6,7 @@ export default function(ngModule){
         shorten = shorten == undefined ? false : shorten;
         var suffix = "";
         if(shorten) {
-          if(num >= 1000000) {
+          if(num >= 999500) {
             num /= 1000000;
             suffix = "M";
           } else if (num >= 1000) {
