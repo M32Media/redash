@@ -12,6 +12,8 @@ from redash.monitor import get_status
 from redash.tasks import refresh_queries
 from redash import models
 from subprocess import call
+import json
+from subprocess import check_output
 import csv
 import os
 import binascii
@@ -130,8 +132,9 @@ def create_subdashgroups(publisher_names):
 @manager.command()
 @click.argument('old_publisher')
 @click.argument('publishers')
+@click.option('--check-portal-type', default=True)
 @click.argument('dashboard_type', required=False)
-def clone_dashboards(old_publisher, publishers, dashboard_type=None):
+def clone_dashboards(old_publisher, publishers, check_portal_type=True, dashboard_type=None):
 
     dashgroup = models.Dashgroup.query.filter(models.Dashgroup.name == old_publisher).one()
 
@@ -144,10 +147,25 @@ def clone_dashboards(old_publisher, publishers, dashboard_type=None):
     publishers = publishers.split(',')
     dashboard_type = dashboard_type.split(',') if dashboard_type is not None else dashboard_type
     for publisher in publishers:
+        portal_type = None
+        # There are two portal types: Ad Operations and Monetization. We go check for
+        # that in bq.
+        if check_portal_type:
+            portal_type = check_output(["bq", "query", "--format=json", 'SELECT Portal_Type FROM [ad-operations:M32_Services_REF.SiteMapping] where BQ_Dataset_Name = "{}" LIMIT 1'.format(publisher)])
+            # this is a bit ugly but it works
+            try:
+                portal_type = json.loads(portal_type.split("\n")[-2])[0]["Portal_Type"]
+            except Exception as e:
+                print("*********** Either {} was not found in BQ or an error occured. No dashboards were created.***********)".format(publisher))
+                print("This is the exception: ".format(e))
+
         for dashboard_id in dashboard_ids:
             # If we want to restrain copy to a certain type (where a type is defined in the naming convention of a dashboard
             # publisher:type:name we check if the type fits, if it doesnt, we don't copy it.
             if (dashboard_type is not None and models.Dashboard.get_by_id(dashboard_id).name.split(":")[1] not in dashboard_type):
+                continue
+            # If the portal type is monetization and the dashboard type is 'publisher' we don't want it.
+            elif portal_type == "Monetization" and models.Dashboard.get_by_id(dashboard_id).name.split(":")[1] == "publisher":
                 continue
 
             created = dashboard.create_dashboard_logic(old_publisher, publisher, dashboard_id)
