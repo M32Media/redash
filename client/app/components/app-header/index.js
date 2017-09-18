@@ -31,6 +31,11 @@ function controller($rootScope, $location, $uibModal, Auth, currentUser, Dashboa
         // We can have dashgroups that looks like publisher.subcategory.
         var unique_names = _.uniq(dg_results.map((index) => index.dashgroup_name.split(".")[0]));
         this.multigroups = unique_names.length === 1 ? false : true;
+        // If we have too many groups we want to display the classic search based menu
+        this.tooManyGroups = unique_names.length >= 10;
+        if (this.tooManyGroups) {
+          return
+        }
         this.dashgroupsDashboards = {};
         this.dashboardHierarchy = {};
         // Let me tell you about the very important difference between var and let. var will fuck things up when its closed over and the var is rewritten over later,
