@@ -132,7 +132,7 @@ def create_subdashgroups(publisher_names):
 @manager.command()
 @click.argument('old_publisher')
 @click.argument('publishers')
-@click.option('--check-portal-type', default=True)
+@click.option('check-portal-type', required=False)
 @click.argument('dashboard_type', required=False)
 def clone_dashboards(old_publisher, publishers, check_portal_type=True, dashboard_type=None):
 
