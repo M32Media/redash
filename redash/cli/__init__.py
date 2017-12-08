@@ -152,7 +152,7 @@ def clone_dashboards(old_publisher, publishers, check_portal_type=True, dashboar
         # that in bq.
         if check_portal_type:
             try:
-                portal_type = check_output(["bq", "query", "--format=json", 'SELECT Portal_Type FROM [ad-operations:M32_Services_REF.SiteMapping] where BQ_Dataset_Name = "{}" LIMIT 1'.format(publisher)])
+                portal_type = check_output(["bq", "query", "--format=json", 'SELECT Portal_Type FROM [adoperationsprd2:M32_Services_REF.SiteMapping] where BQ_Dataset_Name = "{}" LIMIT 1'.format(publisher)])
                 # this is a bit ugly but it works
                 portal_type = json.loads(portal_type.split("\n")[-2])[0]["Portal_Type"]
             except Exception as e:
