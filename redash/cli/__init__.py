@@ -133,9 +133,12 @@ def create_subdashgroups(publisher_names):
 @click.argument('old_publisher')
 @click.argument('publishers')
 @click.argument('check-portal-type', required=False)
+@click.argument('check-for-cxense', required=False)
 @click.argument('dashboard_type', required=False)
-def clone_dashboards(old_publisher, publishers, check_portal_type=True, dashboard_type=None):
-
+def clone_dashboards(old_publisher, publishers, check_portal_type=True, check_for_cxense=True, dashboard_type=None):
+    # click ignores default values in unrequired arguments
+    check_portal_type = check_portal_type.lower() != "false" if check_portal_type is not None else True
+    check_for_cXense = check_for_cXense.lower() != "false" if check_for_cXense is not None else True
     dashgroup = models.Dashgroup.query.filter(models.Dashgroup.name == old_publisher).one()
 
     if dashgroup is None:
@@ -157,8 +160,19 @@ def clone_dashboards(old_publisher, publishers, check_portal_type=True, dashboar
                 portal_type = json.loads(portal_type.split("\n")[-2])[0]["Portal_Type"]
             except Exception as e:
                 print("*********** Either {} was not found in BQ or an error occured. No dashboards were created.***********)".format(publisher))
+                print("*********** If you want to bypass that check, add false after the list of publishers ***********")
                 print("This is the exception: ".format(e))
-
+                return
+        if check_for_cxense:
+            try:
+                portal_type = check_output(["bq", "query", "--format=json", 'SELECT Site_ID_CX FROM [adoperationsprd2:M32_Services_REF.SiteMapping] WHERE BQ_Dataset_Name="{}" GROUP BY BQ_Dataset_Name, Site_ID_CX ORDER BY Site_ID_CX DESC LIMIT 1'.format(publisher)])
+                # this is a bit ugly but it works
+                portal_type = json.loads(portal_type.split("\n")[-2])[0]["Site_ID_CX"] != ""
+            except Exception as e:
+                print("*********** Either {} was not found in BQ or an error occured. No dashboards were created.***********)".format(publisher))
+                print("*********** If you want to bypass that check, add false after the list of publishers ***********")
+                print("This is the exception: ".format(e))
+                return
         for dashboard_id in dashboard_ids:
             # If we want to restrain copy to a certain type (where a type is defined in the naming convention of a dashboard
             # publisher:type:name we check if the type fits, if it doesnt, we don't copy it.
