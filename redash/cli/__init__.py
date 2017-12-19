@@ -151,6 +151,7 @@ def clone_dashboards(old_publisher, publishers, check_portal_type=True, check_fo
     dashboard_type = dashboard_type.split(',') if dashboard_type is not None else dashboard_type
     for publisher in publishers:
         portal_type = None
+        has_cx = False
         # There are two portal types: Ad Operations and Monetization. We go check for
         # that in bq.
         if check_portal_type:
@@ -165,9 +166,9 @@ def clone_dashboards(old_publisher, publishers, check_portal_type=True, check_fo
                 return
         if check_for_cxense:
             try:
-                portal_type = check_output(["bq", "query", "--format=json", 'SELECT Site_ID_CX FROM [adoperationsprd2:M32_Services_REF.SiteMapping] WHERE BQ_Dataset_Name="{}" GROUP BY BQ_Dataset_Name, Site_ID_CX ORDER BY Site_ID_CX DESC LIMIT 1'.format(publisher)])
+                has_cx = check_output(["bq", "query", "--format=json", 'SELECT Site_ID_CX FROM [adoperationsprd2:M32_Services_REF.SiteMapping] WHERE BQ_Dataset_Name="{}" GROUP BY BQ_Dataset_Name, Site_ID_CX ORDER BY Site_ID_CX DESC LIMIT 1'.format(publisher)])
                 # this is a bit ugly but it works
-                portal_type = json.loads(portal_type.split("\n")[-2])[0]["Site_ID_CX"] != ""
+                has_cx = json.loads(has_cx.split("\n")[-2])[0]["Site_ID_CX"] != ""
             except Exception as e:
                 print("*********** Either {} was not found in BQ or an error occured. No dashboards were created.***********)".format(publisher))
                 print("*********** If you want to bypass that check, add false after the list of publishers ***********")
@@ -180,6 +181,9 @@ def clone_dashboards(old_publisher, publishers, check_portal_type=True, check_fo
                 continue
             # If the portal type is monetization and the dashboard type is 'publisher' we don't want it.
             elif portal_type == "Monetization" and models.Dashboard.get_by_id(dashboard_id).name.split(":")[1] == "publisher":
+                continue
+            # If the publisher doesn't have cXense, don't clone
+            elif not has_cx and models.Dashboard.get_by_id(dashboard_id).name.split(":")[1] == "cXense":
                 continue
 
             created = dashboard.create_dashboard_logic(old_publisher, publisher, dashboard_id)
