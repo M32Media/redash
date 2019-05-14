@@ -78,7 +78,7 @@ def clone_month(month_to_change):
 
         widgets = [
             models.Widget.get_by_id(widget_ref[0])
-            for widget_ref in row_labeled_layout if not widget_ref[0] < 0] 
+            for widget_ref in row_labeled_layout if not widget_ref[0] < 0]
         viz_names = [
             widget.visualization.name for widget in widgets]
 
@@ -140,7 +140,7 @@ def clone_month(month_to_change):
 
                 print('Created new widget {widget} for dashboard {dashboard}'.format(
                     widget=new_widget, dashboard=dashboard.name))
-                
+
                 #Appends the widgets id at the same row as the original.
                 new_layout[widget[1]].append(new_widget.id)
 
@@ -160,6 +160,14 @@ def version():
 @manager.command()
 def refresh_all_the_queries():
     refresh_queries()
+
+@manager.command()
+@click.argument('months_to_refresh')
+@click.argument('publishers')
+def refresh_only_selected_queries():
+    refresh_selected_queries(
+        months_to_refresh.split(','),
+        publishers.split(',') if publishers else 'ALL')
 
 @manager.command()
 def status():
@@ -318,5 +326,3 @@ def send_test_mail(email=None):
 
     mail.send(Message(subject="Test Message from Redash", recipients=[email],
                       body="Test message."))
-
-
