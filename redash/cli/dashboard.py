@@ -18,9 +18,10 @@ def create_dashboard_logic(old_publisher, publisher, dashboard_id):
                                dashboard_filters_enabled = old_dashboard.dashboard_filters_enabled,
                                layout='[]',
                                is_draft=old_dashboard.is_draft)
+    
     models.db.session.add(dashboard)
     models.db.session.commit()
-    json.dumps
+
     layout_list = json.loads(old_dashboard.layout)
     # List of (widget_id, row_num) to copy the old layout to the new.
     row_labeled_layout = [ (layout_list[i][j], i) for i in range(len(layout_list)) for j in range(len(layout_list[i]))]
@@ -33,8 +34,15 @@ def create_dashboard_logic(old_publisher, publisher, dashboard_id):
         else :
             old_widget = models.Widget.get_by_id(widget[0])
             if old_widget.visualization != None:
-                query_id = old_widget.visualization.query_rel.id
-                new_query_sql = create_query_definition(query_id, publisher, old_publisher)
+                # Solves a case where the dataset wasn't changing for a query but was for all the other ones.
+                m32_str = 'm32-pixel.m32media_gcs_pixel_tracking_analytics.heartbeat_'
+                randomString = 'rbjbqfbbfu2b2'
+                if old_widget.visualization.query_rel.query_text.find(m32_str) != -1:
+                    new_query_sql = old_widget.visualization.query_rel.query_text.replace(m32_str, randomString).replace(old_publisher, publisher).replace(randomString, m32_str)
+                else:
+                    query_id = old_widget.visualization.query_rel.id
+                    new_query_sql = create_query_definition(query_id, publisher, old_publisher)
+
                 new_query = models.Query(
                     name=old_widget.visualization.query_rel.name + ' [' + publisher.lower() + ']',
                     description='',
@@ -43,10 +51,14 @@ def create_dashboard_logic(old_publisher, publisher, dashboard_id):
                     is_archived=False,
                     schedule=None,
                     data_source=old_widget.visualization.query_rel.data_source,
-                    org=models.Organization.get_by_id(1)
+                    org=models.Organization.get_by_id(1),
+                    # Custom variables
+                    options=old_widget.visualization.query_rel.options
                 )
+
                 models.db.session.add(new_query)
                 models.db.session.commit()
+
                 new_visualisation = models.Visualization(
                     type=old_widget.visualization.type,
                     query_rel=new_query,
@@ -70,8 +82,21 @@ def create_dashboard_logic(old_publisher, publisher, dashboard_id):
                 models.db.session.add(new_widget)
                 models.db.session.commit()
 
+            # Solves a case where the Text widget would be ignored in the cloned layout
+            else:
+                new_widget = models.Widget(
+                    type=old_widget.type,
+                    width=old_widget.width,
+                    options=old_widget.options,
+                    dashboard=dashboard,
+                    text=old_widget.text,
+                    visualization=old_widget.visualization
+                )
+
+                models.db.session.add(new_widget)
+                models.db.session.commit()
                 #Appends the widgets id at the same row as the original.
-                new_layout[widget[1]].append(new_widget.id)
+            new_layout[widget[1]].append(new_widget.id)
 
 
     new_layout = json.dumps(new_layout).replace(' ', '')
