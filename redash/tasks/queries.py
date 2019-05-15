@@ -44,6 +44,15 @@ def refresh_selected_queries(months, publishers):
     logger.info("Done refreshing queries. Found %d outdated queries: %s" % (outdated_queries_count, query_ids))
 
     status = redis_connection.hgetall('redash:status')
+    now = time.time()
+
+    redis_connection.hmset('redash:status', {
+        'outdated_queries_count': outdated_queries_count,
+        'last_refresh_at': now,
+        'query_ids': json.dumps(query_ids)
+    })
+
+    statsd_client.gauge('manager.seconds_since_refresh', now - float(status.get('last_refresh_at', now)))
 
 """
 Gets task associated with ids
