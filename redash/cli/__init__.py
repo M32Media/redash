@@ -9,6 +9,7 @@ from random import randint
 from redash import create_app, settings, __version__
 from redash.cli import users, groups, database, data_sources, organization, dashboard
 from redash.monitor import get_status
+import redash.tasks
 from redash.tasks import refresh_queries
 from redash import models
 from subprocess import call
@@ -162,12 +163,12 @@ def refresh_all_the_queries():
     refresh_queries()
 
 @manager.command()
-@click.argument('months_to_refresh')
+@click.argument('months')
 @click.argument('publishers')
-def refresh_only_selected_queries():
-    refresh_selected_queries(
-        months_to_refresh.split(','),
-        publishers.split(',') if publishers else 'ALL')
+def refresh_only_selected_queries(months, publishers):
+    redash.tasks.refresh_selected_queries(
+        months.split(','),
+        publishers.split(','))
 
 @manager.command()
 def status():
