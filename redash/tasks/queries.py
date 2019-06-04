@@ -24,19 +24,20 @@ def refresh_selected_queries(months, publishers):
         (db.id, db.name) for db in models.Dashboard.query.all()
         if (publishers == ['ALL'] or any(publisher == db.name.split(':')[0] for publisher in publishers))]
 
+    jobs = []
     for db_id, _ in dashboard_ids_names:
             dashboard = models.Dashboard.get_by_id(db_id)
             layout_list = [widget_id for row in json.loads(dashboard.layout) for widget_id in row]
-            
+
             widgets = [models.Widget.get_by_id(widget_id) for widget_id in layout_list if not widget_id < 0]
             for widget in widgets:
                 if widget.visualization != None and any(month in widget.visualization.name for month in months):
                     query_id = widget.visualization.query_rel.id
                     query = models.Query.get_by_id(query_id)
-                    enqueue_query(
+                    jobs.append(enqueue_query(
                         query.query_text, query.data_source, query.user_id,
                         scheduled_query=query,
-                        metadata={'Query ID': query.id, 'Username': 'Scheduled'})
+                        metadata={'Query ID': query.id, 'Username': 'Scheduled'}))
 
                     query_ids.append(query.id)
                     outdated_queries_count += 1
@@ -53,6 +54,8 @@ def refresh_selected_queries(months, publishers):
     })
 
     statsd_client.gauge('manager.seconds_since_refresh', now - float(status.get('last_refresh_at', now)))
+
+    return jobs
 
 """
 Gets task associated with ids
@@ -341,17 +344,17 @@ def refresh_queries_http():
         if query.data_source.paused:
 
             logger.info("Skipping refresh of Query 1 {} because datasource {} is paused because {}"
-                .format(query.id, 
+                .format(query.id,
                     query.data_source.name,
                     query.data_source.pause_reason
                 ))
         else:
-            
+
             jobs.append(enqueue_query(query.query_text, query.data_source, query.user_id,
                               scheduled_query=query,
                               metadata={'Query ID': query.id, 'Username': 'Scheduled'}))
 
-    
+
 
     """ LINK BETWEEN TRACKER AND ACTUAL TASK
     for job in jobs:
@@ -363,7 +366,7 @@ def refresh_queries_http():
         for tracker in QueryTaskTracker.all(_list):
             print("TRACKER : {}".format(tracker.data.get('task_id', None)))
     """
-    
+
 
     return jobs
 
@@ -375,7 +378,7 @@ def refresh_queries():
 
     with statsd_client.timer('manager.outdated_queries_lookup'):
         for query in models.Query.outdated_queries():
-            if settings.FEATURE_DISABLE_REFRESH_QUERIES: 
+            if settings.FEATURE_DISABLE_REFRESH_QUERIES:
                 logging.info("Disabled refresh queries.")
             elif query.data_source.paused:
                 logging.info("Skipping refresh of %s because datasource - %s is paused (%s).", query.id, query.data_source.name, query.data_source.pause_reason)
@@ -620,5 +623,3 @@ def refresh_query_tokens():
         user = u.to_dict()
 
         send_api_token(user)
-
-

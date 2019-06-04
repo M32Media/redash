@@ -3,7 +3,7 @@ from redash.handlers import routes
 from flask import request, render_template, jsonify, make_response
 from flask_restful import Resource, abort
 from redash import models, utils
-from redash.tasks import refresh_queries_http, get_tasks, refresh_query_tokens
+from redash.tasks import refresh_queries_http, get_tasks, refresh_query_tokens, refresh_selected_queries
 from funcy import project
 from redash.authentication.account import send_api_token
 from redash.utils import collect_query_parameters, collect_parameters_from_request, json_dumps
@@ -12,10 +12,10 @@ from redash.utils import collect_query_parameters, collect_parameters_from_reque
 API key validation decorator
 """
 def validate_api_key(func):
-    
+
     def validation_wrapper(dashgroup_name, subcategory_name, dashboard_name, url_tag):
-        
-        #print(os.getenv('REFRESH_TOKEN'))        
+
+        #print(os.getenv('REFRESH_TOKEN'))
 
         token = request.values.get('token')
         ext = request.args.get('ext') or 'json'
@@ -39,7 +39,7 @@ def validate_api_key(func):
         else:
 
             return custom_response(401, "No token found")
-        
+
     return validation_wrapper
 
 
@@ -155,19 +155,19 @@ def embededQueryResultResource(visualization_id, query_token):
     return response
 
 
-
 """
 This Route creates the celery tasks to query data from sources. It returns the IDs of those tasks
-and we have to GET /api/queries/refresh/tasks to know their statuses
+and we have to GET /api/queries/refresh/tasks to know their statuses. This method refreshes
+all queries for the Redash system
 """
-@routes.route('/api/queries/refresh', methods=['POST'])
+@routes.route('/api/queries/refresh/all', methods=['POST'])
 def RefreshQueriesData():
 
     req = request.get_json(force=True)
 
     #Convert object to dict
     token = req['token']
-    
+
     try:
         with open("refresh.cfg", "r") as f:
 
@@ -209,7 +209,84 @@ def RefreshQueriesData():
         response = make_response(json.dumps(data), 202, headers)
 
         return response;
-        
+
+    else:
+
+        message = {
+            'message': "Your API token is invalid please contact M32",
+        }
+
+        resp = jsonify(message)
+        resp.status_code = 401
+
+        return resp
+
+"""
+This Route creates the celery tasks to query only selected data from sources.
+It returns the IDs of those tasks and we have to GET /api/queries/refresh/tasks
+to know their statuses. The json for the request can contain:
+
+- a list of publishers (publishers)
+- a list of months (months) in the format YYYYMM
+
+If no parameters are specified, the queries will affect all publishers for the
+current month (e.g. if this is executed on any day of June, it will refresh all
+queries for all publishers that depend on June data)
+"""
+@routes.route('/api/queries/refresh', methods=['POST'])
+def RefreshQueriesData():
+
+    req = request.get_json(force=True)
+
+    #Convert object to dict
+    token = req['token']
+
+    publishers = req.get('publishers', 'ALL')
+    months = req.get('months', datetime.now().strftime('%Y%m'))
+
+    publishers = publishers if type(publishers) == type(list()) else [publishers]
+    months = months if type(months) == type(list()) else [months]
+
+    try:
+        with open("refresh.cfg", "r") as f:
+
+            content = f.readlines()
+            content = [x.strip() for x in content]
+            cfg = {}
+
+            for c in content:
+                c = c.split("=")
+                cfg[c[0]] = c[1]
+
+    except Exception:
+
+        message = {
+            'message': "Your API token is invalid please contact M32",
+        }
+
+        resp = jsonify(message)
+        resp.status_code = 401
+
+        return resp
+
+    #If token was valid
+    if token == cfg["refresh_token"]:
+
+        jobs = refresh_selected_queries(months, publishers)
+
+        job_ids = []
+
+        for job in jobs:
+            job_ids.append(job.to_dict().get('id', None))
+
+        data = {}
+        data['tasks'] = job_ids
+
+        headers = {'Content-Type': "application/json"}
+        response = make_response(json.dumps(data), 202, headers)
+
+        return response;
+
     else:
 
         message = {
@@ -228,7 +305,7 @@ def TasksStatus():
 
     #Convert object to dict
     obj = json.loads(req['tasks'])
-       
+
     data = get_tasks(obj['tasks'])
 
     headers = {'Content-Type': "application/json"}
@@ -243,7 +320,7 @@ def EmailTest():
         name = "Test User"
         api_key = "SOMEAPIKEYDUMMY"
         email = "arnaud.girardin444@gmail.com"
-    
+
     send_api_token(CustomUser())
 
     return custom_response(200, "Sending Email !")
@@ -259,7 +336,3 @@ def custom_response(code, message="Something went wrong"):
     resp.status_code = code
 
     return resp
-
-
-
-
