@@ -1,4 +1,5 @@
 import json, os
+from datetime import datetime
 from redash.handlers import routes
 from flask import request, render_template, jsonify, make_response
 from flask_restful import Resource, abort
@@ -161,7 +162,7 @@ and we have to GET /api/queries/refresh/tasks to know their statuses. This metho
 all queries for the Redash system
 """
 @routes.route('/api/queries/refresh/all', methods=['POST'])
-def RefreshQueriesData():
+def RefreshAllQueriesData():
 
     req = request.get_json(force=True)
 
