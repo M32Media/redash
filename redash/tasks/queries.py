@@ -14,6 +14,46 @@ from redash.authentication.account import send_api_token
 
 logger = get_task_logger(__name__)
 
+@celery.task(name="redash.tasks.refresh_selected_queries")
+def refresh_selected_queries(months, publishers):
+
+    outdated_queries_count = 0
+    query_ids = []
+
+    dashboard_ids_names = [
+        (db.id, db.name) for db in models.Dashboard.query.all()
+        if (publishers == ['ALL'] or any(publisher == db.name.split(':')[0] for publisher in publishers))]
+
+    for db_id, _ in dashboard_ids_names:
+            dashboard = models.Dashboard.get_by_id(db_id)
+            layout_list = [widget_id for row in json.loads(dashboard.layout) for widget_id in row]
+            
+            widgets = [models.Widget.get_by_id(widget_id) for widget_id in layout_list if not widget_id < 0]
+            for widget in widgets:
+                if widget.visualization != None and any(month in widget.visualization.name for month in months):
+                    query_id = widget.visualization.query_rel.id
+                    query = models.Query.get_by_id(query_id)
+                    enqueue_query(
+                        query.query_text, query.data_source, query.user_id,
+                        scheduled_query=query,
+                        metadata={'Query ID': query.id, 'Username': 'Scheduled'})
+
+                    query_ids.append(query.id)
+                    outdated_queries_count += 1
+
+    logger.info("Done refreshing queries. Found %d outdated queries: %s" % (outdated_queries_count, query_ids))
+
+    status = redis_connection.hgetall('redash:status')
+    now = time.time()
+
+    redis_connection.hmset('redash:status', {
+        'outdated_queries_count': outdated_queries_count,
+        'last_refresh_at': now,
+        'query_ids': json.dumps(query_ids)
+    })
+
+    statsd_client.gauge('manager.seconds_since_refresh', now - float(status.get('last_refresh_at', now)))
+
 """
 Gets task associated with ids
 """
@@ -45,7 +85,6 @@ def get_tasks(ids):
                         }
 
     return tasks;
-
 
 def _job_lock_id(query_hash, data_source_id):
     return "query_hash_job:%s:%s" % (data_source_id, query_hash)
@@ -328,7 +367,6 @@ def refresh_queries_http():
 
     return jobs
 
-    
 @celery.task(name="redash.tasks.refresh_queries")
 def refresh_queries():
 
@@ -553,7 +591,6 @@ class QueryExecutor(object):
     def _load_data_source(self):
         logger.info("task=execute_query state=load_ds ds_id=%d", self.data_source_id)
         return models.DataSource.query.get(self.data_source_id)
-
 
 # user_id is added last as a keyword argument for backward compatability -- to support executing previously submitted
 # jobs before the upgrade to this version.
