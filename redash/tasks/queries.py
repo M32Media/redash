@@ -43,7 +43,7 @@ def refresh_selected_queries(months, publishers, global_queries=False, non_month
                 # This adds everything that is not month dependent to the query list
                 # e.g. Cogeco:segment:profile_referrer:view_cogeco, Global:Intell:AdManager:view_last_6m
                 condition = condition or (not re.findall(r'_(\d{6})', widget.visualization.name))
-            if global:
+            if global_queries:
                 condition = condition or db_name.split(':')[0] == 'Global'
             if condition:
                 print('{}=>{}'.format(db_name, widget.visualization.name))
