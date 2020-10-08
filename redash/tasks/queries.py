@@ -43,7 +43,7 @@ def refresh_selected_queries(months, publishers):
 
                 query_ids.append(query.id)
                 outdated_queries_count += 1
-        return
+    return
 
     logger.info("Done refreshing queries. Found %d outdated queries: %s" % (outdated_queries_count, query_ids))
 
