@@ -164,12 +164,6 @@ def refresh_all_the_queries():
 
 @manager.command()
 @click.argument('months')
-@click.argument('publishers', default='All')
-def refresh_selected_queries(months, publishers):
-    refresh_selected_queries(months, publishers)
-
-@manager.command()
-@click.argument('months')
 @click.argument('publishers')
 def refresh_only_selected_queries(months, publishers):
     redash.tasks.refresh_selected_queries(
