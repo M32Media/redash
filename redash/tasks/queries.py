@@ -25,24 +25,26 @@ def refresh_selected_queries(months, publishers):
         if (publishers == ['ALL'] or any(publisher == db.name.split(':')[0] for publisher in publishers))]
 
     jobs = []
-    for db_id, _ in dashboard_ids_names:
-            dashboard = models.Dashboard.get_by_id(db_id)
-            layout_list = [widget_id for row in json.loads(dashboard.layout) for widget_id in row]
+    for db_id, db_name in dashboard_ids_names:
+        print(db_name)
+        return
+        dashboard = models.Dashboard.get_by_id(db_id)
+        layout_list = [widget_id for row in json.loads(dashboard.layout) for widget_id in row]
 
-            widgets = [models.Widget.get_by_id(widget_id) for widget_id in layout_list if not widget_id < 0]
-            for widget in widgets:
-                if widget.visualization != None and any(month in widget.visualization.name for month in months):
-                    print(widget.visualization.name)
-                    query_id = widget.visualization.query_rel.id
-                    query = models.Query.get_by_id(query_id)
-                    jobs.append(enqueue_query(
-                        query.query_text, query.data_source, query.user_id,
-                        scheduled_query=query,
-                        metadata={'Query ID': query.id, 'Username': 'Scheduled'}))
+        widgets = [models.Widget.get_by_id(widget_id) for widget_id in layout_list if not widget_id < 0]
+        for widget in widgets:
+            if widget.visualization != None and any(month in widget.visualization.name for month in months):
+                print(widget.visualization.name)
+                query_id = widget.visualization.query_rel.id
+                query = models.Query.get_by_id(query_id)
+                jobs.append(enqueue_query(
+                    query.query_text, query.data_source, query.user_id,
+                    scheduled_query=query,
+                    metadata={'Query ID': query.id, 'Username': 'Scheduled'}))
 
-                    query_ids.append(query.id)
-                    outdated_queries_count += 1
-            return
+                query_ids.append(query.id)
+                outdated_queries_count += 1
+        return
 
     logger.info("Done refreshing queries. Found %d outdated queries: %s" % (outdated_queries_count, query_ids))
 
