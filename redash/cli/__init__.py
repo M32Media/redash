@@ -164,7 +164,7 @@ def refresh_all_the_queries():
 
 @manager.command()
 @click.argument('months')
-@click.argument('publishers')
+@click.argument('publishers', default='All')
 def refresh_selected_queries(months, publishers):
     refresh_selected_queries(months, publishers)
 
