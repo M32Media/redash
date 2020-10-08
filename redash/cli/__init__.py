@@ -171,7 +171,7 @@ def refresh_all_the_queries():
 @click.option(
     '--non-monthly-publisher-queries', '-nmpq', is_flag=True,
     help='Execute global publisher queries too (Publisher queries that don\'t depend on the month)')
-def refresh_only_selected_queries(months, publishers):
+def refresh_only_selected_queries(months, publishers, global_queries, non_monthly_publisher_queries):
     redash.tasks.refresh_selected_queries(
         months=months.split(','), publishers=publishers.split(','),
         global_queries=global_queries,
