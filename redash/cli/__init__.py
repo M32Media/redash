@@ -10,7 +10,7 @@ from redash import create_app, settings, __version__
 from redash.cli import users, groups, database, data_sources, organization, dashboard
 from redash.monitor import get_status
 import redash.tasks
-from redash.tasks import refresh_queries
+from redash.tasks import refresh_queries, refresh_selected_queries
 from redash import models
 from subprocess import call
 import json
@@ -161,6 +161,12 @@ def version():
 @manager.command()
 def refresh_all_the_queries():
     refresh_queries()
+
+@manager.command()
+@click.argument('months')
+@click.argument('publishers')
+def refresh_selected_queries(months, publishers):
+    refresh_selected_queries(months, publishers)
 
 @manager.command()
 @click.argument('months')
