@@ -32,6 +32,7 @@ def refresh_selected_queries(months, publishers):
             widgets = [models.Widget.get_by_id(widget_id) for widget_id in layout_list if not widget_id < 0]
             for widget in widgets:
                 if widget.visualization != None and any(month in widget.visualization.name for month in months):
+                    print(widget.visualization.name)
                     query_id = widget.visualization.query_rel.id
                     query = models.Query.get_by_id(query_id)
                     jobs.append(enqueue_query(
@@ -41,6 +42,7 @@ def refresh_selected_queries(months, publishers):
 
                     query_ids.append(query.id)
                     outdated_queries_count += 1
+            return
 
     logger.info("Done refreshing queries. Found %d outdated queries: %s" % (outdated_queries_count, query_ids))
 
