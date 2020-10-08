@@ -165,10 +165,17 @@ def refresh_all_the_queries():
 @manager.command()
 @click.argument('months')
 @click.argument('publishers')
+@click.option(
+    '--global-queries', '-gq', is_flag=True,
+    help='Execute global queries too (Global dashboard)')
+@click.option(
+    '--non-monthly-publisher-queries', '-nmpq', is_flag=True,
+    help='Execute global publisher queries too (Publisher queries that don\'t depend on the month)')
 def refresh_only_selected_queries(months, publishers):
     redash.tasks.refresh_selected_queries(
-        months.split(','),
-        publishers.split(','))
+        months=months.split(','), publishers=publishers.split(','),
+        global_queries=global_queries,
+        non_monthly_publisher_queries=non_monthly_publisher_queries)
 
 @manager.command()
 def status():

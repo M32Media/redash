@@ -3,6 +3,7 @@ import time
 import logging
 import signal
 import redis
+import re
 from celery.result import AsyncResult
 from celery.utils.log import get_task_logger
 from redash import redis_connection, models, statsd_client, settings, utils
@@ -15,14 +16,19 @@ from redash.authentication.account import send_api_token
 logger = get_task_logger(__name__)
 
 @celery.task(name="redash.tasks.refresh_selected_queries")
-def refresh_selected_queries(months, publishers):
+def refresh_selected_queries(months, publishers, global_queries=False, non_monthly_publisher_queries=False):
 
     outdated_queries_count = 0
     query_ids = []
 
+    all_dashboards = models.Dashboard.query.all()
+
     dashboard_ids_names = [
-        (db.id, db.name) for db in models.Dashboard.query.all()
+        (db.id, db.name) for db in all_dashboards
         if (publishers == ['ALL'] or any(publisher == db.name.split(':')[0] for publisher in publishers))]
+
+    if global_queries:
+        dashboard_ids_names += [(db.id, db.name) for db in all_dashboards if db.name.split(':')[0] == 'Global']
 
     jobs = []
     # An example of Dashboard is Cogeco:unsold:stats or Cogeco:segment:profile_referrer
@@ -32,7 +38,13 @@ def refresh_selected_queries(months, publishers):
 
         widgets = [models.Widget.get_by_id(widget_id) for widget_id in layout_list if not widget_id < 0]
         for widget in widgets:
-            if widget.visualization != None and any(month in widget.visualization.name for month in months):
+            condition = widget.visualization != None and any(month in widget.visualization.name for month in months)
+            if non_monthly_publisher_queries:
+                # If the flag is True, add the queries where the pattern DDDDDD, with D being a digit, is not present in the query
+                # This adds everything that is not month dependent to the query list
+                # e.g. Cogeco:segment:profile_referrer:view_cogeco, Global:Intell:AdManager:view_last_6m
+                condition = condition or (not re.findall(r'_(\d{6})', widget.visualization.name))
+            if condition:
                 print('{}=>{}'.format(db_name, widget.visualization.name))
                 query_id = widget.visualization.query_rel.id
                 query = models.Query.get_by_id(query_id)
