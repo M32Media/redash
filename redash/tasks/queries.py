@@ -35,7 +35,6 @@ def refresh_selected_queries(months, publishers, global_queries=False, non_month
     for db_id, db_name in dashboard_ids_names:
         dashboard = models.Dashboard.get_by_id(db_id)
         layout_list = [widget_id for row in json.loads(dashboard.layout) for widget_id in row]
-
         widgets = [models.Widget.get_by_id(widget_id) for widget_id in layout_list if not widget_id < 0]
         for widget in widgets:
             condition = widget.visualization != None and any(month in widget.visualization.name for month in months)
@@ -44,6 +43,8 @@ def refresh_selected_queries(months, publishers, global_queries=False, non_month
                 # This adds everything that is not month dependent to the query list
                 # e.g. Cogeco:segment:profile_referrer:view_cogeco, Global:Intell:AdManager:view_last_6m
                 condition = condition or (not re.findall(r'_(\d{6})', widget.visualization.name))
+            if global:
+                condition = condition or db_name.split(':')[0] == 'Global'
             if condition:
                 print('{}=>{}'.format(db_name, widget.visualization.name))
                 query_id = widget.visualization.query_rel.id

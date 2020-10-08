@@ -163,8 +163,8 @@ def refresh_all_the_queries():
     refresh_queries()
 
 @manager.command()
-@click.argument('months')
-@click.argument('publishers')
+@click.argument('months', default=datetime.now().strftime('%Y%m'))
+@click.argument('publishers', default='ALL')
 @click.option(
     '--global-queries', '-gq', is_flag=True,
     help='Execute global queries too (Global dashboard)')
