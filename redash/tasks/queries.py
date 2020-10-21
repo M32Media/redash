@@ -32,6 +32,7 @@ def refresh_selected_queries(months, publishers, global_queries=False, non_month
 
     jobs = []
     # An example of Dashboard is Cogeco:unsold:stats or Cogeco:segment:profile_referrer
+    print(dashboard_ids_names)
     for db_id, db_name in dashboard_ids_names:
         dashboard = models.Dashboard.get_by_id(db_id)
         layout_list = [widget_id for row in json.loads(dashboard.layout) for widget_id in row]
