@@ -17,7 +17,7 @@ logger = get_task_logger(__name__)
 
 @celery.task(name="redash.tasks.refresh_selected_queries")
 def refresh_selected_queries(months, publishers, global_queries=False, non_monthly_publisher_queries=False):
-
+    print('refresh_selected_queries', months, publishers)
     outdated_queries_count = 0
     query_ids = []
 
