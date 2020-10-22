@@ -17,7 +17,6 @@ logger = get_task_logger(__name__)
 
 @celery.task(name="redash.tasks.refresh_selected_queries")
 def refresh_selected_queries(months, publishers, global_queries=False, non_monthly_publisher_queries=False):
-    print('refresh_selected_queries', months, publishers)
     outdated_queries_count = 0
     query_ids = []
 
@@ -32,7 +31,6 @@ def refresh_selected_queries(months, publishers, global_queries=False, non_month
 
     jobs = []
     # An example of Dashboard is Cogeco:unsold:stats or Cogeco:segment:profile_referrer
-    print(dashboard_ids_names)
     for db_id, db_name in dashboard_ids_names:
         dashboard = models.Dashboard.get_by_id(db_id)
         layout_list = [widget_id for row in json.loads(dashboard.layout) for widget_id in row]
@@ -47,7 +45,6 @@ def refresh_selected_queries(months, publishers, global_queries=False, non_month
             if global_queries:
                 condition = condition or db_name.split(':')[0] == 'Global'
             if condition:
-                print('{}=>{}'.format(db_name, widget.visualization.name))
                 query_id = widget.visualization.query_rel.id
                 query = models.Query.get_by_id(query_id)
                 # jobs.append(enqueue_query(
@@ -64,11 +61,11 @@ def refresh_selected_queries(months, publishers, global_queries=False, non_month
     status = redis_connection.hgetall('redash:status')
     now = time.time()
 
-    redis_connection.hmset('redash:status', {
-        'outdated_queries_count': outdated_queries_count,
-        'last_refresh_at': now,
-        'query_ids': json.dumps(query_ids)
-    })
+    redis_connection.hmset(
+        'redash:status', {
+            'outdated_queries_count': outdated_queries_count,
+            'last_refresh_at': now,
+            'query_ids': json.dumps(query_ids)})
 
     statsd_client.gauge('manager.seconds_since_refresh', now - float(status.get('last_refresh_at', now)))
 
