@@ -155,6 +155,72 @@ def embededQueryResultResource(visualization_id, query_token):
 
     return response
 
+"""
+This Route creates the celery tasks to query data from sources.
+"""
+@routes.route('/api/queries/refresh/only_selected', methods=['POST'])
+def RefreshOnlySelectedQueries():
+
+    req = request.get_json(force=True)
+
+    token = req.get('token', None)
+    if not token:
+        message = {'message': 'Please provide a token in the request JSON'}
+        resp = jsonify(message)
+        resp.status_code = 401
+        return resp
+
+    months = req.get('months', [])
+    if not months:
+        message = {'message': 'Please provide at least one month in the form YYYYMM'}
+        resp = jsonify(message)
+        resp.status_code = 200
+        return resp
+
+    publishers = req.get('publishers', 'ALL')
+    global_queries = req.get('global_queries', False)
+    non_monthly_publisher_queries = req.get('non_monthly_publisher_queries', False)
+
+    # We read a file we have server-side to compare with the token we send in the request
+    # TODO: This is repeated code, should be wrapped up in a function
+    try:
+        with open("refresh.cfg", "r") as f:
+
+            content = f.readlines()
+            content = [x.strip() for x in content]
+            cfg = {}
+
+            for c in content:
+                c = c.split("=")
+                cfg[c[0]] = c[1]
+
+    except Exception:
+
+        message = {
+            'message': "Your API token is invalid please contact M32",
+        }
+
+        resp = jsonify(message)
+        resp.status_code = 401
+
+        return resp
+
+    #If token was valid
+    if token == cfg["refresh_token"]:
+        jobs = refresh_selected_queries(
+            months=months, publishers=publishers, global_queries=global_queries,
+            non_monthly_publisher_queries=non_monthly_publisher_queries)
+        job_ids = [job.to_dict().get('id', None) for job in jobs if job.to_dict().get('id', None)]
+        data = {}
+        data['tasks'] = job_ids
+        headers = {'Content-Type': "application/json"}
+        response = make_response(json.dumps(data), 202, headers)
+        return response
+    else:
+        message = {'message': "Your API token is invalid please contact M32"}
+        resp = jsonify(message)
+        resp.status_code = 401
+        return resp
 
 """
 This Route creates the celery tasks to query data from sources. It returns the IDs of those tasks
