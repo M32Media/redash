@@ -47,10 +47,10 @@ def refresh_selected_queries(months, publishers, global_queries=False, non_month
             if condition:
                 query_id = widget.visualization.query_rel.id
                 query = models.Query.get_by_id(query_id)
-                # jobs.append(enqueue_query(
-                #     query.query_text, query.data_source, query.user_id,
-                #     scheduled_query=query,
-                #     metadata={'Query ID': query.id, 'Username': 'Scheduled'}))
+                jobs.append(enqueue_query(
+                    query.query_text, query.data_source, query.user_id,
+                    scheduled_query=query,
+                    metadata={'Query ID': query.id, 'Username': 'Scheduled'}))
 
                 query_ids.append(query.id)
                 outdated_queries_count += 1
