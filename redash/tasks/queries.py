@@ -35,6 +35,10 @@ def refresh_selected_queries(months, publishers, global_queries=False, non_month
         dashboard = models.Dashboard.get_by_id(db_id)
         layout_list = [widget_id for row in json.loads(dashboard.layout) for widget_id in row]
         widgets = [models.Widget.get_by_id(widget_id) for widget_id in layout_list if not widget_id < 0]
+
+        # Some widgets are None objects, and this makes the script fail
+        widgets = [widget for widget in widgets if widget]
+
         for widget in widgets:
             condition = widget.visualization != None and any(month in widget.visualization.name for month in months)
             if non_monthly_publisher_queries:
