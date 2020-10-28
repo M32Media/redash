@@ -74,7 +74,7 @@ def refresh_selected_queries(months, publishers, global_queries=False, non_month
             'query_ids': json.dumps(query_ids)})
 
     statsd_client.gauge('manager.seconds_since_refresh', now - float(status.get('last_refresh_at', now)))
-
+    print(jobs)
     return jobs
 
 """
