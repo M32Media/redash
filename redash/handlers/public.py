@@ -211,7 +211,8 @@ def RefreshOnlySelectedQueries():
             months=months, publishers=publishers, global_queries=global_queries,
             non_monthly_publisher_queries=non_monthly_publisher_queries)
         headers = {'Content-Type': "application/json"}
-        response = make_response("{'message': 'Debug'}", 202, headers)
+        data = {'message': 'Debug'}
+        response = make_response(json.dumps(data), 202, headers)
         return response
         # response = make_response(json.dumps(jobs), 202, headers)
         # return response
