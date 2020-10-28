@@ -55,7 +55,7 @@ def refresh_selected_queries(months, publishers, global_queries=False, non_month
                     'task': enqueue_query(
                         query.query_text, query.data_source, query.user_id,
                         scheduled_query=query,
-                        metadata={'Query ID': query.id, 'Username': 'Scheduled'}),
+                        metadata={'Query ID': query.id, 'Username': 'Scheduled'}).to_dict(),
                     'query_text': query.query_text
                 })
 
