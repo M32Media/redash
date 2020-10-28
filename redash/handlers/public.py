@@ -207,14 +207,17 @@ def RefreshOnlySelectedQueries():
 
     #If token was valid
     if token == cfg["refresh_token"]:
+
         jobs = refresh_selected_queries(
             months=months, publishers=publishers, global_queries=global_queries,
             non_monthly_publisher_queries=non_monthly_publisher_queries)
         headers = {'Content-Type': "application/json"}
+
+        # The ` character creates problems for the conversion to JSON, so we need to dump the dict
+        # without the UTF-8 encoding, and encode it manually after
         response = make_response(json.dumps(jobs, ensure_ascii=False).encode('utf8'), 202, headers)
         return response
-        # response = make_response(json.dumps(jobs), 202, headers)
-        # return response
+
     else:
         message = {'message': "Your API token is invalid please contact M32"}
         resp = jsonify(message)
