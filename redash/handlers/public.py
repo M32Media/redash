@@ -210,9 +210,8 @@ def RefreshOnlySelectedQueries():
         jobs = refresh_selected_queries(
             months=months, publishers=publishers, global_queries=global_queries,
             non_monthly_publisher_queries=non_monthly_publisher_queries)
-        job_ids = [job.to_dict().get('id', None) for job in jobs if job.to_dict().get('id', None)]
-        data = {}
-        data['tasks'] = job_ids
+        job_dicts = [job.to_dict() for job in jobs if job.to_dict()]
+        data = job_dicts
         headers = {'Content-Type': "application/json"}
         response = make_response(json.dumps(data), 202, headers)
         return response
