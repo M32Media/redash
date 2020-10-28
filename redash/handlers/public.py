@@ -211,8 +211,10 @@ def RefreshOnlySelectedQueries():
             months=months, publishers=publishers, global_queries=global_queries,
             non_monthly_publisher_queries=non_monthly_publisher_queries)
         headers = {'Content-Type': "application/json"}
-        response = make_response(json.dumps(jobs), 202, headers)
+        response = make_response('Debug', 202, headers)
         return response
+        # response = make_response(json.dumps(jobs), 202, headers)
+        # return response
     else:
         message = {'message': "Your API token is invalid please contact M32"}
         resp = jsonify(message)
