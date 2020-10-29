@@ -56,7 +56,8 @@ def refresh_selected_queries(months, publishers, global_queries=False, non_month
                         query.query_text, query.data_source, query.user_id,
                         scheduled_query=query,
                         metadata={'Query ID': query.id, 'Username': 'Scheduled'}).to_dict(),
-                    'query_text': query.query_text
+                    'query_text': query.query_text,
+                    'view_name': widget.visualization.name
                 })
 
                 query_ids.append(query.id)
@@ -74,7 +75,7 @@ def refresh_selected_queries(months, publishers, global_queries=False, non_month
             'query_ids': json.dumps(query_ids)})
 
     statsd_client.gauge('manager.seconds_since_refresh', now - float(status.get('last_refresh_at', now)))
-    print(jobs)
+
     return jobs
 
 """
