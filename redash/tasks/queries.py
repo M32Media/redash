@@ -57,7 +57,7 @@ def refresh_selected_queries(months, publishers, global_queries=False, non_month
                         scheduled_query=query,
                         metadata={'Query ID': query.id, 'Username': 'Scheduled'}).to_dict(),
                     'query_text': query.query_text,
-                    'view_name': widget.visualization.name
+                    'view_name': '{}.{}'.format(db_name, widget.visualization.name)
                 })
 
                 query_ids.append(query.id)
