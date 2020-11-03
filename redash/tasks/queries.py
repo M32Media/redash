@@ -73,7 +73,7 @@ def refresh_selected_queries(
                 query_ids.append(query.id)
                 outdated_queries_count += 1
 
-    logger.info("Done refreshing queries. Found %d outdated queries: %s" % (outdated_queries_count, query_ids))
+    logger.info(jobs)
 
     status = redis_connection.hgetall('redash:status')
     now = time.time()
