@@ -180,6 +180,7 @@ def RefreshOnlySelectedQueries():
     publishers = req.get('publishers', 'ALL')
     global_queries = req.get('global_queries', False)
     non_monthly_publisher_queries = req.get('non_monthly_publisher_queries', False)
+    no_query_execution = req.get('no_query_execution', False)
 
     # We read a file we have server-side to compare with the token we send in the request
     # TODO: This is repeated code, should be wrapped up in a function
@@ -210,7 +211,8 @@ def RefreshOnlySelectedQueries():
 
         jobs = refresh_selected_queries(
             months=months, publishers=publishers, global_queries=global_queries,
-            non_monthly_publisher_queries=non_monthly_publisher_queries)
+            non_monthly_publisher_queries=non_monthly_publisher_queries,
+            no_query_execution=no_query_execution)
         headers = {'Content-Type': "application/json"}
 
         # The ` character creates problems for the conversion to JSON, so we need to dump the dict

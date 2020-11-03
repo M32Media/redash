@@ -16,7 +16,9 @@ from redash.authentication.account import send_api_token
 logger = get_task_logger(__name__)
 
 @celery.task(name="redash.tasks.refresh_selected_queries")
-def refresh_selected_queries(months, publishers, global_queries=False, non_monthly_publisher_queries=False):
+def refresh_selected_queries(
+    months, publishers, global_queries=False, non_monthly_publisher_queries=False,
+    no_query_execution=False):
     outdated_queries_count = 0
     query_ids = []
 
@@ -51,14 +53,22 @@ def refresh_selected_queries(months, publishers, global_queries=False, non_month
             if condition:
                 query_id = widget.visualization.query_rel.id
                 query = models.Query.get_by_id(query_id)
-                jobs.append({
-                    'task': enqueue_query(
-                        query.query_text, query.data_source, query.user_id,
-                        scheduled_query=query,
-                        metadata={'Query ID': query.id, 'Username': 'Scheduled'}).to_dict(),
-                    'query_text': query.query_text,
-                    'view_name': '{}.{}'.format(db_name, widget.visualization.name)
-                })
+
+                # If no_query_execution flag is enabled, the query is not run and we only return the query text
+                if no_query_execution:
+                    jobs.append({
+                        'query_text': query.query_text,
+                        'view_name': '{}.{}'.format(db_name, widget.visualization.name)
+                    })
+                else:
+                    jobs.append({
+                        'task': enqueue_query(
+                            query.query_text, query.data_source, query.user_id,
+                            scheduled_query=query,
+                            metadata={'Query ID': query.id, 'Username': 'Scheduled'}).to_dict(),
+                        'query_text': query.query_text,
+                        'view_name': '{}.{}'.format(db_name, widget.visualization.name)
+                    })
 
                 query_ids.append(query.id)
                 outdated_queries_count += 1
