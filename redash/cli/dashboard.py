@@ -35,8 +35,9 @@ def create_dashboard_logic(old_publisher, publisher, dashboard_id):
             if old_widget.visualization != None:
                 query_id = old_widget.visualization.query_rel.id
                 new_query_sql = create_query_definition(query_id, publisher, old_publisher)
+                new_query_name= old_widget.visualization.query_rel.name.replace(old_publisher.lower(),publisher.lower())
                 new_query = models.Query(
-                    name=old_widget.visualization.query_rel.name + ' [' + publisher.lower() + ']',
+                    name=new_query_name ,
                     description='',
                     query_text=new_query_sql,
                     user=models.User.get_by_id(1),
@@ -47,10 +48,11 @@ def create_dashboard_logic(old_publisher, publisher, dashboard_id):
                 )
                 models.db.session.add(new_query)
                 models.db.session.commit()
+                new_visualisation_name = old_widget.visualization.name.replace(old_publisher.lower(),publisher.lower())
                 new_visualisation = models.Visualization(
                     type=old_widget.visualization.type,
                     query_rel=new_query,
-                    name=old_widget.visualization.name,
+                    name=new_visualisation_name,
                     fr_name=old_widget.visualization.fr_name,
                     description='',
                     options=old_widget.visualization.options
@@ -91,4 +93,5 @@ def create_dashboard(old_publisher, publisher, dashboard_id):
 def create_query_definition(id,publisher,old_publisher):
     query = models.Query.get_by_id(id)
     return query.query_text.replace(old_publisher,publisher)
+
 

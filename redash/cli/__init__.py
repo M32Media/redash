@@ -4,7 +4,8 @@ import json
 import click
 from flask.cli import FlaskGroup, run_command
 from flask import current_app
-
+from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 from random import randint
 from redash import create_app, settings, __version__
 from redash.cli import users, groups, database, data_sources, organization, dashboard
@@ -43,6 +44,116 @@ manager.add_command(data_sources.manager, "ds")
 manager.add_command(organization.manager, "org")
 manager.add_command(dashboard.manager, "dashboard")
 manager.add_command(run_command, "runserver")
+
+@manager.command()
+@click.argument('month_to_change')
+def clone_month(month_to_change):
+
+    # Check whether the month is correct
+    try:
+        date_old = datetime.strptime(month_to_change, '%Y-%m').strftime('%Y%m')
+        date_new = (
+            datetime.strptime(month_to_change, '%Y-%m')
+            + relativedelta(months=1)).strftime('%Y%m')
+    except Exception as e:
+        print(e)
+        print('Specify a month in the format YYYY-MM')
+        return
+
+    # Get the queries for the views of a certain publisher
+    dashboard_ids = [
+        db.id for db in models.Dashboard.query.all()
+        if not 'Global' in db.name]
+
+    for dashboard_id in dashboard_ids:
+
+        dashboard = models.Dashboard.get_by_id(dashboard_id)
+        print('Working on dashboard {}'.format(dashboard.name))
+
+        layout_list = json.loads(dashboard.layout)
+        new_layout = [[] for i in range(len(layout_list))]
+        row_labeled_layout = [
+            (layout_list[i][j], i)
+            for i
+            in range(len(layout_list)) for j in range(len(layout_list[i]))]
+
+        widgets = [
+            models.Widget.get_by_id(widget_ref[0])
+            for widget_ref in row_labeled_layout if not widget_ref[0] < 0]
+        viz_names = [
+            widget.visualization.name for widget in widgets]
+
+        for widget in row_labeled_layout:
+
+            # Covers the case where the widget is a spacer.
+            if widget[0] < 0:
+                new_layout[widget[1]].append(widget[0])
+                continue
+            else:
+                widget_to_clone = models.Widget.get_by_id(widget[0])
+                new_layout[widget[1]].append(widget_to_clone.id)
+
+            if widget_to_clone.visualization != None:
+                visualization_name = widget_to_clone.visualization.name
+                if date_old in visualization_name:
+                    print('Visualization -> {} can be cloned from {} to {}'.format(
+                        visualization_name, date_old, date_new))
+                else:
+                    # No need to modify the visualization, as it doesn't
+                    # contain the date we are looking for
+                    continue
+
+                new_visualisation_name = widget_to_clone.visualization.name.replace(date_old, date_new)
+
+
+                if new_visualisation_name in viz_names:
+                    print('Visualization {} already exists'.format(new_visualisation_name))
+                    continue
+
+                query_id = widget_to_clone.visualization.query_rel.id
+                query = models.Query.get_by_id(query_id)
+                new_query_sql = query.query_text.replace(date_old, date_new)
+                new_query_name = widget_to_clone.visualization.query_rel.name.replace(date_old, date_new)
+                new_query = models.Query(
+                    name=new_query_name, description='', query_text=new_query_sql,
+                    user=models.User.get_by_id(1), is_archived=False,
+                    schedule=None, data_source=widget_to_clone.visualization.query_rel.data_source,
+                    org=models.Organization.get_by_id(1))
+                models.db.session.add(new_query)
+                models.db.session.commit()
+
+                new_visualisation = models.Visualization(
+                    type=widget_to_clone.visualization.type,
+                    query_rel=new_query, name=new_visualisation_name,
+                    fr_name=widget_to_clone.visualization.fr_name,
+                    description='', options=widget_to_clone.visualization.options)
+
+                models.db.session.add(new_visualisation)
+                models.db.session.commit()
+                new_widget = models.Widget(
+                    type=widget_to_clone.type,
+                    width=widget_to_clone.width,
+                    options=widget_to_clone.options,
+                    dashboard=dashboard,
+                    visualization=new_visualisation)
+
+                models.db.session.add(new_widget)
+                models.db.session.commit()
+
+                print('Created new widget {widget} for dashboard {dashboard}'.format(
+                    widget=new_widget, dashboard=dashboard.name))
+
+                #Appends the widgets id at the same row as the original.
+                new_layout[widget[1]].append(new_widget.id)
+
+
+        new_layout = json.dumps(new_layout).replace(' ', '')
+
+        dashboard.layout = new_layout
+        models.db.session.commit()
+
+    models.db.session.commit()
+
 
 @manager.command()
 def version():
@@ -176,14 +287,14 @@ def clone_dashboards(old_publisher, publishers, check_portal_type=True, check_fo
         for dashboard_id in dashboard_ids:
             # If we want to restrain copy to a certain type (where a type is defined in the naming convention of a dashboard
             # publisher:type:name we check if the type fits, if it doesnt, we don't copy it.
-            if (dashboard_type is not None and models.Dashboard.get_by_id(dashboard_id).name.split(":")[1] not in dashboard_type):
-                continue
+            #if (dashboard_type is not None and models.Dashboard.get_by_id(dashboard_id).name.split(":")[1] not in dashboard_type):
+            #    continue
             # If the portal type is monetization and the dashboard type is 'publisher' we don't want it.
-            elif portal_type == "Monetization" and models.Dashboard.get_by_id(dashboard_id).name.split(":")[1] == "publisher":
-                continue
+            #elif portal_type == "Monetization" and models.Dashboard.get_by_id(dashboard_id).name.split(":")[1] == "publisher":
+            #    continue
             # If the publisher doesn't have cXense, don't clone
-            elif not has_cx and models.Dashboard.get_by_id(dashboard_id).name.split(":")[1] == "cXense":
-                continue
+            #elif not has_cx and models.Dashboard.get_by_id(dashboard_id).name.split(":")[1] == "cXense":
+            #    continue
 
             created = dashboard.create_dashboard_logic(old_publisher, publisher, dashboard_id)
             #we want to put the created dashboard in a new dashgroup or one that has the right name
@@ -193,7 +304,7 @@ def clone_dashboards(old_publisher, publishers, check_portal_type=True, check_fo
             models.db.session.commit()
 
     # We also want to create subdashgroups for all these new groups.
-    create_subdashgroups_logic(publishers)
+    #create_subdashgroups_logic(publishers)
 
 
 @manager.command()
@@ -210,4 +321,5 @@ def send_test_mail(email=None):
 
     mail.send(Message(subject="Test Message from Redash", recipients=[email],
                       body="Test message."))
+
 
