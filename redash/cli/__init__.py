@@ -1,6 +1,6 @@
 import json
-
-
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 import click
 from flask.cli import FlaskGroup, run_command
 from flask import current_app
@@ -10,7 +10,8 @@ from random import randint
 from redash import create_app, settings, __version__
 from redash.cli import users, groups, database, data_sources, organization, dashboard
 from redash.monitor import get_status
-from redash.tasks import refresh_queries
+import redash.tasks
+from redash.tasks import refresh_queries, refresh_selected_queries
 from redash import models
 from subprocess import call
 import json
@@ -105,7 +106,6 @@ def clone_month(month_to_change):
 
                 new_visualisation_name = widget_to_clone.visualization.name.replace(date_old, date_new)
 
-
                 if new_visualisation_name in viz_names:
                     print('Visualization {} already exists'.format(new_visualisation_name))
                     continue
@@ -154,7 +154,6 @@ def clone_month(month_to_change):
 
     models.db.session.commit()
 
-
 @manager.command()
 def version():
     """Displays Redash version."""
@@ -163,6 +162,25 @@ def version():
 @manager.command()
 def refresh_all_the_queries():
     refresh_queries()
+
+@manager.command()
+@click.argument('months', default=datetime.now().strftime('%Y%m'))
+@click.argument('publishers', default='ALL')
+@click.option(
+    '--global-queries', '-gq', is_flag=True,
+    help='Execute global queries too (Global dashboard)')
+@click.option(
+    '--non-monthly-publisher-queries', '-nmpq', is_flag=True,
+    help='Execute global publisher queries too (Publisher queries that don\'t depend on the month)')
+@click.option(
+    '--no-query-execution', '-nqe', is_flag=True,
+    help='Don\'t run queries, just return the text')
+def refresh_only_selected_queries(months, publishers, global_queries, non_monthly_publisher_queries, no_query_execution):
+    redash.tasks.refresh_selected_queries(
+        months=months.split(','), publishers=publishers.split(','),
+        global_queries=global_queries,
+        non_monthly_publisher_queries=non_monthly_publisher_queries,
+        no_query_execution=no_query_execution)
 
 @manager.command()
 def status():
@@ -321,5 +339,3 @@ def send_test_mail(email=None):
 
     mail.send(Message(subject="Test Message from Redash", recipients=[email],
                       body="Test message."))
-
-

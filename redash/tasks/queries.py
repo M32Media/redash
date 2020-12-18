@@ -3,6 +3,7 @@ import time
 import logging
 import signal
 import redis
+import re
 from celery.result import AsyncResult
 from celery.utils.log import get_task_logger
 from redash import redis_connection, models, statsd_client, settings, utils
@@ -13,6 +14,79 @@ from .alerts import check_alerts_for_query
 from redash.authentication.account import send_api_token
 
 logger = get_task_logger(__name__)
+
+@celery.task(name="redash.tasks.refresh_selected_queries")
+def refresh_selected_queries(
+    months, publishers, global_queries=False, non_monthly_publisher_queries=False,
+    no_query_execution=False):
+    outdated_queries_count = 0
+    query_ids = []
+
+    all_dashboards = models.Dashboard.query.all()
+
+    dashboard_ids_names = [
+        (db.id, db.name) for db in all_dashboards
+        if (publishers == ['ALL'] or any(publisher == db.name.split(':')[0] for publisher in publishers))]
+
+    if global_queries:
+        dashboard_ids_names += [(db.id, db.name) for db in all_dashboards if db.name.split(':')[0] == 'Global']
+
+    jobs = []
+    # An example of Dashboard is Cogeco:unsold:stats or Cogeco:segment:profile_referrer
+    for db_id, db_name in dashboard_ids_names:
+        dashboard = models.Dashboard.get_by_id(db_id)
+        layout_list = [widget_id for row in json.loads(dashboard.layout) for widget_id in row]
+        widgets = [models.Widget.get_by_id(widget_id) for widget_id in layout_list if not widget_id < 0]
+
+        # Some widgets are None objects, and this makes the script fail
+        widgets = [widget for widget in widgets if widget]
+
+        for widget in widgets:
+            condition = widget.visualization != None and any(month in widget.visualization.name for month in months)
+            if non_monthly_publisher_queries:
+                # If the flag is True, add the queries where the pattern DDDDDD, with D being a digit, is not present in the query
+                # This adds everything that is not month dependent to the query list
+                # e.g. Cogeco:segment:profile_referrer:view_cogeco, Global:Intell:AdManager:view_last_6m
+                condition = condition or (not re.findall(r'_(\d{6})', widget.visualization.name))
+            if global_queries:
+                condition = condition or db_name.split(':')[0] == 'Global'
+            if condition:
+                query_id = widget.visualization.query_rel.id
+                query = models.Query.get_by_id(query_id)
+
+                # If no_query_execution flag is enabled, the query is not run and we only return the query text
+                if no_query_execution:
+                    jobs.append({
+                        'query_text': query.query_text,
+                        'view_name': '{}.{}'.format(db_name, widget.visualization.name)
+                    })
+                else:
+                    jobs.append({
+                        'task': enqueue_query(
+                            query.query_text, query.data_source, query.user_id,
+                            scheduled_query=query,
+                            metadata={'Query ID': query.id, 'Username': 'Scheduled'}).to_dict(),
+                        'query_text': query.query_text,
+                        'view_name': '{}.{}'.format(db_name, widget.visualization.name)
+                    })
+
+                query_ids.append(query.id)
+                outdated_queries_count += 1
+
+    logger.info(jobs)
+
+    status = redis_connection.hgetall('redash:status')
+    now = time.time()
+
+    redis_connection.hmset(
+        'redash:status', {
+            'outdated_queries_count': outdated_queries_count,
+            'last_refresh_at': now,
+            'query_ids': json.dumps(query_ids)})
+
+    statsd_client.gauge('manager.seconds_since_refresh', now - float(status.get('last_refresh_at', now)))
+
+    return jobs
 
 """
 Gets task associated with ids
@@ -45,7 +119,6 @@ def get_tasks(ids):
                         }
 
     return tasks;
-
 
 def _job_lock_id(query_hash, data_source_id):
     return "query_hash_job:%s:%s" % (data_source_id, query_hash)
@@ -302,17 +375,17 @@ def refresh_queries_http():
         if query.data_source.paused:
 
             logger.info("Skipping refresh of Query 1 {} because datasource {} is paused because {}"
-                .format(query.id, 
+                .format(query.id,
                     query.data_source.name,
                     query.data_source.pause_reason
                 ))
         else:
-            
+
             jobs.append(enqueue_query(query.query_text, query.data_source, query.user_id,
                               scheduled_query=query,
                               metadata={'Query ID': query.id, 'Username': 'Scheduled'}))
 
-    
+
 
     """ LINK BETWEEN TRACKER AND ACTUAL TASK
     for job in jobs:
@@ -324,11 +397,10 @@ def refresh_queries_http():
         for tracker in QueryTaskTracker.all(_list):
             print("TRACKER : {}".format(tracker.data.get('task_id', None)))
     """
-    
+
 
     return jobs
 
-    
 @celery.task(name="redash.tasks.refresh_queries")
 def refresh_queries():
 
@@ -337,7 +409,7 @@ def refresh_queries():
 
     with statsd_client.timer('manager.outdated_queries_lookup'):
         for query in models.Query.outdated_queries():
-            if settings.FEATURE_DISABLE_REFRESH_QUERIES: 
+            if settings.FEATURE_DISABLE_REFRESH_QUERIES:
                 logging.info("Disabled refresh queries.")
             elif query.data_source.paused:
                 logging.info("Skipping refresh of %s because datasource - %s is paused (%s).", query.id, query.data_source.name, query.data_source.pause_reason)
@@ -554,7 +626,6 @@ class QueryExecutor(object):
         logger.info("task=execute_query state=load_ds ds_id=%d", self.data_source_id)
         return models.DataSource.query.get(self.data_source_id)
 
-
 # user_id is added last as a keyword argument for backward compatability -- to support executing previously submitted
 # jobs before the upgrade to this version.
 @celery.task(name="redash.tasks.execute_query", bind=True, track_started=True)
@@ -583,5 +654,3 @@ def refresh_query_tokens():
         user = u.to_dict()
 
         send_api_token(user)
-
-
