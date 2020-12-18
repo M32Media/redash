@@ -4,7 +4,8 @@ from dateutil.relativedelta import relativedelta
 import click
 from flask.cli import FlaskGroup, run_command
 from flask import current_app
-
+from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 from random import randint
 from redash import create_app, settings, __version__
 from redash.cli import users, groups, database, data_sources, organization, dashboard
