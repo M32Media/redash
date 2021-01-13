@@ -8,6 +8,7 @@ from redash.tasks import refresh_queries_http, get_tasks, refresh_query_tokens, 
 from funcy import project
 from redash.authentication.account import send_api_token
 from redash.utils import collect_query_parameters, collect_parameters_from_request, json_dumps
+from redash.cli.users import create as create_user
 
 """
 API key validation decorator
@@ -154,6 +155,78 @@ def embededQueryResultResource(visualization_id, query_token):
     response = make_json_response(query_result)
 
     return response
+
+'''
+This route creates a user by specyfing the dashgroup id optionally
+
+The json payload to provide this method is:
+{
+    "name": "<USER_NAME>",
+    "token": "<REDASH_TOKEN>"
+}
+'''
+@routes.route('/api/users/create', methods=['POST'])
+def create_user():
+
+    req = request.get_json(force=True)
+
+    token = req.get('token', None)
+    if not token:
+        message = {'message': 'Please provide a token in the request JSON'}
+        resp = jsonify(message)
+        resp.status_code = 401
+        return resp
+
+    name = req.get('user', None)
+    if not name:
+        message = {'message': 'Please provide a name for the user (BQ Dataset)'}
+        resp = jsonify(message)
+        resp.status_code = 401
+        return resp
+
+    # We read a file we have server-side to compare with the token we send in the request
+    # TODO: This is repeated code, should be wrapped up in a function
+    try:
+        with open("refresh.cfg", "r") as f:
+
+            content = f.readlines()
+            content = [x.strip() for x in content]
+            cfg = {}
+
+            for c in content:
+                c = c.split("=")
+                cfg[c[0]] = c[1]
+
+    except Exception:
+
+        message = {
+            'message': "Your API token is invalid please contact M32",
+        }
+
+        resp = jsonify(message)
+        resp.status_code = 401
+
+        return resp
+
+    #If token was valid
+    if token == cfg["refresh_token"]:
+
+        jobs = refresh_selected_queries(
+            months=months, publishers=publishers, global_queries=global_queries,
+            non_monthly_publisher_queries=non_monthly_publisher_queries,
+            no_query_execution=no_query_execution)
+        headers = {'Content-Type': "application/json"}
+
+        # The ` character creates problems for the conversion to JSON, so we need to dump the dict
+        # without the UTF-8 encoding, and encode it manually after
+        response = make_response(json.dumps(jobs, ensure_ascii=False).encode('utf8'), 202, headers)
+        return response
+
+    else:
+        message = {'message': "Your API token is invalid please contact M32"}
+        resp = jsonify(message)
+        resp.status_code = 401
+        return resp
 
 """
 This Route creates the celery tasks to query data from sources.
