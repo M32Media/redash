@@ -211,15 +211,16 @@ def create_user():
     #If token was valid
     if token == cfg["refresh_token"]:
 
-        jobs = refresh_selected_queries(
-            months=months, publishers=publishers, global_queries=global_queries,
-            non_monthly_publisher_queries=non_monthly_publisher_queries,
-            no_query_execution=no_query_execution)
-        headers = {'Content-Type': "application/json"}
+        # This is the template we use for the email, it is a non-existing made up email
+        email = 'user@{user}.com'.format(user=user)
+        create_user(
+            email=email, name=user, groups=[], is_admin=False, google_auth=False,
+            password=None, organization='default', dashgroups=user)
+        headers = {'Content-Type': 'application/json'}
 
         # The ` character creates problems for the conversion to JSON, so we need to dump the dict
         # without the UTF-8 encoding, and encode it manually after
-        response = make_response(json.dumps(jobs, ensure_ascii=False).encode('utf8'), 202, headers)
+        response = make_response(json.dumps({'user': user}, ensure_ascii=False).encode('utf8'), 202, headers)
         return response
 
     else:
