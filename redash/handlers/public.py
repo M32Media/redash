@@ -9,6 +9,7 @@ from funcy import project
 from redash.authentication.account import send_api_token
 from redash.utils import collect_query_parameters, collect_parameters_from_request, json_dumps
 from redash.cli.users import create as create_user
+from redash.cli import clone_dashboards
 
 """
 API key validation decorator
@@ -155,6 +156,98 @@ def embededQueryResultResource(visualization_id, query_token):
     response = make_json_response(query_result)
 
     return response
+
+'''
+This route clones dashboards from a base publisher to a list of publishers
+
+The json payload to provide this method is:
+{
+    "base_publisher": "<BASE_PUBLISHER>",
+    "destination_publishers": [
+        "<DEST_PUBLISHER_1>",
+        "<DEST_PUBLISHER_2>",
+        ...
+        "<DEST_PUBLISHER_N>"
+    ],
+    "token": "<REDASH_TOKEN>"
+}
+'''
+@routes.route('/api/data/clone_dashboards', methods=['POST'])
+def create_user():
+
+    try:
+
+        req = request.get_json(force=True)
+
+        token = req.get('token', None)
+        if not token:
+            message = {'message': 'Please provide a token in the request JSON'}
+            resp = jsonify(message)
+            resp.status_code = 401
+            return resp
+
+        base_publisher = req.get('base_publisher', None)
+        if not name:
+            message = {'message': 'Please provide a base publisher (base_publisher)'}
+            resp = jsonify(message)
+            resp.status_code = 401
+            return resp
+
+        destination_publishers = req.get('destination_publishers', None)
+        if not name:
+            message = {'message': 'Please provide a list of destination publishers (destination_publishers)'}
+            resp = jsonify(message)
+            resp.status_code = 401
+            return resp
+
+        # We read a file we have server-side to compare with the token we send in the request
+        # TODO: This is repeated code, should be wrapped up in a function
+        try:
+            with open("refresh.cfg", "r") as f:
+
+                content = f.readlines()
+                content = [x.strip() for x in content]
+                cfg = {}
+
+                for c in content:
+                    c = c.split("=")
+                    cfg[c[0]] = c[1]
+
+        except Exception:
+
+            message = {
+                'message': "Your API token is invalid please contact M32",
+            }
+
+            resp = jsonify(message)
+            resp.status_code = 401
+
+            return resp
+
+        #If token was valid
+        if token == cfg["refresh_token"]:
+
+            clone_dashboards(
+                old_publisher=base_publisher,
+                publishers=','.join(destination_publishers))
+            headers = {'Content-Type': 'application/json'}
+
+            # The ` character creates problems for the conversion to JSON, so we need to dump the dict
+            # without the UTF-8 encoding, and encode it manually after
+            response = make_response(json.dumps({
+                'base_publisher': base_publisher, 'destination_publishers': destination_publishers
+            }, ensure_ascii=False).encode('utf8'), 202, headers)
+            return response
+
+        else:
+            message = {'message': "Your API token is invalid please contact M32"}
+            resp = jsonify(message)
+            resp.status_code = 401
+            return resp
+
+    except Exception as e:
+        import traceback
+        return traceback.format_exc()
 
 '''
 This route creates a user by specyfing the dashgroup id optionally

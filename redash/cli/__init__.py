@@ -186,7 +186,7 @@ def refresh_only_selected_queries(months, publishers, global_queries, non_monthl
 @click.argument('username', required=True)
 def create_user(username):
     email = 'user@{user}.com'.format(user=username)
-    users.create_user_logic(email, username, [])
+    users.create_user_logic(email, username, [], no_prompt=True)
 
 @manager.command()
 def status():

@@ -51,8 +51,9 @@ def grant_admin(email, organization='default'):
     except NoResultFound:
         print "User [%s] not found." % email
 
-
-def create_user_logic(email, name, groups, is_admin=False, google_auth=False, password=None, organization='default', dashgroups=None):
+def create_user_logic(
+    email, name, groups, is_admin=False, google_auth=False, password=None,
+    organization='default', dashgroups=None, no_prompt=False):
     """
     Create user EMAIL with display name NAME. The dashgroups argument is a comma separated list of dashgroups names.
     """
@@ -66,8 +67,11 @@ def create_user_logic(email, name, groups, is_admin=False, google_auth=False, pa
 
     user = models.User(org=org, email=email, name=name, group_ids=groups)
     if not password and not google_auth:
-        password = prompt("Password", hide_input=True,
-                          confirmation_prompt=True)
+        if no_prompt:
+            password = 'dev'
+        else:
+            password = prompt("Password", hide_input=True, confirmation_prompt=True)
+
     if not google_auth:
         user.hash_password(password)
 
