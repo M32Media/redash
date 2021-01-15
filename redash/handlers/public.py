@@ -307,9 +307,7 @@ def create_user():
             email = 'user@{user}.com'.format(user=name)
 
             # Dashgroups is a comma separated list
-            create_user_logic(
-                email=email, name=name, groups=[], is_admin=False, google_auth=False,
-                password=None, organization='default', dashgroups=name)
+            create_user_logic(email, name, [], dashgroups=name)
             headers = {'Content-Type': 'application/json'}
 
             # The ` character creates problems for the conversion to JSON, so we need to dump the dict
