@@ -161,74 +161,78 @@ This route creates a user by specyfing the dashgroup id optionally
 
 The json payload to provide this method is:
 {
-    "name": "<USER_NAME>",
+    "user": "<USER_NAME>",
     "token": "<REDASH_TOKEN>"
 }
 '''
 @routes.route('/api/users/create', methods=['POST'])
 def create_user():
 
-    req = request.get_json(force=True)
-
-    token = req.get('token', None)
-    if not token:
-        message = {'message': 'Please provide a token in the request JSON'}
-        resp = jsonify(message)
-        resp.status_code = 401
-        return resp
-
-    name = req.get('user', None)
-    if not name:
-        message = {'message': 'Please provide a name for the user (BQ Dataset)'}
-        resp = jsonify(message)
-        resp.status_code = 401
-        return resp
-
-    # We read a file we have server-side to compare with the token we send in the request
-    # TODO: This is repeated code, should be wrapped up in a function
     try:
-        with open("refresh.cfg", "r") as f:
 
-            content = f.readlines()
-            content = [x.strip() for x in content]
-            cfg = {}
+        req = request.get_json(force=True)
 
-            for c in content:
-                c = c.split("=")
-                cfg[c[0]] = c[1]
+        token = req.get('token', None)
+        if not token:
+            message = {'message': 'Please provide a token in the request JSON'}
+            resp = jsonify(message)
+            resp.status_code = 401
+            return resp
 
-    except Exception:
+        name = req.get('user', None)
+        if not name:
+            message = {'message': 'Please provide a name for the user (BQ Dataset)'}
+            resp = jsonify(message)
+            resp.status_code = 401
+            return resp
 
-        message = {
-            'message': "Your API token is invalid please contact M32",
-        }
+        # We read a file we have server-side to compare with the token we send in the request
+        # TODO: This is repeated code, should be wrapped up in a function
+        try:
+            with open("refresh.cfg", "r") as f:
 
-        resp = jsonify(message)
-        resp.status_code = 401
+                content = f.readlines()
+                content = [x.strip() for x in content]
+                cfg = {}
 
-        return resp
+                for c in content:
+                    c = c.split("=")
+                    cfg[c[0]] = c[1]
 
-    #If token was valid
-    if token == cfg["refresh_token"]:
+        except Exception:
 
-        # This is the template we use for the email, it is a non-existing made up email
-        email = 'user@{user}.com'.format(user=user)
-        create_user(
-            email=email, name=user, groups=[], is_admin=False, google_auth=False,
-            password=None, organization='default', dashgroups=user)
-        headers = {'Content-Type': 'application/json'}
+            message = {
+                'message': "Your API token is invalid please contact M32",
+            }
 
-        # The ` character creates problems for the conversion to JSON, so we need to dump the dict
-        # without the UTF-8 encoding, and encode it manually after
-        response = make_response(json.dumps({'user': user}, ensure_ascii=False).encode('utf8'), 202, headers)
-        return response
+            resp = jsonify(message)
+            resp.status_code = 401
 
-    else:
-        message = {'message': "Your API token is invalid please contact M32"}
-        resp = jsonify(message)
-        resp.status_code = 401
-        return resp
+            return resp
 
+        #If token was valid
+        if token == cfg["refresh_token"]:
+
+            # This is the template we use for the email, it is a non-existing made up email
+            email = 'user@{user}.com'.format(user=user)
+            create_user(
+                email=email, name=user, groups=[], is_admin=False, google_auth=False,
+                password=None, organization='default', dashgroups=user)
+            headers = {'Content-Type': 'application/json'}
+
+            # The ` character creates problems for the conversion to JSON, so we need to dump the dict
+            # without the UTF-8 encoding, and encode it manually after
+            response = make_response(json.dumps({'user': user}, ensure_ascii=False).encode('utf8'), 202, headers)
+            return response
+
+        else:
+            message = {'message': "Your API token is invalid please contact M32"}
+            resp = jsonify(message)
+            resp.status_code = 401
+            return resp
+    except Exception as e:
+        import traceback
+        return traceback.format_exc()
 """
 This Route creates the celery tasks to query data from sources.
 """
