@@ -8,7 +8,7 @@ from redash.tasks import refresh_queries_http, get_tasks, refresh_query_tokens, 
 from funcy import project
 from redash.authentication.account import send_api_token
 from redash.utils import collect_query_parameters, collect_parameters_from_request, json_dumps
-from redash.cli.users import create as create_user_logic
+from redash.cli.users import create_user_logic
 from redash.cli import clone_dashboards_logic
 
 """
