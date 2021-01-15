@@ -256,7 +256,7 @@ The json payload to provide this method is:
 }
 '''
 @routes.route('/api/users/create', methods=['POST'])
-def create_user():
+def api_create_user():
 
     try:
 
