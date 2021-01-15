@@ -214,7 +214,7 @@ def create_user():
         if token == cfg["refresh_token"]:
 
             # This is the template we use for the email, it is a non-existing made up email
-            email = 'user@{user}.com'.format(user=user)
+            email = 'user@{user}.com'.format(user=name)
             create_user(
                 email=email, name=user, groups=[], is_admin=False, google_auth=False,
                 password=None, organization='default', dashgroups=user)
