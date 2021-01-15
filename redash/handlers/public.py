@@ -173,7 +173,7 @@ The json payload to provide this method is:
 }
 '''
 @routes.route('/api/data/clone_dashboards', methods=['POST'])
-def create_user():
+def api_clone_dashboards():
 
     try:
 
