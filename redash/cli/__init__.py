@@ -186,9 +186,7 @@ def refresh_only_selected_queries(months, publishers, global_queries, non_monthl
 @click.argument('username', required=True)
 def create_user(username):
     email = 'user@{user}.com'.format(user=username)
-    users.create(
-        email=email, name=username, groups=[], is_admin=False, google_auth=False,
-        password=None, organization='default', dashgroups=username)
+    users.create(email, username, [])
 
 @manager.command()
 def status():
