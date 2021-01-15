@@ -9,7 +9,7 @@ from funcy import project
 from redash.authentication.account import send_api_token
 from redash.utils import collect_query_parameters, collect_parameters_from_request, json_dumps
 from redash.cli.users import create as create_user
-from redash.cli import clone_dashboards
+from redash.cli import clone_dashboards_logic
 
 """
 API key validation decorator
@@ -227,7 +227,7 @@ def api_clone_dashboards():
         #If token was valid
         if token == cfg["refresh_token"]:
             return 'Ok'
-            clone_dashboards(base_publisher, ','.join(destination_publishers))
+            clone_dashboards_logic(base_publisher, ','.join(destination_publishers))
             headers = {'Content-Type': 'application/json'}
 
             # The ` character creates problems for the conversion to JSON, so we need to dump the dict
