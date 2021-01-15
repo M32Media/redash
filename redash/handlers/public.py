@@ -187,14 +187,14 @@ def api_clone_dashboards():
             return resp
 
         base_publisher = req.get('base_publisher', None)
-        if not name:
+        if not base_publisher:
             message = {'message': 'Please provide a base publisher (base_publisher)'}
             resp = jsonify(message)
             resp.status_code = 401
             return resp
 
         destination_publishers = req.get('destination_publishers', None)
-        if not name:
+        if not destination_publishers:
             message = {'message': 'Please provide a list of destination publishers (destination_publishers)'}
             resp = jsonify(message)
             resp.status_code = 401
