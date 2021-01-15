@@ -227,9 +227,7 @@ def api_clone_dashboards():
         #If token was valid
         if token == cfg["refresh_token"]:
 
-            clone_dashboards(
-                old_publisher=base_publisher,
-                publishers=','.join(destination_publishers))
+            clone_dashboards(base_publisher, ','.join(destination_publishers))
             headers = {'Content-Type': 'application/json'}
 
             # The ` character creates problems for the conversion to JSON, so we need to dump the dict

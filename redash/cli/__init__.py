@@ -263,7 +263,6 @@ def create_subdashgroups(publisher_names):
     This command will split the dashgroup. publisher_names is a comma separated list of publishers."""
     create_subdashgroups_logic(publisher_names.split(','))
 
-
 @manager.command()
 @click.argument('old_publisher')
 @click.argument('publishers')
