@@ -8,7 +8,7 @@ from redash.tasks import refresh_queries_http, get_tasks, refresh_query_tokens, 
 from funcy import project
 from redash.authentication.account import send_api_token
 from redash.utils import collect_query_parameters, collect_parameters_from_request, json_dumps
-from redash.cli.users import create as create_user
+from redash.cli.users import create as create_user_logic
 from redash.cli import clone_dashboards_logic
 
 """
@@ -307,7 +307,7 @@ def create_user():
             email = 'user@{user}.com'.format(user=name)
 
             # Dashgroups is a comma separated list
-            create_user(
+            create_user_logic(
                 email=email, name=name, groups=[], is_admin=False, google_auth=False,
                 password=None, organization='default', dashgroups=name)
             headers = {'Content-Type': 'application/json'}
