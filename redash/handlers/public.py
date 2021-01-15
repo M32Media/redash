@@ -226,7 +226,6 @@ def api_clone_dashboards():
 
         #If token was valid
         if token == cfg["refresh_token"]:
-            return 'Ok'
             clone_dashboards_logic(base_publisher, ','.join(destination_publishers))
             headers = {'Content-Type': 'application/json'}
 
